@@ -1,0 +1,32 @@
+# ==========================================
+# Stage 1: Build Vite React application
+# ==========================================
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Install dependencies first for efficient caching
+COPY package*.json ./
+RUN npm ci
+
+# Copy the rest of the application files
+COPY . .
+
+# Build production static assets (this reads .env variables at build time)
+RUN npm run build
+
+# ==========================================
+# Stage 2: Serve static files with Nginx
+# ==========================================
+FROM nginx:alpine
+
+# Copy built bundle from Stage 1 to Nginx HTML root
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Overwrite Nginx default configuration with our custom SPA router
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80 (standard HTTP port served by fly.io)
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
