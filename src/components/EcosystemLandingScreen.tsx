@@ -1,0 +1,178 @@
+import { useState, useEffect } from 'react';
+import { LogOut, LayoutGrid, FileText, CheckCircle2, User as UserIcon, ExternalLink, HelpCircle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { usePermissions } from '../hooks/usePermissions';
+import { supabase } from '../lib/supabase';
+
+export function EcosystemLandingScreen() {
+  const { user, signOut } = useAuth();
+  const { isAdmin } = usePermissions();
+  const [houseNumber, setHouseNumber] = useState<string | null>(null);
+  const [whatsappNumber, setWhatsappNumber] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user?.id) return;
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('house_number, whatsapp_number')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (data) {
+          setHouseNumber(data.house_number);
+          setWhatsappNumber(data.whatsapp_number);
+        }
+      } catch (err) {
+        console.error('Error fetching landing profile:', err);
+      }
+    };
+    fetchProfile();
+  }, [user?.id]);
+
+  const apps = [
+    {
+      name: 'IPL Finder',
+      description: 'Search, index, and manage bank e-statements and CSV records. Active document audit trail.',
+      icon: FileText,
+      status: 'active',
+      badgeText: 'Live',
+      link: 'http://localhost:5173', // Pointing to typical local running file-finder-sr3 port
+    },
+    {
+      name: 'Rekap Viewer',
+      description: 'Fly.io cached backend display for Sheets logs, reports, and real-time community summaries.',
+      icon: LayoutGrid,
+      status: 'active',
+      badgeText: 'Live',
+      link: '#', // Placeholder for now
+    },
+    {
+      name: 'Kas Management',
+      description: 'Decentralized cashbook treasury, monthly billing tracking, and balance sheet reporting.',
+      icon: HelpCircle,
+      status: 'planned',
+      badgeText: 'Planned',
+      link: null,
+    },
+    {
+      name: 'Surat Administration',
+      description: 'Instant official resident correspondence generation and custom PDF permit drafting tools.',
+      icon: HelpCircle,
+      status: 'planned',
+      badgeText: 'Planned',
+      link: null,
+    },
+  ];
+
+  return (
+    <div className="ecosystem-container animate-fade-in">
+      {/* Premium Gradient Background Blur */}
+      <div className="glow-accent glow-ecosystem"></div>
+
+      <header className="ecosystem-header">
+        <div className="header-brand">
+          <div className="brand-badge">
+            <CheckCircle2 className="badge-logo" />
+            <span>Identity Active</span>
+          </div>
+          <h1>Veryresto Hub</h1>
+          <p>Central Community App Dashboard</p>
+        </div>
+
+        <button onClick={signOut} className="hub-signout-btn" type="button">
+          <LogOut className="btn-icon" />
+          <span>Sign Out</span>
+        </button>
+      </header>
+
+      <main className="ecosystem-layout">
+        {/* Resident Profile Card */}
+        <section className="profile-card glassmorphic animate-slide-up">
+          <div className="profile-heading">
+            {user?.user_metadata?.avatar_url || user?.user_metadata?.picture ? (
+              <img
+                className="profile-avatar"
+                src={user.user_metadata.avatar_url || user.user_metadata.picture}
+                alt="Avatar"
+              />
+            ) : (
+              <div className="profile-avatar-fallback">
+                <UserIcon className="fallback-avatar-icon" />
+              </div>
+            )}
+            <div className="profile-info">
+              <h2>{user?.user_metadata?.full_name || user?.email}</h2>
+              <p className="user-email">{user?.email}</p>
+              <div className="role-tags">
+                <span className="role-tag status-approved">Approved Resident</span>
+                {isAdmin && <span className="role-tag status-admin">Global Admin</span>}
+              </div>
+            </div>
+          </div>
+
+          <div className="profile-details">
+            <div className="p-detail">
+              <span className="p-label">Registered House:</span>
+              <span className="p-value">{houseNumber || 'Not specified'}</span>
+            </div>
+            {whatsappNumber && (
+              <div className="p-detail">
+                <span className="p-label">WhatsApp Contact:</span>
+                <span className="p-value">{whatsappNumber}</span>
+              </div>
+            )}
+            <div className="p-detail">
+              <span className="p-label">Account ID:</span>
+              <span className="p-value-mono">{user?.id.substring(0, 18)}...</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Directory Grid */}
+        <section className="apps-section animate-slide-up delay-1">
+          <h2>Community Applications</h2>
+          <div className="apps-grid">
+            {apps.map((app, index) => {
+              const Icon = app.icon;
+              return (
+                <div key={index} className={`app-hub-card glassmorphic ${app.status}`}>
+                  <div className="card-top">
+                    <div className="app-icon-wrapper">
+                      <Icon className="app-card-icon" />
+                    </div>
+                    <span className={`status-pill ${app.status}`}>{app.badgeText}</span>
+                  </div>
+
+                  <div className="card-body">
+                    <h3>{app.name}</h3>
+                    <p>{app.description}</p>
+                  </div>
+
+                  <div className="card-action">
+                    {app.link ? (
+                      <a
+                        href={app.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="app-launch-btn"
+                      >
+                        <span>Launch App</span>
+                        <ExternalLink className="launch-icon" />
+                      </a>
+                    ) : (
+                      <button className="app-launch-btn disabled" disabled type="button">
+                        <span>Coming Soon</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
