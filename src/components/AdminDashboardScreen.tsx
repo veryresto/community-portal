@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Users, Shield, Database, Activity, Check, X, ShieldAlert, 
-  Search, Info, AlertTriangle, ArrowLeft, Save, Sparkles 
+  Info, AlertTriangle, ArrowLeft, Sparkles 
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
