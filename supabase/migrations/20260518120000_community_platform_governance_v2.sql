@@ -100,7 +100,7 @@ ALTER TABLE public.user_app_roles ENABLE ROW LEVEL SECURITY;
 -- Global App-RBAC RLS Policies
 CREATE POLICY "Approved residents can view connected apps and roles"
   ON public.applications FOR SELECT
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND approval_status = 'approved'));
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
 
 CREATE POLICY "Platform managers can manage application registry"
   ON public.applications FOR ALL
@@ -108,19 +108,19 @@ CREATE POLICY "Platform managers can manage application registry"
 
 CREATE POLICY "Approved residents can view app capabilities"
   ON public.app_permissions FOR SELECT
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND approval_status = 'approved'));
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
 
 CREATE POLICY "Approved residents can view role templates"
   ON public.app_roles FOR SELECT
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND approval_status = 'approved'));
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
 
 CREATE POLICY "Approved residents can view role bindings"
   ON public.app_role_permissions FOR SELECT
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND approval_status = 'approved'));
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
 
 CREATE POLICY "Approved residents can view active app access mappings"
   ON public.user_app_roles FOR SELECT
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND approval_status = 'approved'));
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
 
 CREATE POLICY "Platform managers can manage resident app role mappings"
   ON public.user_app_roles FOR ALL
