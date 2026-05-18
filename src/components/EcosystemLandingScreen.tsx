@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { LogOut, LayoutGrid, FileText, CheckCircle2, User as UserIcon, ExternalLink, HelpCircle } from 'lucide-react';
+import { LogOut, LayoutGrid, FileText, CheckCircle2, User as UserIcon, ExternalLink, HelpCircle, Shield } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { usePermissions } from '../hooks/usePermissions';
 import { supabase } from '../lib/supabase';
+import { AdminDashboardScreen } from './AdminDashboardScreen';
 
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
-  const { isAdmin } = usePermissions();
+  const { isAdmin, isGovernanceManager } = usePermissions();
   const [houseNumber, setHouseNumber] = useState<string | null>(null);
   const [whatsappNumber, setWhatsappNumber] = useState<string | null>(null);
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -66,6 +68,14 @@ export function EcosystemLandingScreen() {
     },
   ];
 
+  if (showAdminDashboard && isGovernanceManager) {
+    return (
+      <div className="ecosystem-container">
+        <AdminDashboardScreen onBack={() => setShowAdminDashboard(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="ecosystem-container animate-fade-in">
       {/* Premium Gradient Background Blur */}
@@ -81,10 +91,28 @@ export function EcosystemLandingScreen() {
           <p>Central Community App Dashboard</p>
         </div>
 
-        <button onClick={signOut} className="hub-signout-btn" type="button">
-          <LogOut className="btn-icon" />
-          <span>Sign Out</span>
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {isGovernanceManager && (
+            <button 
+              onClick={() => setShowAdminDashboard(true)} 
+              className="hub-signout-btn" 
+              type="button"
+              style={{ 
+                borderColor: 'var(--primary)', 
+                color: 'var(--primary)',
+                boxShadow: '0 4px 14px var(--primary-glow)'
+              }}
+            >
+              <Shield className="btn-icon" />
+              <span>Admin Center</span>
+            </button>
+          )}
+
+          <button onClick={signOut} className="hub-signout-btn" type="button">
+            <LogOut className="btn-icon" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </header>
 
       <main className="ecosystem-layout">

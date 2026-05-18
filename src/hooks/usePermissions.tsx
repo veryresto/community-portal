@@ -4,6 +4,9 @@ import { useAuth } from './useAuth';
 
 interface Permissions {
   isAdmin: boolean;
+  isVerifier: boolean;
+  isModerator: boolean;
+  isGovernanceManager: boolean;
   isApproved: boolean;
   isRejected: boolean;
   canReadFiles: boolean;
@@ -15,6 +18,8 @@ interface Permissions {
 export function usePermissions(): Permissions {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVerifier, setIsVerifier] = useState(false);
+  const [isModerator, setIsModerator] = useState(false);
   const [isRejected, setIsRejected] = useState(false);
   const [canReadFiles, setCanReadFiles] = useState(false);
   const [canUploadFiles, setCanUploadFiles] = useState(false);
@@ -25,6 +30,8 @@ export function usePermissions(): Permissions {
   useEffect(() => {
     if (!user) {
       setIsAdmin(false);
+      setIsVerifier(false);
+      setIsModerator(false);
       setIsRejected(false);
       setCanReadFiles(false);
       setCanUploadFiles(false);
@@ -52,16 +59,21 @@ export function usePermissions(): Permissions {
         const houseNum = profile?.house_number;
         setHasSubmittedInfo(!!houseNum);
 
-        // 2. Fetch admin role from user_roles
-        const { data: roleData } = await supabase
+        // 2. Fetch all global roles from user_roles
+        const { data: rolesData } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
+          .eq('user_id', user.id);
 
-        const adminStatus = !!roleData;
+        const activeRoles = rolesData?.map(r => r.role) || [];
+        
+        const adminStatus = activeRoles.includes('admin');
+        const verifierStatus = activeRoles.includes('resident_verifier');
+        const moderatorStatus = activeRoles.includes('platform_moderator');
+
         setIsAdmin(adminStatus);
+        setIsVerifier(verifierStatus);
+        setIsModerator(moderatorStatus);
 
         // 3. Evaluate approval status with the hybrid source of truth
         const dbStatus = profile?.approval_status;
@@ -115,8 +127,13 @@ export function usePermissions(): Permissions {
     fetchPermissions();
   }, [user]);
 
+  const isGovernanceManager = isAdmin || isVerifier || isModerator;
+
   return {
     isAdmin,
+    isVerifier,
+    isModerator,
+    isGovernanceManager,
     isApproved,
     isRejected,
     canReadFiles,
