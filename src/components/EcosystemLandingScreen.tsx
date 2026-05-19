@@ -33,6 +33,18 @@ export function EcosystemLandingScreen() {
     fetchProfile();
   }, [user?.id]);
 
+  const isLocal = window.location.hostname.endsWith('.localtest.me') || 
+                  window.location.hostname.endsWith('.lvh.me') || 
+                  window.location.hostname === 'localhost';
+
+  const iplFinderUrl = isLocal 
+    ? (import.meta.env.VITE_IPL_FINDER_URL || 'http://ipl-finder.localtest.me:8080')
+    : (import.meta.env.VITE_IPL_FINDER_URL || 'https://ipl-finder.veryresto.com');
+
+  const rekapViewerUrl = isLocal
+    ? (import.meta.env.VITE_REKAP_VIEWER_URL || 'http://rekap.localtest.me:3000')
+    : (import.meta.env.VITE_REKAP_VIEWER_URL || 'https://rekap.veryresto.com');
+
   const apps = [
     {
       name: 'IPL Finder',
@@ -40,7 +52,7 @@ export function EcosystemLandingScreen() {
       icon: FileText,
       status: 'active',
       badgeText: 'Live',
-      link: 'http://localhost:5173', // Pointing to typical local running file-finder-sr3 port
+      link: iplFinderUrl,
     },
     {
       name: 'Rekap Viewer',
@@ -48,7 +60,7 @@ export function EcosystemLandingScreen() {
       icon: LayoutGrid,
       status: 'active',
       badgeText: 'Live',
-      link: '#', // Placeholder for now
+      link: rekapViewerUrl,
     },
     {
       name: 'Kas Management',
