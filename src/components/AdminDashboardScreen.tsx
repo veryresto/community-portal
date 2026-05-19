@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Users, Shield, Database, Activity, Check, X, ShieldAlert, 
-  Info, AlertTriangle, ArrowLeft, Sparkles 
+  Info, AlertTriangle, ArrowLeft, Sparkles, Edit 
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -55,6 +55,7 @@ interface GovernanceEvent {
   created_at: string;
   actor_email?: string;
   target_email?: string;
+  metadata?: any;
 }
 
 export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
@@ -87,15 +88,23 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   // Selected Profile for App Governance Matrix
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
 
+  // Inline Profile Edit States (Option 2)
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ house_number: '', whatsapp_number: '' });
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Determine if actor has rights to edit/approve profiles (admin or verifier only)
+  const canManageProfiles = isAdmin || isVerifier;
+
   // Load baseline data on mount
   useEffect(() => {
     fetchBaselineData();
   }, []);
 
   const fetchBaselineData = async () => {
-    setLoading(true);
     try {
-      // 1. Fetch profiles that have completed Waiting Room registration
+      setLoading(true);
+      // 1. Fetch Profiles (Residents with house number)
       const { data: pData } = await supabase
         .from('profiles')
         .select('*')
@@ -148,7 +157,13 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   };
 
   // Helper to log audit event to governance_events
-  const logGovernanceAction = async (targetUserId: string, action: string, reason: string, targetEmail: string) => {
+  const logGovernanceAction = async (
+    targetUserId: string, 
+    action: string, 
+    reason: string, 
+    targetEmail: string,
+    customMetadata: Record<string, any> = {}
+  ) => {
     try {
       await supabase
         .from('governance_events')
@@ -159,12 +174,123 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           reason: reason || null,
           metadata: {
             actor_email: user?.email,
-            target_email: targetEmail
+            target_email: targetEmail,
+            ...customMetadata
           }
         });
     } catch (err) {
       console.error('Failed to write governance event:', err);
     }
+  };
+
+  // Helper normalization and validation functions (Option 2)
+  const normalizeHouseNumber = (val: string) => val.trim().replace(/\s+/g, ' ');
+  const normalizeWhatsAppNumber = (val: string) => val.replace(/[^\d+]/g, '');
+
+  const validateProfileEdit = (houseNumber: string, whatsappNumber: string): string | null => {
+    if (!houseNumber) return 'House number is required.';
+    if (houseNumber.length > 25) return 'House number must be 25 characters or less.';
+    
+    if (whatsappNumber) {
+      const digitsOnly = whatsappNumber.replace(/\D/g, '');
+      if (digitsOnly.length < 9 || digitsOnly.length > 15) {
+        return 'WhatsApp number must contain between 9 and 15 digits.';
+      }
+    }
+    return null;
+  };
+
+  const handleStartEdit = (profile: Profile) => {
+    setEditingProfileId(profile.id);
+    setEditForm({
+      house_number: profile.house_number || '',
+      whatsapp_number: profile.whatsapp_number || ''
+    });
+    setEditError(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProfileId(null);
+    setEditError(null);
+  };
+
+  const handleSaveProfileEdit = async (profile: Profile) => {
+    const normHouse = normalizeHouseNumber(editForm.house_number);
+    const normWhatsApp = editForm.whatsapp_number ? normalizeWhatsAppNumber(editForm.whatsapp_number) : '';
+    
+    const validationError = validateProfileEdit(normHouse, normWhatsApp);
+    if (validationError) {
+      setEditError(validationError);
+      return;
+    }
+
+    setLoading(true);
+    setEditError(null);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          house_number: normHouse,
+          whatsapp_number: normWhatsApp || null
+        })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      // Log structured metadata showing before and after states
+      await logGovernanceAction(
+        profile.id,
+        'modified_resident_profile',
+        'Corrected resident contact/house details',
+        profile.email,
+        {
+          before: {
+            house_number: profile.house_number,
+            whatsapp_number: profile.whatsapp_number
+          },
+          after: {
+            house_number: normHouse,
+            whatsapp_number: normWhatsApp || null
+          }
+        }
+      );
+
+      setEditingProfileId(null);
+      await fetchBaselineData();
+    } catch (err: any) {
+      console.error(err);
+      setEditError(err.message || 'Failed to save changes.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to extract state updates and profile edits from audit logs
+  const getProfileAuditDetails = (profileId: string) => {
+    const profileEvents = governanceEvents.filter(ev => ev.target_user_id === profileId);
+    
+    // Latest event that approved, rejected, or suspended
+    const stateEvent = profileEvents.find(ev => 
+      ev.action === 'approved_resident' || 
+      ev.action === 'rejected_resident' || 
+      ev.action === 'suspended_resident'
+    );
+    
+    // Latest event that modified house number
+    const houseEditEvent = profileEvents.find(ev => 
+      ev.action === 'modified_resident_profile' &&
+      ev.metadata &&
+      (ev.metadata as any).before?.house_number !== (ev.metadata as any).after?.house_number
+    );
+    
+    // Latest event that modified whatsapp number
+    const whatsappEditEvent = profileEvents.find(ev => 
+      ev.action === 'modified_resident_profile' &&
+      ev.metadata &&
+      (ev.metadata as any).before?.whatsapp_number !== (ev.metadata as any).after?.whatsapp_number
+    );
+    
+    return { stateEvent, houseEditEvent, whatsappEditEvent };
   };
 
   // Handle Approve Resident (Global standing)
@@ -479,75 +605,168 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProfiles.map(profile => (
-                      <tr key={profile.id}>
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous Resident'}</span>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
-                          </div>
-                        </td>
-                        <td>{profile.house_number}</td>
-                        <td>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>}</td>
-                        <td>
-                          <span className={`pill-badge ${profile.approval_status}`}>
-                            {profile.approval_status}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="admin-action-group" style={{ justifyContent: 'flex-end' }}>
-                            {profile.approval_status === 'pending' && (
-                              <>
-                                <button 
-                                  onClick={() => handleApproveResident(profile)}
-                                  className="admin-btn primary"
-                                >
-                                  <Check style={{ width: '14px' }} />
-                                  <span>Approve</span>
-                                </button>
-                                <button 
-                                  onClick={() => triggerReasonModal(profile, 'reject')}
-                                  className="admin-btn danger"
-                                >
-                                  <X style={{ width: '14px' }} />
-                                  <span>Reject</span>
-                                </button>
-                              </>
+                    {filteredProfiles.map(profile => {
+                      const { stateEvent, houseEditEvent, whatsappEditEvent } = getProfileAuditDetails(profile.id);
+                      return (
+                        <tr key={profile.id}>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                              <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous Resident'}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
+                            </div>
+                          </td>
+                          <td>
+                            {editingProfileId === profile.id ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <input
+                                  type="text"
+                                  className="search-input"
+                                  style={{ padding: '6px 8px', fontSize: '14px', width: '130px', margin: 0 }}
+                                  value={editForm.house_number}
+                                  onChange={(e) => setEditForm(prev => ({ ...prev, house_number: e.target.value }))}
+                                />
+                                {editError && <span style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</span>}
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span>{profile.house_number}</span>
+                                {houseEditEvent && (
+                                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }} title={`Edited: ${houseEditEvent.reason}`}>
+                                    Corrected by {houseEditEvent.actor_email}
+                                  </span>
+                                )}
+                              </div>
                             )}
+                          </td>
+                          <td>
+                            {editingProfileId === profile.id ? (
+                              <input
+                                type="text"
+                                className="search-input"
+                                style={{ padding: '6px 8px', fontSize: '14px', width: '150px', margin: 0 }}
+                                placeholder="e.g. 08123456789"
+                                value={editForm.whatsapp_number}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, whatsapp_number: e.target.value }))}
+                              />
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>}</span>
+                                {whatsappEditEvent && (
+                                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }} title={`Edited: ${whatsappEditEvent.reason}`}>
+                                    Corrected by {whatsappEditEvent.actor_email}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <span className={`pill-badge ${profile.approval_status}`}>
+                                {profile.approval_status}
+                              </span>
+                              {stateEvent && (
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                                  {profile.approval_status === 'approved' ? 'Approved' : 
+                                   profile.approval_status === 'rejected' ? 'Rejected' : 'Suspended'} by {stateEvent.actor_email}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            {canManageProfiles ? (
+                              <div className="admin-action-group" style={{ justifyContent: 'flex-end' }}>
+                                {editingProfileId === profile.id ? (
+                                  <>
+                                    <button 
+                                      onClick={() => handleSaveProfileEdit(profile)}
+                                      className="admin-btn primary"
+                                      disabled={loading}
+                                    >
+                                      <Check style={{ width: '14px' }} />
+                                      <span>Save</span>
+                                    </button>
+                                    <button 
+                                      onClick={handleCancelEdit}
+                                      className="admin-btn secondary"
+                                      disabled={loading}
+                                    >
+                                      <X style={{ width: '14px' }} />
+                                      <span>Cancel</span>
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button 
+                                      onClick={() => handleStartEdit(profile)}
+                                      className="admin-btn secondary"
+                                      title="Edit resident profile details"
+                                    >
+                                      <Edit style={{ width: '14px' }} />
+                                      <span>Edit</span>
+                                    </button>
 
-                            {profile.approval_status === 'approved' && (
-                              <button 
-                                onClick={() => triggerReasonModal(profile, 'suspend')}
-                                className="admin-btn danger"
-                              >
-                                <ShieldAlert style={{ width: '14px' }} />
-                                <span>Suspend</span>
-                              </button>
-                            )}
+                                    {profile.approval_status === 'pending' && (
+                                      <>
+                                        <button 
+                                          onClick={() => handleApproveResident(profile)}
+                                          className="admin-btn primary"
+                                        >
+                                          <Check style={{ width: '14px' }} />
+                                          <span>Approve</span>
+                                        </button>
+                                        <button 
+                                          onClick={() => triggerReasonModal(profile, 'reject')}
+                                          className="admin-btn danger"
+                                        >
+                                          <X style={{ width: '14px' }} />
+                                          <span>Reject</span>
+                                        </button>
+                                      </>
+                                    )}
 
-                            {profile.approval_status === 'suspended' && (
-                              <button 
-                                onClick={() => handleApproveResident(profile)}
-                                className="admin-btn primary"
-                              >
-                                <Check style={{ width: '14px' }} />
-                                <span>Re-Approve</span>
-                              </button>
-                            )}
+                                    {profile.approval_status === 'approved' && (
+                                      <button 
+                                        onClick={() => triggerReasonModal(profile, 'suspend')}
+                                        className="admin-btn danger"
+                                      >
+                                        <ShieldAlert style={{ width: '14px' }} />
+                                        <span>Suspend</span>
+                                      </button>
+                                    )}
 
-                            {profile.approval_status === 'rejected' && (
-                              <button 
-                                onClick={() => handleApproveResident(profile)}
-                                className="admin-btn primary"
-                              >
-                                <Check style={{ width: '14px' }} />
-                                <span>Re-Approve</span>
-                              </button>
+                                    {profile.approval_status === 'suspended' && (
+                                      <button 
+                                        onClick={() => handleApproveResident(profile)}
+                                        className="admin-btn primary"
+                                      >
+                                        <Check style={{ width: '14px' }} />
+                                        <span>Re-Approve</span>
+                                      </button>
+                                    )}
+
+                                    {profile.approval_status === 'rejected' && (
+                                      <button 
+                                        onClick={() => handleApproveResident(profile)}
+                                        className="admin-btn primary"
+                                      >
+                                        <Check style={{ width: '14px' }} />
+                                        <span>Re-Approve</span>
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            ) : (
+                              <div style={{ textAlign: 'right' }}>
+                                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                                  Read-only (Admins/Verifiers only)
+                                </span>
+                              </div>
                             )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
