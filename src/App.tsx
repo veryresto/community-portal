@@ -6,7 +6,7 @@ import { RejectedScreen } from './components/RejectedScreen';
 import { EcosystemLandingScreen } from './components/EcosystemLandingScreen';
 
 function MainAppContent() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
   const { isApproved, isRejected, loading: permLoading } = usePermissions();
 
   // Show a premium visual spinner if authenticating or fetching permissions
@@ -43,8 +43,9 @@ function MainAppContent() {
   const rawRedirectTo = searchParams.get('redirect_to');
   const redirectTo = getValidatedRedirectUrl(rawRedirectTo);
 
-  if (redirectTo) {
-    window.location.replace(redirectTo);
+  if (redirectTo && session) {
+    const ssoUrl = `${redirectTo}/#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`;
+    window.location.replace(ssoUrl);
     return (
       <div className="portal-container">
         <div className="glow-accent glow-1"></div>
@@ -62,8 +63,12 @@ function MainAppContent() {
 const ALLOWED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:5173',
+  'http://ipl-finder.lvh.me:8080',
+  'http://community.lvh.me:5173',
   'https://ipl-finder-sr3.netlify.app',
-  'https://rekap.veryresto.com'
+  'https://rekap.veryresto.com',
+  'https://ipl-finder.veryresto.com',
+  'https://ipl-finder.fly.dev'
 ];
 
 const getValidatedRedirectUrl = (urlParam: string | null): string | null => {
