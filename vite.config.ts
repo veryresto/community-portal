@@ -8,8 +8,10 @@ export default defineConfig({
     port: 5173,
     allowedHosts: [
       "community.lvh.me",
+      "community.localtest.me",
       "localhost"
     ]
+
   },
   plugins: [react()],
 })

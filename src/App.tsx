@@ -22,6 +22,16 @@ function MainAppContent() {
     );
   }
 
+  // Extract and validate redirect URL
+  const searchParams = new URLSearchParams(window.location.search);
+  const rawRedirectTo = searchParams.get('redirect_to');
+  const redirectTo = getValidatedRedirectUrl(rawRedirectTo);
+
+  // Save the validated redirect URL to sessionStorage if present
+  if (redirectTo) {
+    sessionStorage.setItem('oauth_redirect_to', redirectTo);
+  }
+
   // Route 1: User not logged in -> Show Login
   if (!user) {
     return <LoginScreen />;
@@ -38,14 +48,13 @@ function MainAppContent() {
   }
 
   // Route 4: Account approved -> Portal landing hub directory
-  // If a valid redirect_to parameter is present, redirect to the consumer app instead
-  const searchParams = new URLSearchParams(window.location.search);
-  const rawRedirectTo = searchParams.get('redirect_to');
-  const redirectTo = getValidatedRedirectUrl(rawRedirectTo);
+  // Retrieve the redirect URL from parameter or fallback to the saved sessionStorage URL
+  const finalRedirectTo = redirectTo || sessionStorage.getItem('oauth_redirect_to');
 
-  if (redirectTo && session) {
-    const ssoUrl = `${redirectTo}/#access_token=${encodeURIComponent(session.access_token)}&refresh_token=${encodeURIComponent(session.refresh_token)}`;
-    window.location.replace(ssoUrl);
+  if (finalRedirectTo && session) {
+    // Clear the stored URL so subsequent direct portal visits don't redirect
+    sessionStorage.removeItem('oauth_redirect_to');
+    window.location.replace(finalRedirectTo);
     return (
       <div className="portal-container">
         <div className="glow-accent glow-1"></div>
@@ -65,9 +74,12 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://ipl-finder.lvh.me:8080',
   'http://community.lvh.me:5173',
+  'http://ipl-finder.localtest.me:8080',
+  'http://community.localtest.me:5173',
   'https://ipl-finder-sr3.netlify.app',
   'https://rekap.veryresto.com',
   'https://ipl-finder.veryresto.com',
+  'https://community.veryresto.com',
   'https://ipl-finder.fly.dev'
 ];
 
