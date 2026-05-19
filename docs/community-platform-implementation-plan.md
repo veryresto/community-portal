@@ -244,6 +244,18 @@ This compatibility glue is powerful but dangerous if semantics diverge later. It
 - **Sunset Milestone**: 7 days post-deployment of **Phase 5 (Convert IPL Finder)**. Once IPL Finder is fully updated to query the new `has_namespaced_permission` helper in production, the legacy tables are officially obsolete.
 - **Removal Actions**: The legacy sync triggers (`sync_legacy_permissions_trg`) and legacy tables (`user_permissions`) will be explicitly dropped, completing the migration.
 
+### Permission Source Architecture
+To prevent architectural confusion, we establish a strict separation of roles:
+- **Canonical Permission Source**:
+  * `applications`
+  * `app_roles`
+  * `app_permissions`
+  * `user_app_roles`
+  All administration, role assignments, and platform capability mappings are performed exclusively on these canonical tables. They are the single source of truth.
+- **Compatibility Projection**:
+  * `user_permissions` (ONLY)
+  This table is treated strictly as a **read-only compatibility projection** of the canonical source. It is populated solely by database triggers to support legacy applications (like IPL Finder) during the migration window. No direct writes should ever target this table.
+
 ---
 
 ## 8. App Onboarding Model
