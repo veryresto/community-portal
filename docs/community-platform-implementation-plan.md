@@ -258,7 +258,22 @@ To prevent architectural confusion, we establish a strict separation of roles:
 
 ---
 
-## 8. App Onboarding Model
+## 8. Security & Governance Architecture
+
+To maintain a secure and fully auditable ecosystem, the platform employs the following database-level patterns:
+
+### 1. Immutable Audit Logging
+All critical governance operations are logged into the immutable `governance_events` ledger. 
+- **Role Assignments:** The `log_user_app_role_governance` trigger monitors the `user_app_roles` table, automatically inserting `assigned_app_role` and `revoked_app_role` events on any insertion or deletion—completely bypassing application-level vulnerabilities.
+- **Profile Approvals:** Resident status changes (approvals, rejections, and suspensions) are logged as formal governance actions (`approved_resident`, `rejected_resident`, `suspended_resident`), ensuring a permanent trace of administrator decisions.
+
+### 2. Reusable Security Helpers
+Row Level Security (RLS) policies are simplified and secured using encapsulated PL/pgSQL helper functions.
+- **`is_platform_manager(uid)`**: A `SECURITY DEFINER` function that securely checks if a user holds the `admin`, `resident_verifier`, or `platform_moderator` role. This encapsulates the privilege logic, prevents schema-hijacking, and keeps RLS policies DRY and highly readable (e.g., `USING (public.is_platform_manager(auth.uid()))`).
+
+---
+
+## 9. App Onboarding Model
 
 Future developers adding new apps must follow this standard integration checklist:
 
@@ -270,7 +285,7 @@ Future developers adding new apps must follow this standard integration checklis
 
 ---
 
-## 9. Deployment Strategy
+## 10. Deployment Strategy
 
 - **Topology**: All applications will be deployed as independent services on Fly.io.
 - **Database**: A single, shared Supabase instance manages the Postgres database, Auth, and Storage.
@@ -278,6 +293,6 @@ Future developers adding new apps must follow this standard integration checklis
 
 ---
 
-## 10. Constraints
+## 11. Constraints
 
 - **No Enterprise IAM**: We are relying on simple Postgres tables and Supabase Auth, avoiding complex distributed OAuth/OIDC providers (like Auth0 or Keycloak) to maintain operational simplicity for the community.
