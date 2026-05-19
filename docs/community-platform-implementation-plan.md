@@ -183,17 +183,23 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ## 5. Authentication & Session Strategy
 
-Since all apps operate under the `.veryresto.com` root domain, they intended to share the Supabase Auth session via cookies.
+Rather than using complex token-in-fragment redirects or standalone SSO protocols, the applications share a single authenticated session natively across the base domain (`.veryresto.com` in production, `.localtest.me` in local development) using a custom cookie storage adapter.
 
-### Subdomain Session Sharing
-- Supabase Auth can be configured to write cookies scoped to the root domain (`Domain=.veryresto.com`).
-- This allows a token minted on `community.veryresto.com` to be automatically sent to the Supabase API when the user navigates to `rekap.veryresto.com`.
+### 1. Subdomain Cookie Sharing (`CookieStorage`)
+Both the platform and consumer applications configure the `@supabase/supabase-js` client with a custom `CookieStorage` engine.
+- **Base Domain Scoping**: The storage adapter dynamically detects the current hostname and scopes the cookie to the parent wildcard domain (e.g., `.veryresto.com` or `.localtest.me`).
+- **Namespaced Storage Key**: The authentication state is namespaced under the key `veryresto-auth` to prevent collisions with default Supabase identifiers.
+- **Protocol-Adaptive Security**: The `Secure` cookie flag is applied dynamically only when accessing the page over `https:` protocols, allowing local `http://` development to function without browser cookie rejection.
 
-### Fallback Redirect Session Strategy
-In scenarios where shared cookies become inconsistent across subdomains (e.g., due to strict browser tracking protections like ITP), the architecture must fall back gracefully to ensure continuous access:
-- **Central Login Page Interstitial**: If an app fails to read the session cookie, it redirects to the central `community.veryresto.com` login page.
-- **Token Refresh Redirect**: If the central auth server detects an active session despite the consumer app's missing cookie, it immediately redirects back to the consumer app with a short-lived token or authorization code in the URL.
-- **Lightweight SSO Handoff**: The consumer app exchanges this URL parameter for a local session, effectively establishing a lightweight SSO flow.
+### 2. Cookie Size Optimization (Metadata Stripping)
+Supabase sessions can become extremely large (often exceeding 4KB) due to extensive user metadata, leading to silent browser cookie truncation and hard-to-debug authentication failures.
+- **Serialization Filter (`setItem`)**: When saving a session, the adapter parses the payload and explicitly deletes the large nested `user` object. Only the essential properties (`access_token`, `refresh_token`, `expires_at`, `expires_in`, `token_type`) are stored, compressing the cookie size to ~1.5KB.
+- **JWT Claim Parsing (`getItem`)**: When restoring the session, the adapter reads the compressed payload and decodes the JWT claims from the `access_token` (such as `sub`, `email`, `role`, `user_metadata`, and `app_metadata`). It reconstructs the `user` profile object on-the-fly, ensuring complete compatibility with standard Supabase client methods.
+
+### 3. OAuth State Retention
+When unauthenticated users access a consumer app (e.g., `ipl-finder.veryresto.com`), they are redirected to the community portal with a target URL parameter: `community.veryresto.com/?redirect_to=https://ipl-finder.veryresto.com`.
+- **Session Cache**: To prevent the target URL from being lost when the browser is redirected to external Google OAuth screens and back, the portal caches the validated `redirect_to` value in `sessionStorage` on initial load.
+- **Automatic Restore**: Once the OAuth callback completes and the user session is active, the portal retrieves the target URL from `sessionStorage`, clears the cache, and redirects the user back to the destination app where the shared subdomain cookie immediately logs them in.
 
 ---
 
@@ -296,3 +302,29 @@ Future developers adding new apps must follow this standard integration checklis
 ## 11. Constraints
 
 - **No Enterprise IAM**: We are relying on simple Postgres tables and Supabase Auth, avoiding complex distributed OAuth/OIDC providers (like Auth0 or Keycloak) to maintain operational simplicity for the community.
+
+---
+
+## 12. Critical Operational Learnings & Blockers
+
+During the implementation and testing phases of the shared subdomain authentication architecture, several critical blockers and quirks were resolved:
+
+### 1. Silent Cookie Truncation (4KB Browser Limit)
+* **Blocker**: Google OAuth sessions can grow extremely large when user metadata, app metadata, and long refresh tokens are bundled together. Standard cookies are strictly capped at 4KB per domain by modern browsers. Exceeding this causes browsers to silently reject the cookie write, leaving the user in an unauthenticated loop.
+* **Resolution**: The custom `CookieStorage` dynamically strips out the massive nested `user` object prior to writing the cookie. The adapter reconstructs this object on the client side at read time by decoding the access token's JWT claims.
+
+### 2. Google OAuth Redirect Whitelists
+* **Blocker**: When logging in locally, the application requests redirection back to `http://community.localtest.me:5173/`. However, if this URL is not explicitly whitelisted in the Supabase Dashboard under **Authentication > URL Configuration > Redirect URLs**, Supabase rejects the redirect request and defaults to the production Site URL, causing local logins to redirect to production.
+* **Resolution**: Local subdomains (`http://community.localtest.me:5173/`, `http://ipl-finder.localtest.me:8080/`) must be whitelisted in the Supabase Dashboard, alongside the production domain `https://community.veryresto.com/`.
+
+### 3. Permissions Loading Timing Race Condition
+* **Blocker**: When consumer apps mount, the authentication state resolves first. In the single render frame where `user` becomes valid but the database query for `usePermissions` is still loading, the UI might evaluate permissions as `false` and trigger a redirect loop back to the portal.
+* **Resolution**: The `usePermissions` hook returns a `resolvedUserId` state variable. Consumer apps verify `resolvedUserId === user.id` before executing any automatic unapproved-resident redirects, ensuring timing parity between the user and permission states.
+
+### 4. Vite Host Verification (`allowedHosts`)
+* **Blocker**: When accessing local Vite dev servers via custom domains (e.g. `community.localtest.me`), Vite's default dev server security blocks the requests.
+* **Resolution**: Whitelist the hosts explicitly in each project's `vite.config.ts` under `server.allowedHosts` (e.g., `community.localtest.me` and `ipl-finder.localtest.me`).
+
+### 5. macOS mDNSResponder Negative DNS Caching
+* **Blocker**: When setting up new production custom domains (like `community.veryresto.com`), trying to access the domain *before* DNS propagation finishes causes the macOS resolver to cache a negative lookup (NXDOMAIN) for up to 3,600 seconds (1 hour). This prevents browsers from reaching the site even after DNS resolves globally.
+* **Resolution**: Flush the macOS resolver cache using `sudo killall -HUP mDNSResponder` to force the system to retrieve the updated IP address.
