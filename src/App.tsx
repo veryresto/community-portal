@@ -74,8 +74,6 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://ipl-finder.localtest.me:8080',
   'http://community.localtest.me:5173',
-  'http://ipl-finder.localtest.me:8080',
-  'http://community.localtest.me:5173',
   'http://rekap.localtest.me:3000',
   'https://ipl-finder-sr3.netlify.app',
   'https://rekap.veryresto.com',
