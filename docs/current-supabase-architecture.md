@@ -179,3 +179,145 @@ The ecosystem currently relies on sibling-domain session sharing (often involvin
 *   **Decoupled Governance Scopes**: Migrate away from global `admin` bypasses. Adopt hierarchical governance where a "Global Admin" can assign "App Admins", but apps themselves handle their isolated RLS natively.
 *   **Committee & Multi-Role Support**: Expand `app_roles` into complex grouping (e.g., Committee structures) that users can dynamically rotate in and out of.
 *   **Formalize Off-Boarding**: Currently `suspended` and `rejected` exist, but formal off-boarding flows for users moving out of the community need clearer semantic states and role-revocation cascades.
+
+---
+
+## Appendix A — Raw RLS Policies
+
+Below are the exact RLS policies in effect for the core governance tables to ensure security assumptions, update paths, and governance flows are not accidentally broken during future redesigns.
+
+### `public.profiles`
+
+```sql
+CREATE POLICY "Users can view all profiles" 
+ON public.profiles FOR SELECT 
+USING (true);
+
+CREATE POLICY "Users can insert own profile" 
+ON public.profiles FOR INSERT 
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" 
+ON public.profiles FOR UPDATE 
+USING (auth.uid() = id);
+
+CREATE POLICY "Platform managers can update all profiles"
+ON public.profiles FOR UPDATE
+USING (public.is_platform_manager(auth.uid()));
+```
+
+### `public.user_roles` (Global Roles)
+
+```sql
+CREATE POLICY "Admins can view all roles"
+ON public.user_roles FOR SELECT
+USING (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY "Admins can manage roles"
+ON public.user_roles FOR ALL
+USING (public.has_role(auth.uid(), 'admin'));
+```
+
+### `public.governance_events`
+
+```sql
+CREATE POLICY "Admins and verifiers can view governance events"
+ON public.governance_events FOR SELECT
+USING (EXISTS (
+  SELECT 1 FROM public.user_roles 
+  WHERE user_id::text = auth.uid()::text 
+  AND role::text IN ('admin', 'resident_verifier')
+));
+
+CREATE POLICY "Authorized system and managers can create governance events"
+ON public.governance_events FOR INSERT
+WITH CHECK (EXISTS (
+  SELECT 1 FROM public.user_roles 
+  WHERE user_id::text = auth.uid()::text 
+  AND role::text IN ('admin', 'resident_verifier', 'platform_moderator')
+));
+```
+
+### App-RBAC Framework (`applications`, `app_roles`, `app_permissions`, `app_role_permissions`, `user_app_roles`)
+
+```sql
+-- Applications registry
+CREATE POLICY "Approved residents can view connected apps and roles"
+ON public.applications FOR SELECT
+USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
+
+CREATE POLICY "Platform managers can manage application registry"
+ON public.applications FOR ALL
+USING (EXISTS (SELECT 1 FROM public.user_roles WHERE user_id::text = auth.uid()::text AND role::text = 'admin'));
+
+-- App Permissions & Templates
+CREATE POLICY "Approved residents can view app capabilities"
+ON public.app_permissions FOR SELECT
+USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
+
+CREATE POLICY "Approved residents can view role templates"
+ON public.app_roles FOR SELECT
+USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
+
+CREATE POLICY "Approved residents can view role bindings"
+ON public.app_role_permissions FOR SELECT
+USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
+
+-- User App Role assignments
+CREATE POLICY "Approved residents can view active app access mappings"
+ON public.user_app_roles FOR SELECT
+USING (EXISTS (SELECT 1 FROM public.profiles WHERE id::text = auth.uid()::text AND approval_status::text = 'approved'));
+
+CREATE POLICY "Platform managers can manage resident app role mappings"
+ON public.user_app_roles FOR ALL
+USING (EXISTS (
+  SELECT 1 FROM public.user_roles 
+  WHERE user_id::text = auth.uid()::text 
+  AND role::text IN ('admin', 'resident_verifier')
+));
+```
+
+### Legacy Tables (`user_permissions`)
+
+```sql
+CREATE POLICY "Admins can view all permissions"
+ON public.user_permissions FOR SELECT
+USING (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY "Users can view own permissions"
+ON public.user_permissions FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins can manage permissions"
+ON public.user_permissions FOR ALL
+USING (public.has_role(auth.uid(), 'admin'));
+```
+
+### `public.files` (Legacy Example bound to App-RBAC)
+
+```sql
+CREATE POLICY "Approved users can view files"
+ON public.files FOR SELECT
+USING (
+  public.has_role(auth.uid(), 'admin') OR 
+  public.has_namespaced_permission(auth.uid(), 'ipl_finder.read_files')
+);
+
+CREATE POLICY "Users with upload permission can upload files"
+ON public.files FOR INSERT
+WITH CHECK (
+  auth.uid() = uploader_id AND (
+    public.has_role(auth.uid(), 'admin') OR 
+    public.has_namespaced_permission(auth.uid(), 'ipl_finder.upload_files')
+  )
+);
+
+CREATE POLICY "Users can delete own files"
+ON public.files FOR DELETE
+USING (
+  auth.uid() = uploader_id AND (
+    public.has_role(auth.uid(), 'admin') OR 
+    public.has_namespaced_permission(auth.uid(), 'ipl_finder.upload_files')
+  )
+);
+```
