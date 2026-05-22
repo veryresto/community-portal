@@ -1,0 +1,2059 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "community-platform",
+    "languages": [
+      "TypeScript",
+      "JavaScript",
+      "SQL",
+      "CSS",
+      "HTML",
+      "Markdown",
+      "Dockerfile",
+      "TOML"
+    ],
+    "frameworks": [
+      "React",
+      "Vite",
+      "Docker",
+      "Supabase"
+    ],
+    "description": "The Veryresto Identity Portal — a centralized single sign-on hub built with React 19, TypeScript, Vite, and Supabase that handles Google OAuth, resident approval workflows, role and permission management, and cross-subdomain session propagation for the Veryresto resident ecosystem.",
+    "analyzedAt": "2026-05-22T15:18:56.139Z",
+    "gitCommitHash": "aa0bd2aeae1d7fdcb60f0fefdd82b438dc92c110"
+  },
+  "nodes": [
+    {
+      "id": "file:src/App.tsx",
+      "type": "file",
+      "name": "App.tsx",
+      "filePath": "src/App.tsx",
+      "summary": "Root application component that manages top-level routing between authentication screens (Login, Pending, Rejected, Ecosystem Landing) based on user session state, approval status, and a validated cross-subdomain redirect flow.",
+      "tags": [
+        "entry-point",
+        "component",
+        "routing",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/App.tsx:MainAppContent",
+      "type": "function",
+      "name": "MainAppContent",
+      "filePath": "src/App.tsx",
+      "lineRange": [
+        8,
+        70
+      ],
+      "summary": "Inner component that reads auth and permission state to conditionally render the correct screen, storing and consuming a redirect URL in sessionStorage for post-login cross-subdomain navigation.",
+      "tags": [
+        "component",
+        "routing",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/App.tsx:getValidatedRedirectUrl",
+      "type": "function",
+      "name": "getValidatedRedirectUrl",
+      "filePath": "src/App.tsx",
+      "lineRange": [
+        85,
+        96
+      ],
+      "summary": "Validates a redirect URL parameter against the ALLOWED_ORIGINS whitelist before allowing a post-login redirect, preventing open-redirect attacks.",
+      "tags": [
+        "validation",
+        "security",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/App.tsx:App",
+      "type": "function",
+      "name": "App",
+      "filePath": "src/App.tsx",
+      "lineRange": [
+        98,
+        104
+      ],
+      "summary": "Default export wrapping MainAppContent inside a React Router BrowserRouter and the AuthProvider context to enable routing and global auth state.",
+      "tags": [
+        "entry-point",
+        "component"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/main.tsx",
+      "type": "file",
+      "name": "main.tsx",
+      "filePath": "src/main.tsx",
+      "summary": "Application entry point that mounts the React root onto the DOM and imports the global CSS stylesheet.",
+      "tags": [
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/AdminDashboardScreen.tsx",
+      "type": "file",
+      "name": "AdminDashboardScreen.tsx",
+      "filePath": "src/components/AdminDashboardScreen.tsx",
+      "summary": "Comprehensive admin panel component (1107 lines) that provides tabbed views for resident management (approval, rejection, profile editing), global role assignment, application access matrix (RBAC), and a governance event audit log with full Supabase CRUD operations.",
+      "tags": [
+        "component",
+        "api-handler",
+        "service",
+        "api-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/components/AdminDashboardScreen.tsx:AdminDashboardScreen",
+      "type": "function",
+      "name": "AdminDashboardScreen",
+      "filePath": "src/components/AdminDashboardScreen.tsx",
+      "lineRange": [
+        61,
+        1107
+      ],
+      "summary": "Monolithic admin dashboard React component that orchestrates resident approval workflows, global role management, per-application RBAC template assignments, and governance audit logging against the Supabase backend.",
+      "tags": [
+        "component",
+        "service",
+        "api-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/components/EcosystemLandingScreen.tsx",
+      "type": "file",
+      "name": "EcosystemLandingScreen.tsx",
+      "filePath": "src/components/EcosystemLandingScreen.tsx",
+      "summary": "Post-login landing screen for approved residents that displays their profile summary, ecosystem app access tiles, and a conditional admin dashboard entry point, fetching profile data from Supabase on mount.",
+      "tags": [
+        "component",
+        "api-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/components/EcosystemLandingScreen.tsx:EcosystemLandingScreen",
+      "type": "function",
+      "name": "EcosystemLandingScreen",
+      "filePath": "src/components/EcosystemLandingScreen.tsx",
+      "lineRange": [
+        8,
+        218
+      ],
+      "summary": "React component rendering the resident's personalized ecosystem hub with app access cards, profile info, and an admin dashboard toggle for privileged users.",
+      "tags": [
+        "component",
+        "api-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/LoginScreen.tsx",
+      "type": "file",
+      "name": "LoginScreen.tsx",
+      "filePath": "src/components/LoginScreen.tsx",
+      "summary": "Google OAuth login screen component that delegates sign-in to the useAuth hook and displays loading and error states during authentication.",
+      "tags": [
+        "component",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/components/LoginScreen.tsx:LoginScreen",
+      "type": "function",
+      "name": "LoginScreen",
+      "filePath": "src/components/LoginScreen.tsx",
+      "lineRange": [
+        5,
+        81
+      ],
+      "summary": "Renders the Google sign-in button and handles OAuth initiation with loading and error feedback.",
+      "tags": [
+        "component",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/components/PendingApprovalScreen.tsx",
+      "type": "file",
+      "name": "PendingApprovalScreen.tsx",
+      "filePath": "src/components/PendingApprovalScreen.tsx",
+      "summary": "Screen shown to users whose approval is pending, allowing them to enter and submit their house number and WhatsApp number, which triggers a notification email via the send-notification-email Supabase Edge Function.",
+      "tags": [
+        "component",
+        "api-handler",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/components/PendingApprovalScreen.tsx:PendingApprovalScreen",
+      "type": "function",
+      "name": "PendingApprovalScreen",
+      "filePath": "src/components/PendingApprovalScreen.tsx",
+      "lineRange": [
+        6,
+        249
+      ],
+      "summary": "React component that collects resident registration details, persists them to the profiles table, and invokes the notification email edge function to alert admins of a new submission.",
+      "tags": [
+        "component",
+        "api-handler",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/components/RejectedScreen.tsx",
+      "type": "file",
+      "name": "RejectedScreen.tsx",
+      "filePath": "src/components/RejectedScreen.tsx",
+      "summary": "Simple informational screen shown to users whose registration was rejected, displaying their email and a message explaining the rejection with a sign-out option.",
+      "tags": [
+        "component",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/components/RejectedScreen.tsx:RejectedScreen",
+      "type": "function",
+      "name": "RejectedScreen",
+      "filePath": "src/components/RejectedScreen.tsx",
+      "lineRange": [
+        4,
+        51
+      ],
+      "summary": "Renders a rejection notice for declined residents and provides a sign-out action via the useAuth hook.",
+      "tags": [
+        "component",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/hooks/useAuth.tsx",
+      "type": "file",
+      "name": "useAuth.tsx",
+      "filePath": "src/hooks/useAuth.tsx",
+      "summary": "React context and hook providing global authentication state (session, user, loading) by subscribing to Supabase auth state changes, plus signInWithGoogle and signOut actions that also update the last_active_at profile timestamp.",
+      "tags": [
+        "hook",
+        "authentication",
+        "service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/hooks/useAuth.tsx:AuthProvider",
+      "type": "function",
+      "name": "AuthProvider",
+      "filePath": "src/hooks/useAuth.tsx",
+      "lineRange": [
+        16,
+        70
+      ],
+      "summary": "Context provider that subscribes to Supabase auth state changes, exposes session and user objects to the component tree, and updates the user's last_active_at on sign-in.",
+      "tags": [
+        "hook",
+        "authentication",
+        "service"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/hooks/useAuth.tsx:useAuth",
+      "type": "function",
+      "name": "useAuth",
+      "filePath": "src/hooks/useAuth.tsx",
+      "lineRange": [
+        72,
+        78
+      ],
+      "summary": "Custom hook that reads from the AuthContext, throwing if used outside of AuthProvider.",
+      "tags": [
+        "hook",
+        "authentication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/hooks/usePermissions.tsx",
+      "type": "file",
+      "name": "usePermissions.tsx",
+      "filePath": "src/hooks/usePermissions.tsx",
+      "summary": "Custom hook that fetches the authenticated user's approval status, global roles (admin, verifier, moderator), and fine-grained permissions (read_files, upload_files) from Supabase, exposing derived boolean flags to consumers.",
+      "tags": [
+        "hook",
+        "service",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/hooks/usePermissions.tsx:usePermissions",
+      "type": "function",
+      "name": "usePermissions",
+      "filePath": "src/hooks/usePermissions.tsx",
+      "lineRange": [
+        18,
+        144
+      ],
+      "summary": "Fetches profile approval status, user_roles, and user_permissions from Supabase and returns derived boolean state flags (isAdmin, isApproved, isRejected, canReadFiles, canUploadFiles, etc.).",
+      "tags": [
+        "hook",
+        "service",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/supabase.ts",
+      "type": "file",
+      "name": "supabase.ts",
+      "filePath": "src/lib/supabase.ts",
+      "summary": "Supabase client singleton configured with a custom CookieStorage implementation that persists auth tokens in domain-scoped cookies (using .veryresto.id or .localtest.me roots) to enable cross-subdomain session sharing.",
+      "tags": [
+        "service",
+        "singleton",
+        "authentication"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "CookieStorage implements the Supabase Storage interface to override the default localStorage with cross-subdomain cookie persistence — critical for SSO across the Veryresto ecosystem."
+    },
+    {
+      "id": "function:src/lib/supabase.ts:parseJwt",
+      "type": "function",
+      "name": "parseJwt",
+      "filePath": "src/lib/supabase.ts",
+      "lineRange": [
+        14,
+        28
+      ],
+      "summary": "Decodes a JWT token's payload from base64url encoding and returns the parsed JSON claims object, used to reconstruct the Supabase User object from the cookie-stored access token.",
+      "tags": [
+        "utility",
+        "authentication",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/supabase.ts:getCookieDomain",
+      "type": "function",
+      "name": "getCookieDomain",
+      "filePath": "src/lib/supabase.ts",
+      "lineRange": [
+        30,
+        39
+      ],
+      "summary": "Determines the appropriate cookie domain root (.localtest.me or .veryresto.com) based on the current hostname, enabling cross-subdomain session sharing across the Veryresto ecosystem.",
+      "tags": [
+        "utility",
+        "authentication",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/supabase.ts:isLocalHostOrIP",
+      "type": "function",
+      "name": "isLocalHostOrIP",
+      "filePath": "src/lib/supabase.ts",
+      "lineRange": [
+        41,
+        48
+      ],
+      "summary": "Returns true if the given hostname is localhost, a loopback address (127.0.0.1, ::1), or a bare IPv4 address, used by CookieStorage to skip domain-scoping for local development environments.",
+      "tags": [
+        "utility",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:src/lib/supabase.ts:CookieStorage",
+      "type": "class",
+      "name": "CookieStorage",
+      "filePath": "src/lib/supabase.ts",
+      "lineRange": [
+        50,
+        156
+      ],
+      "summary": "Custom Supabase storage adapter that reads, writes, and deletes auth session cookies with domain-scoped attributes enabling single sign-on across all Veryresto subdomains.",
+      "tags": [
+        "service",
+        "singleton",
+        "authentication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/test-db.js",
+      "type": "file",
+      "name": "test-db.js",
+      "filePath": "src/test-db.js",
+      "summary": "Ad-hoc development script that directly fetches user_permissions and governance_events records from the Supabase REST API using a hardcoded anon key to verify database connectivity and RLS policy behavior.",
+      "tags": [
+        "test",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "summary": "Vite build configuration enabling the React plugin for JSX transforms.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:eslint.config.js",
+      "type": "file",
+      "name": "eslint.config.js",
+      "filePath": "eslint.config.js",
+      "summary": "ESLint flat configuration applying TypeScript-aware and React Hooks linting rules to the project source files.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:supabase/functions/delete-users/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "supabase/functions/delete-users/index.ts",
+      "summary": "Supabase Edge Function (Deno) that allows admin users to delete one or more non-admin resident accounts from auth.users, verifying admin role via JWT and preventing self-deletion or deletion of other admins.",
+      "tags": [
+        "api-handler",
+        "service",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:supabase/functions/get-users-auth-info/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "supabase/functions/get-users-auth-info/index.ts",
+      "summary": "Supabase Edge Function (Deno) that returns auth metadata (created_at, last_sign_in_at) for all users, accessible only to admin role holders as verified via the has_role RPC.",
+      "tags": [
+        "api-handler",
+        "service",
+        "middleware"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:supabase/functions/send-notification-email/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "supabase/functions/send-notification-email/index.ts",
+      "summary": "Supabase Edge Function (Deno) that dispatches transactional emails via the Resend API for new resident registrations, approval grants, and rejection notifications, using inline HTML email templates.",
+      "tags": [
+        "api-handler",
+        "service",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:supabase/functions/send-notification-email/index.ts:sendEmail",
+      "type": "function",
+      "name": "sendEmail",
+      "filePath": "supabase/functions/send-notification-email/index.ts",
+      "lineRange": [
+        37,
+        58
+      ],
+      "summary": "Sends a transactional email by posting to the Resend API with a from/to/subject/html payload, returning the parsed JSON response.",
+      "tags": [
+        "service",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:supabase/functions/send-notification-email/index.ts:generateNewUserEmailHtml",
+      "type": "function",
+      "name": "generateNewUserEmailHtml",
+      "filePath": "supabase/functions/send-notification-email/index.ts",
+      "lineRange": [
+        73,
+        108
+      ],
+      "summary": "Generates the HTML body for new resident registration notification emails shown to admins, embedding the resident's name, email, and house number.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:supabase/functions/send-notification-email/index.ts:generateApprovalEmailHtml",
+      "type": "function",
+      "name": "generateApprovalEmailHtml",
+      "filePath": "supabase/functions/send-notification-email/index.ts",
+      "lineRange": [
+        110,
+        151
+      ],
+      "summary": "Generates the HTML body for approval confirmation emails sent to newly approved residents, listing their granted permissions.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:supabase/functions/send-notification-email/index.ts:generateRejectionEmailHtml",
+      "type": "function",
+      "name": "generateRejectionEmailHtml",
+      "filePath": "supabase/functions/send-notification-email/index.ts",
+      "lineRange": [
+        153,
+        186
+      ],
+      "summary": "Generates the HTML body for rejection notification emails sent to residents whose registration was declined.",
+      "tags": [
+        "utility",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/App.css",
+      "type": "file",
+      "name": "App.css",
+      "filePath": "src/App.css",
+      "summary": "Component-scoped CSS stylesheet providing layout and styling rules specific to the top-level App component.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/index.css",
+      "type": "file",
+      "name": "index.css",
+      "filePath": "src/index.css",
+      "summary": "Global CSS stylesheet (1461 lines) that defines the design system including CSS custom properties, typography, glassmorphic UI components, pill badges, profile cards, admin dashboard layout, and responsive breakpoints for the entire application.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "Vite HTML entry point that bootstraps the React application by loading the main.tsx module script.",
+      "tags": [
+        "entry-point",
+        "markup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "NPM package manifest defining project dependencies (React 19, Supabase JS, React Router, Lucide React) and devDependencies (Vite, TypeScript, ESLint), with build/dev/lint scripts.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "Root TypeScript configuration that references tsconfig.app.json and tsconfig.node.json as separate project composites for the app and Vite node tooling.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tsconfig.app.json",
+      "type": "config",
+      "name": "tsconfig.app.json",
+      "filePath": "tsconfig.app.json",
+      "summary": "TypeScript compiler configuration for application source files enabling strict mode, ESNext target, bundler module resolution, and React JSX transform.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "summary": "TypeScript compiler configuration for Vite configuration files, targeting ESNext with bundler module resolution in Node context.",
+      "tags": [
+        "configuration",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Example environment variable file documenting required runtime secrets: Supabase URL and publishable key for the frontend, Resend API key for the email edge function, and URLs for the IPL Finder and Rekap Viewer ecosystem apps.",
+      "tags": [
+        "configuration",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "Dockerfile",
+      "summary": "Two-stage Docker build that compiles the Vite React application with Node 20 in the first stage, then serves the resulting static bundle via nginx:alpine on port 80.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "build-system"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Multi-stage build pattern keeps the final image minimal by discarding Node.js build tooling and shipping only the compiled dist output."
+    },
+    {
+      "id": "config:nginx.conf",
+      "type": "config",
+      "name": "nginx.conf",
+      "filePath": "nginx.conf",
+      "summary": "Nginx server block configuration for the SPA container: routes all unmatched paths to index.html for client-side routing, enables gzip compression, and sets aggressive 1-year cache headers on static assets.",
+      "tags": [
+        "configuration",
+        "infrastructure",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "languageNotes": "try_files fallback to /index.html is essential for React Router to handle deep-link page reloads correctly."
+    },
+    {
+      "id": "config:fly.toml",
+      "type": "config",
+      "name": "fly.toml",
+      "filePath": "fly.toml",
+      "summary": "Fly.io deployment manifest for the community-veryresto app, targeting the Singapore region with HTTPS enforcement, auto-stop/start machines, and a minimal 256 MB shared-CPU VM.",
+      "tags": [
+        "configuration",
+        "infrastructure",
+        "deployment"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:supabase/config.toml",
+      "type": "config",
+      "name": "config.toml",
+      "filePath": "supabase/config.toml",
+      "summary": "Supabase local development configuration disabling JWT verification for the send-notification-email and delete-users Edge Functions, allowing them to be invoked without authentication tokens during development.",
+      "tags": [
+        "configuration",
+        "supabase",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:docs/migration-approval-status.sql:profiles",
+      "type": "table",
+      "name": "profiles (approval_status backfill)",
+      "filePath": "docs/migration-approval-status.sql",
+      "summary": "Reference SQL script (kept in docs/) that adds an approval_status column to profiles and backfills values from legacy user_permissions and user_roles data, used as a migration guide before the governance v2 schema was applied.",
+      "tags": [
+        "database",
+        "migration",
+        "documentation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "table",
+      "name": "profiles",
+      "filePath": "supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql",
+      "summary": "Foundational migration that creates the profiles and files tables with RLS policies, sets up a storage bucket for text file uploads, and installs handle_new_user and update_updated_at_column triggers for automatic profile creation and timestamp management.",
+      "tags": [
+        "database",
+        "migration",
+        "schema-definition"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "SECURITY DEFINER on handle_new_user elevates privilege so the trigger can write to profiles even for newly-created auth.users rows."
+    },
+    {
+      "id": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:files",
+      "type": "table",
+      "name": "files",
+      "filePath": "supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql",
+      "summary": "Files table definition (created in the same migration as profiles) supporting full-text search on name and content via GIN indexes and controlled via RLS policies.",
+      "tags": [
+        "database",
+        "migration",
+        "schema-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_roles",
+      "type": "table",
+      "name": "user_roles",
+      "filePath": "supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql",
+      "summary": "Migration introducing the app_role and user_permission enums, user_roles and user_permissions tables, three SECURITY DEFINER helper functions (has_role, has_permission, is_approved), and an automatic admin assignment trigger for the veryresto@gmail.com seed account.",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "complex",
+      "languageNotes": "SECURITY DEFINER functions prevent RLS infinite recursion by bypassing row-level checks when evaluating role/permission lookups inside policy expressions."
+    },
+    {
+      "id": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_permissions",
+      "type": "table",
+      "name": "user_permissions",
+      "filePath": "supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql",
+      "summary": "user_permissions table definition and accompanying RLS policies (created in the same migration as user_roles).",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260107002340_bde62e4c-7ed7-433a-98d3-f3126dd97fcb.sql:files",
+      "type": "table",
+      "name": "files (delete policy update)",
+      "filePath": "supabase/migrations/20260107002340_bde62e4c-7ed7-433a-98d3-f3126dd97fcb.sql",
+      "summary": "Hotfix migration that replaces the files DELETE RLS policy to allow admins to delete any file while restricting non-admins to deleting only their own files with the upload_files permission.",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260107093614_b77bcd8d-cd09-4d60-b2d6-3f46c42f31e4.sql:profiles",
+      "type": "table",
+      "name": "profiles (house_number column)",
+      "filePath": "supabase/migrations/20260107093614_b77bcd8d-cd09-4d60-b2d6-3f46c42f31e4.sql",
+      "summary": "Single-statement migration adding the house_number VARCHAR(25) column to the profiles table to capture resident dwelling identifiers.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260113041311_e90a3627-9370-4f34-b8a2-701e96855830.sql:profiles",
+      "type": "table",
+      "name": "profiles (whatsapp_number column)",
+      "filePath": "supabase/migrations/20260113041311_e90a3627-9370-4f34-b8a2-701e96855830.sql",
+      "summary": "Single-statement migration adding the whatsapp_number column to profiles for resident contact information.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260115044000_5dffb68e-75da-4f30-9614-e1335ebdd0ef.sql:user_permission",
+      "type": "table",
+      "name": "user_permission enum (rejected value)",
+      "filePath": "supabase/migrations/20260115044000_5dffb68e-75da-4f30-9614-e1335ebdd0ef.sql",
+      "summary": "Minimal migration extending the user_permission enum with a 'rejected' value to allow explicitly marking users as rejected in the legacy permissions system.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260115045406_1f7dc294-01ac-43ed-bdbb-45791e8302e1.sql:activity_logs",
+      "type": "table",
+      "name": "activity_logs",
+      "filePath": "supabase/migrations/20260115045406_1f7dc294-01ac-43ed-bdbb-45791e8302e1.sql",
+      "summary": "Creates the activity_logs table with RLS policies (admins can view, authenticated users can insert their own), performance indexes on created_at and action, and enables Supabase Realtime publication for live activity feeds.",
+      "tags": [
+        "database",
+        "migration",
+        "monitoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:supabase/migrations/20260311063103_22ee9810-95f1-49a5-b0a4-67917bd07232.sql:profiles",
+      "type": "table",
+      "name": "profiles (last_active_at column)",
+      "filePath": "supabase/migrations/20260311063103_22ee9810-95f1-49a5-b0a4-67917bd07232.sql",
+      "summary": "Single-statement migration adding the last_active_at timestamptz column to profiles for tracking user presence.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260518103000_community_platform_governance.sql:placeholder",
+      "type": "table",
+      "name": "governance placeholder",
+      "filePath": "supabase/migrations/20260518103000_community_platform_governance.sql",
+      "summary": "Empty placeholder migration inserted to satisfy Supabase CLI migration history sequencing before the governance v2 migration was applied.",
+      "tags": [
+        "database",
+        "migration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "type": "table",
+      "name": "governance_events",
+      "filePath": "supabase/migrations/20260518120000_community_platform_governance_v2.sql",
+      "summary": "Comprehensive governance schema migration introducing the approval_status enum, governance_events audit table, full App-RBAC tables (applications, app_permissions, app_roles, app_role_permissions, user_app_roles), the has_namespaced_permission helper, and a sync_legacy_permissions trigger to bridge old user_permissions during the strangler-pattern migration window.",
+      "tags": [
+        "database",
+        "migration",
+        "security",
+        "schema-definition"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Implements a strangler pattern: the sync_legacy_permissions trigger keeps the old user_permissions table current while App-RBAC is rolled out progressively across ecosystem applications."
+    },
+    {
+      "id": "table:supabase/migrations/20260519090000_hotfix_sync_legacy_permissions.sql:sync_function",
+      "type": "table",
+      "name": "sync_legacy_permissions (hotfix)",
+      "filePath": "supabase/migrations/20260519090000_hotfix_sync_legacy_permissions.sql",
+      "summary": "Hotfix migration that rewrites the sync_legacy_permissions trigger function to use the correct row-per-permission INSERT/DELETE model instead of an update-based approach, and adds the log_user_app_role_governance trigger for immutable audit logging of all app role assignments to governance_events.",
+      "tags": [
+        "database",
+        "migration",
+        "security",
+        "monitoring"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Two triggers in one migration: one for legacy compatibility projection (sync_legacy_permissions) and one for immutable governance audit logging (log_user_app_role_governance)."
+    },
+    {
+      "id": "table:supabase/migrations/20260519100000_profiles_update_policy.sql:profiles",
+      "type": "table",
+      "name": "profiles (platform manager update policy)",
+      "filePath": "supabase/migrations/20260519100000_profiles_update_policy.sql",
+      "summary": "Adds an RLS UPDATE policy on profiles allowing admin, resident_verifier, and platform_moderator roles to update any resident profile, enabling approval workflow management.",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260519110000_is_platform_manager_refactor.sql:is_platform_manager",
+      "type": "table",
+      "name": "is_platform_manager helper",
+      "filePath": "supabase/migrations/20260519110000_is_platform_manager_refactor.sql",
+      "summary": "Refactors the inline policy expression from the previous migration into a reusable is_platform_manager(UUID) SECURITY DEFINER function covering admin, resident_verifier, and platform_moderator roles, then replaces the profiles UPDATE policy to use it.",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260519120000_restrict_profile_updates.sql:is_platform_manager",
+      "type": "table",
+      "name": "is_platform_manager (restrict)",
+      "filePath": "supabase/migrations/20260519120000_restrict_profile_updates.sql",
+      "summary": "Narrows the is_platform_manager helper to exclude platform_moderator, restricting profile update authority to only admin and resident_verifier roles.",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20260519130000_update_ipl_finder_rls.sql:files",
+      "type": "table",
+      "name": "files & activity_logs (namespaced RLS)",
+      "filePath": "supabase/migrations/20260519130000_update_ipl_finder_rls.sql",
+      "summary": "Backfills user_app_roles from legacy user_permissions for IPL Finder, then replaces all files and activity_logs RLS policies with namespaced permission checks using the public.has_namespaced_permission helper, completing the App-RBAC cutover for IPL Finder.",
+      "tags": [
+        "database",
+        "migration",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:supabase/migrations/20260520000000_register_rekap_viewer.sql:applications",
+      "type": "table",
+      "name": "rekap_viewer application",
+      "filePath": "supabase/migrations/20260520000000_register_rekap_viewer.sql",
+      "summary": "Registers the Rekap Viewer application in the ecosystem applications registry with a resident role and read_data permission, onboarding a second application into the App-RBAC framework.",
+      "tags": [
+        "database",
+        "migration",
+        "schema-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Top-level project overview for the Community Platform (Veryresto Identity Portal), covering the tech stack, local development setup, environment variables, deployment, and project structure across 14 sections.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "development"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/auth-integration-guide.md",
+      "type": "document",
+      "name": "auth-integration-guide.md",
+      "filePath": "docs/auth-integration-guide.md",
+      "summary": "Hub document for integrating third-party apps with the Veryresto Identity Portal, describing the auth contract, linking to per-framework reference implementations, and walking through app registration steps including origin allowlisting and optional RBAC setup.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "integration",
+        "api-schema"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/auth/go-fiber.md",
+      "type": "document",
+      "name": "go-fiber.md",
+      "filePath": "docs/auth/go-fiber.md",
+      "summary": "Stub reference implementation guide for integrating the Veryresto identity protocol into a Go + Fiber backend, outlining planned coverage areas and key notes for implementors.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "integration",
+        "go"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/auth/laravel.md",
+      "type": "document",
+      "name": "laravel.md",
+      "filePath": "docs/auth/laravel.md",
+      "summary": "Stub reference implementation guide for integrating the Veryresto identity protocol into a Laravel (PHP) backend, outlining planned coverage areas and key notes for implementors.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "integration",
+        "php"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/auth/nextjs.md",
+      "type": "document",
+      "name": "nextjs.md",
+      "filePath": "docs/auth/nextjs.md",
+      "summary": "Stub reference implementation guide for integrating the Veryresto identity protocol into a Next.js App Router frontend, including a planned file structure and key notes for implementors.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "integration",
+        "nextjs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/auth/node-express.md",
+      "type": "document",
+      "name": "node-express.md",
+      "filePath": "docs/auth/node-express.md",
+      "summary": "Full reference implementation guide for integrating the Veryresto identity protocol in a Node.js + Express backend, covering Supabase client setup, auth middleware, permission middleware, token refresh handling, and a local development checklist across 10 sections.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "middleware",
+        "integration"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Contains full code snippets for Supabase JWT verification middleware and optional RBAC permission middleware in Node.js/Express."
+    },
+    {
+      "id": "document:docs/auth/react-vite.md",
+      "type": "document",
+      "name": "react-vite.md",
+      "filePath": "docs/auth/react-vite.md",
+      "summary": "Comprehensive reference implementation guide for integrating the Veryresto identity protocol in a React + Vite (TypeScript) frontend, detailing Supabase cookie storage configuration, auth hooks, approval-status hooks, app gating, RBAC permission checks, and local development setup across 10 sections.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "react",
+        "integration"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Provides complete TypeScript code samples including custom React hooks for session management, approval polling, and app-specific permission fetching from Supabase."
+    },
+    {
+      "id": "document:docs/community-platform-implementation-plan.md",
+      "type": "document",
+      "name": "community-platform-implementation-plan.md",
+      "filePath": "docs/community-platform-implementation-plan.md",
+      "summary": "Detailed implementation plan for the Community Platform covering target architecture, phased extraction strategy (scaffold, waiting-room UI, approval UI, App-RBAC, app integrations), shared database schema, authentication session strategy, governance model, migration safety, security architecture, app onboarding, deployment strategy, and critical operational learnings across 43 sections.",
+      "tags": [
+        "documentation",
+        "architecture",
+        "planning",
+        "database"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Includes SQL DDL schema definitions for App-RBAC tables, RLS evolution notes, and cross-subdomain cookie strategy details."
+    },
+    {
+      "id": "document:docs/current-supabase-architecture.md",
+      "type": "document",
+      "name": "current-supabase-architecture.md",
+      "filePath": "docs/current-supabase-architecture.md",
+      "summary": "Reference document for the current Supabase schema and governance architecture, providing an ERD, full table inventory (profiles, user_roles, applications, app_permissions, app_roles, app_role_permissions, user_app_roles, governance_events), current RLS policies, helper functions/RPCs, approval flow, RBAC model, known limitations, and raw RLS policy appendix.",
+      "tags": [
+        "documentation",
+        "database",
+        "architecture",
+        "security"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Includes raw Supabase RLS policy SQL in the appendix for profiles, user_roles, governance_events, App-RBAC framework tables, and legacy user_permissions."
+    },
+    {
+      "id": "document:docs/veryresto-identity-protocol.md",
+      "type": "document",
+      "name": "veryresto-identity-protocol.md",
+      "filePath": "docs/veryresto-identity-protocol.md",
+      "summary": "Canonical specification for the Veryresto Identity Protocol defining the cross-subdomain auth topology, cookie contract (name, domain, structure, attributes, lifetime), redirect contract, approval contract, RBAC contract, and session verification contract with a step-by-step verification flow and security considerations.",
+      "tags": [
+        "documentation",
+        "authentication",
+        "security",
+        "api-schema"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Acts as the authoritative protocol contract that all per-framework integration guides (Node.js, React, Go, Laravel, Next.js) must implement."
+    },
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Ignore file for the understand-anything analysis tool specifying directories and file patterns (e.g., node_modules, dist, build artifacts, test files) to exclude from knowledge graph generation.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "build-system"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/App.tsx",
+      "target": "function:src/App.tsx:MainAppContent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "function:src/App.tsx:getValidatedRedirectUrl",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "function:src/App.tsx:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "function:src/App.tsx:App",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/components/AdminDashboardScreen.tsx",
+      "target": "function:src/components/AdminDashboardScreen.tsx:AdminDashboardScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/components/AdminDashboardScreen.tsx",
+      "target": "function:src/components/AdminDashboardScreen.tsx:AdminDashboardScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/components/EcosystemLandingScreen.tsx",
+      "target": "function:src/components/EcosystemLandingScreen.tsx:EcosystemLandingScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/components/EcosystemLandingScreen.tsx",
+      "target": "function:src/components/EcosystemLandingScreen.tsx:EcosystemLandingScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/components/LoginScreen.tsx",
+      "target": "function:src/components/LoginScreen.tsx:LoginScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/components/LoginScreen.tsx",
+      "target": "function:src/components/LoginScreen.tsx:LoginScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/components/PendingApprovalScreen.tsx",
+      "target": "function:src/components/PendingApprovalScreen.tsx:PendingApprovalScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/components/PendingApprovalScreen.tsx",
+      "target": "function:src/components/PendingApprovalScreen.tsx:PendingApprovalScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/components/RejectedScreen.tsx",
+      "target": "function:src/components/RejectedScreen.tsx:RejectedScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/components/RejectedScreen.tsx",
+      "target": "function:src/components/RejectedScreen.tsx:RejectedScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/hooks/useAuth.tsx",
+      "target": "function:src/hooks/useAuth.tsx:AuthProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/hooks/useAuth.tsx",
+      "target": "function:src/hooks/useAuth.tsx:useAuth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/hooks/useAuth.tsx",
+      "target": "function:src/hooks/useAuth.tsx:AuthProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/hooks/useAuth.tsx",
+      "target": "function:src/hooks/useAuth.tsx:useAuth",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/hooks/usePermissions.tsx",
+      "target": "function:src/hooks/usePermissions.tsx:usePermissions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/hooks/usePermissions.tsx",
+      "target": "function:src/hooks/usePermissions.tsx:usePermissions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/supabase.ts",
+      "target": "class:src/lib/supabase.ts:CookieStorage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/supabase.ts",
+      "target": "function:src/lib/supabase.ts:parseJwt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/supabase.ts",
+      "target": "function:src/lib/supabase.ts:getCookieDomain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/supabase.ts",
+      "target": "function:src/lib/supabase.ts:isLocalHostOrIP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:supabase/functions/send-notification-email/index.ts",
+      "target": "function:supabase/functions/send-notification-email/index.ts:sendEmail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:supabase/functions/send-notification-email/index.ts",
+      "target": "function:supabase/functions/send-notification-email/index.ts:generateNewUserEmailHtml",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:supabase/functions/send-notification-email/index.ts",
+      "target": "function:supabase/functions/send-notification-email/index.ts:generateApprovalEmailHtml",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:supabase/functions/send-notification-email/index.ts",
+      "target": "function:supabase/functions/send-notification-email/index.ts:generateRejectionEmailHtml",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:src/main.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tsconfig.json",
+      "target": "file:src/App.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tsconfig.app.json",
+      "target": "file:src/App.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tsconfig.node.json",
+      "target": "file:vite.config.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.env.example",
+      "target": "file:src/lib/supabase.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.env.example",
+      "target": "file:supabase/functions/send-notification-email/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:src/main.tsx",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/components/PendingApprovalScreen.tsx",
+      "target": "file:supabase/functions/send-notification-email/index.ts",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "config:nginx.conf",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:fly.toml",
+      "target": "service:Dockerfile",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:nginx.conf",
+      "target": "service:Dockerfile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_roles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_roles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:files",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260107002340_bde62e4c-7ed7-433a-98d3-f3126dd97fcb.sql:files",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:files",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260107093614_b77bcd8d-cd09-4d60-b2d6-3f46c42f31e4.sql:profiles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260113041311_e90a3627-9370-4f34-b8a2-701e96855830.sql:profiles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260115044000_5dffb68e-75da-4f30-9614-e1335ebdd0ef.sql:user_permission",
+      "target": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_permissions",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260311063103_22ee9810-95f1-49a5-b0a4-67917bd07232.sql:profiles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "target": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_roles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "target": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_permissions",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519090000_hotfix_sync_legacy_permissions.sql:sync_function",
+      "target": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519100000_profiles_update_policy.sql:profiles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519110000_is_platform_manager_refactor.sql:is_platform_manager",
+      "target": "table:supabase/migrations/20260519100000_profiles_update_policy.sql:profiles",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519120000_restrict_profile_updates.sql:is_platform_manager",
+      "target": "table:supabase/migrations/20260519110000_is_platform_manager_refactor.sql:is_platform_manager",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519130000_update_ipl_finder_rls.sql:files",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:files",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519130000_update_ipl_finder_rls.sql:files",
+      "target": "table:supabase/migrations/20260115045406_1f7dc294-01ac-43ed-bdbb-45791e8302e1.sql:activity_logs",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519130000_update_ipl_finder_rls.sql:files",
+      "target": "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_permissions",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260519130000_update_ipl_finder_rls.sql:files",
+      "target": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:supabase/migrations/20260520000000_register_rekap_viewer.sql:applications",
+      "target": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "type": "migrates",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "table:docs/migration-approval-status.sql:profiles",
+      "target": "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "table:docs/migration-approval-status.sql:profiles",
+      "target": "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:docs/auth-integration-guide.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:docs/community-platform-implementation-plan.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:docs/current-supabase-architecture.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth-integration-guide.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth-integration-guide.md",
+      "target": "document:docs/auth/node-express.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth-integration-guide.md",
+      "target": "document:docs/auth/react-vite.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth-integration-guide.md",
+      "target": "document:docs/auth/go-fiber.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth-integration-guide.md",
+      "target": "document:docs/auth/laravel.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth-integration-guide.md",
+      "target": "document:docs/auth/nextjs.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth/node-express.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth/react-vite.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth/go-fiber.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth/laravel.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/auth/nextjs.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/community-platform-implementation-plan.md",
+      "target": "document:docs/current-supabase-architecture.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/community-platform-implementation-plan.md",
+      "target": "document:docs/veryresto-identity-protocol.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/hooks/usePermissions.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/components/LoginScreen.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/components/PendingApprovalScreen.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/components/RejectedScreen.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/App.tsx",
+      "target": "file:src/components/EcosystemLandingScreen.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/AdminDashboardScreen.tsx",
+      "target": "file:src/lib/supabase.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/AdminDashboardScreen.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/AdminDashboardScreen.tsx",
+      "target": "file:src/hooks/usePermissions.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/EcosystemLandingScreen.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/EcosystemLandingScreen.tsx",
+      "target": "file:src/hooks/usePermissions.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/EcosystemLandingScreen.tsx",
+      "target": "file:src/lib/supabase.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/EcosystemLandingScreen.tsx",
+      "target": "file:src/components/AdminDashboardScreen.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/LoginScreen.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/PendingApprovalScreen.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/PendingApprovalScreen.tsx",
+      "target": "file:src/lib/supabase.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/components/RejectedScreen.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/hooks/useAuth.tsx",
+      "target": "file:src/lib/supabase.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/hooks/usePermissions.tsx",
+      "target": "file:src/lib/supabase.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/hooks/usePermissions.tsx",
+      "target": "file:src/hooks/useAuth.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/main.tsx",
+      "target": "file:src/index.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/main.tsx",
+      "target": "file:src/App.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:ui",
+      "name": "UI Layer",
+      "description": "React screen components rendering the authentication flow (Login, Pending, Rejected, Ecosystem Landing, Admin Dashboard) along with global and component-scoped stylesheets and the HTML/JS entry points that bootstrap the SPA.",
+      "nodeIds": [
+        "file:src/App.tsx",
+        "file:src/main.tsx",
+        "file:src/components/AdminDashboardScreen.tsx",
+        "file:src/components/EcosystemLandingScreen.tsx",
+        "file:src/components/LoginScreen.tsx",
+        "file:src/components/PendingApprovalScreen.tsx",
+        "file:src/components/RejectedScreen.tsx",
+        "file:src/App.css",
+        "file:src/index.css",
+        "file:index.html"
+      ]
+    },
+    {
+      "id": "layer:service",
+      "name": "Service Layer",
+      "description": "React hooks and the Supabase client singleton that encapsulate authentication state, permission resolution, and cross-subdomain session management for the Veryresto identity portal.",
+      "nodeIds": [
+        "file:src/hooks/useAuth.tsx",
+        "file:src/hooks/usePermissions.tsx",
+        "file:src/lib/supabase.ts",
+        "file:src/test-db.js"
+      ]
+    },
+    {
+      "id": "layer:edge-functions",
+      "name": "Edge Functions",
+      "description": "Supabase Edge Functions providing admin-only server-side operations: deleting resident accounts, retrieving auth metadata, and dispatching transactional notification emails via Resend.",
+      "nodeIds": [
+        "file:supabase/functions/delete-users/index.ts",
+        "file:supabase/functions/get-users-auth-info/index.ts",
+        "file:supabase/functions/send-notification-email/index.ts"
+      ]
+    },
+    {
+      "id": "layer:data",
+      "name": "Data Layer",
+      "description": "Supabase database migrations defining the governance schema — resident profiles, RBAC tables (user_roles, user_permissions), activity_logs, governance_events, RLS policies, and the ecosystem application registry.",
+      "nodeIds": [
+        "config:supabase/config.toml",
+        "table:docs/migration-approval-status.sql:profiles",
+        "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles",
+        "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:files",
+        "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_roles",
+        "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_permissions",
+        "table:supabase/migrations/20260107002340_bde62e4c-7ed7-433a-98d3-f3126dd97fcb.sql:files",
+        "table:supabase/migrations/20260107093614_b77bcd8d-cd09-4d60-b2d6-3f46c42f31e4.sql:profiles",
+        "table:supabase/migrations/20260113041311_e90a3627-9370-4f34-b8a2-701e96855830.sql:profiles",
+        "table:supabase/migrations/20260115044000_5dffb68e-75da-4f30-9614-e1335ebdd0ef.sql:user_permission",
+        "table:supabase/migrations/20260115045406_1f7dc294-01ac-43ed-bdbb-45791e8302e1.sql:activity_logs",
+        "table:supabase/migrations/20260311063103_22ee9810-95f1-49a5-b0a4-67917bd07232.sql:profiles",
+        "table:supabase/migrations/20260518103000_community_platform_governance.sql:placeholder",
+        "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events",
+        "table:supabase/migrations/20260519090000_hotfix_sync_legacy_permissions.sql:sync_function",
+        "table:supabase/migrations/20260519100000_profiles_update_policy.sql:profiles",
+        "table:supabase/migrations/20260519110000_is_platform_manager_refactor.sql:is_platform_manager",
+        "table:supabase/migrations/20260519120000_restrict_profile_updates.sql:is_platform_manager",
+        "table:supabase/migrations/20260519130000_update_ipl_finder_rls.sql:files",
+        "table:supabase/migrations/20260520000000_register_rekap_viewer.sql:applications"
+      ]
+    },
+    {
+      "id": "layer:infrastructure",
+      "name": "Infrastructure",
+      "description": "Container and deployment configuration for the community platform, including the two-stage Docker build, nginx SPA routing config, and the Fly.io deployment manifest targeting the Singapore region.",
+      "nodeIds": [
+        "service:Dockerfile",
+        "config:nginx.conf",
+        "config:fly.toml"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "Configuration",
+      "description": "Project-level build and toolchain configuration files including the Vite build setup, TypeScript compiler composites, ESLint rules, NPM package manifest, and environment variable template.",
+      "nodeIds": [
+        "file:vite.config.ts",
+        "file:eslint.config.js",
+        "config:package.json",
+        "config:tsconfig.json",
+        "config:tsconfig.app.json",
+        "config:tsconfig.node.json",
+        "config:.env.example",
+        "config:.understand-anything/.understandignore"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation",
+      "description": "Project documentation covering the overall architecture, the Veryresto Identity Protocol specification, integration guides for multiple tech stacks (Node/Express, React/Vite, Go/Fiber, Laravel, Next.js), and the Supabase schema reference.",
+      "nodeIds": [
+        "document:README.md",
+        "document:docs/auth-integration-guide.md",
+        "document:docs/auth/go-fiber.md",
+        "document:docs/auth/laravel.md",
+        "document:docs/auth/nextjs.md",
+        "document:docs/auth/node-express.md",
+        "document:docs/auth/react-vite.md",
+        "document:docs/community-platform-implementation-plan.md",
+        "document:docs/current-supabase-architecture.md",
+        "document:docs/veryresto-identity-protocol.md"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README to understand what the Veryresto Identity Portal is and why it exists. It is the single sign-on hub for the entire Veryresto resident ecosystem — the only app that speaks Google OAuth — and it propagates a shared session cookie across all subdomains so every resident app (IPL Finder, Rekap Viewer, etc.) inherits the same identity. Reading this first gives you the mental model that frames every architectural decision you will encounter in the code.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "HTML & React Bootstrap",
+      "description": "The Vite HTML entry point (`index.html`) is the single page the browser loads, and `main.tsx` mounts the React root into it. These two files are the outermost shell of the application — there is almost no logic here, which is intentional: everything interesting happens in the component tree that `main.tsx` hands off to. Understanding this minimal bootstrap confirms the project follows a standard Vite + React SPA pattern.",
+      "nodeIds": [
+        "file:index.html",
+        "file:src/main.tsx"
+      ],
+      "languageLesson": "Vite uses `index.html` as its entry point rather than a JavaScript file. The `<script type=\"module\" src=\"/src/main.tsx\">` tag triggers Vite's ES module graph resolution, which is how it achieves near-instant hot module replacement during development."
+    },
+    {
+      "order": 3,
+      "title": "Root Router: App.tsx",
+      "description": "App.tsx is the highest fan-out file in the codebase — it imports every screen and both service hooks, making it the central nervous system of the application. Instead of a URL-based router, it uses conditional rendering driven by auth state and approval status: unauthenticated users see LoginScreen, pending users see PendingApprovalScreen, rejected users see RejectedScreen, and approved residents reach EcosystemLandingScreen. It also validates a cross-subdomain redirect token before completing the SSO handshake.",
+      "nodeIds": [
+        "file:src/App.tsx"
+      ],
+      "languageLesson": "This pattern — a single component that conditionally renders one of several full-screen views based on application state — is sometimes called a \"state machine router.\" It avoids URL routing overhead when the navigation model is determined entirely by server-side identity state rather than user-driven navigation."
+    },
+    {
+      "order": 4,
+      "title": "Supabase Client Singleton",
+      "description": "The Supabase client in `src/lib/supabase.ts` is the foundation of the entire service layer — both `useAuth` and `usePermissions` import it. The key implementation detail is a custom `CookieStorage` adapter that stores the session in a cookie on the `.veryresto.com` domain instead of localStorage. This single design choice is what enables cross-subdomain session sharing: every resident app on any `*.veryresto.com` subdomain can read the same cookie.",
+      "nodeIds": [
+        "file:src/lib/supabase.ts"
+      ],
+      "languageLesson": "Supabase's `createClient` accepts a `storage` option that replaces the default localStorage adapter. By supplying a cookie-based implementation and setting `domain: '.veryresto.com'`, the JWT is stored in a cookie visible to all subdomains — a browser-native SSO mechanism that requires no server-side session store."
+    },
+    {
+      "order": 5,
+      "title": "Authentication Hook",
+      "description": "The `useAuth` hook wraps Supabase's `onAuthStateChange` subscription in a React context, making the current user session available to the entire component tree without prop drilling. It is imported by both App.tsx (to decide which screen to render) and `usePermissions` (to know which user to fetch permissions for). Understanding this hook reveals the reactive pattern at the heart of the portal: the UI responds to auth state changes automatically whenever Google OAuth completes or a session expires.",
+      "nodeIds": [
+        "file:src/hooks/useAuth.tsx"
+      ],
+      "languageLesson": "React context paired with a subscription pattern (like Supabase's auth events) creates a global reactive store without Redux or Zustand. The context provider subscribes once at mount; all consumers re-render automatically when the auth state changes, keeping the UI in sync with the backend."
+    },
+    {
+      "order": 6,
+      "title": "Permissions Hook",
+      "description": "Building on `useAuth`, the `usePermissions` hook fetches three distinct layers of identity data from Supabase: approval status (is the resident approved, pending, or rejected?), global roles (is the resident an admin?), and fine-grained app-level permissions. App.tsx consumes all three to route users to the correct screen. This hook is also where the RBAC system surfaces in the client — the data it returns ultimately comes from the `user_roles` and governance tables you will see in the database layer.",
+      "nodeIds": [
+        "file:src/hooks/usePermissions.tsx"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Identity Protocol Spec",
+      "description": "The `veryresto-identity-protocol.md` document is the canonical specification describing how the cookie is structured, how the redirect flow works, how approval status is enforced, and how RBAC is applied. Reading it after understanding the Supabase client and the two hooks gives you the full picture of why those implementation choices were made. The `auth-integration-guide.md` then serves as the practical guide for other apps in the ecosystem that need to consume the identity the portal produces.",
+      "nodeIds": [
+        "document:docs/veryresto-identity-protocol.md",
+        "document:docs/auth-integration-guide.md"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Login & Resident Approval Screens",
+      "description": "LoginScreen, PendingApprovalScreen, and RejectedScreen cover the three states a user can be in before gaining access. LoginScreen simply delegates to the `useAuth` hook's Google sign-in method. PendingApprovalScreen is more interesting: it collects the resident's house number and WhatsApp contact, then calls the `send-notification-email` Edge Function to alert admins — this is the only direct client-to-Edge-Function call in the UI layer. RejectedScreen is purely informational, showing why access was denied.",
+      "nodeIds": [
+        "file:src/components/LoginScreen.tsx",
+        "file:src/components/PendingApprovalScreen.tsx",
+        "file:src/components/RejectedScreen.tsx"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Ecosystem Landing & Admin Dashboard",
+      "description": "EcosystemLandingScreen is the destination for approved residents: it shows a profile summary and tiles linking to other ecosystem apps, acting as the home base for the resident experience. AdminDashboardScreen is the power-user counterpart — a tabbed panel giving admins the ability to manage residents, assign roles, view the RBAC matrix, and audit governance events. Together these two screens represent the two distinct post-login experiences the portal must serve.",
+      "nodeIds": [
+        "file:src/components/EcosystemLandingScreen.tsx",
+        "file:src/components/AdminDashboardScreen.tsx"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "Foundational Database Schema",
+      "description": "The `profiles` migration is the first thing that was ever deployed to Supabase for this project. It creates the `profiles` table (one row per authenticated user), the `files` table, Row Level Security policies that enforce data isolation, and auto-triggers that create a profile on first sign-in. This is the data substrate that `usePermissions` queries — the `approval_status` column here is what determines whether a user sees PendingApprovalScreen or EcosystemLandingScreen.",
+      "nodeIds": [
+        "table:supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql:profiles"
+      ],
+      "languageLesson": "Supabase RLS (Row Level Security) policies are PostgreSQL policies attached to tables. They run on every query and enforce access rules at the database level — even a service-role bypass must be explicit. Combined with auth.uid(), they ensure a user can only read and write their own rows without any application-level gating logic."
+    },
+    {
+      "order": 11,
+      "title": "RBAC Schema",
+      "description": "The second migration layer introduces `user_roles`, `user_permissions`, and three PostgreSQL helper functions: `has_role()`, `has_permission()`, and `is_approved()`. These functions are called inside RLS policies on protected tables, making authorization entirely database-enforced. The `usePermissions` hook queries the data in these tables, but the enforcement happens in the database — the client-side hook is just surfacing what the database has already decided.",
+      "nodeIds": [
+        "table:supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql:user_roles"
+      ],
+      "languageLesson": "PostgreSQL functions used in RLS policies run with the security context of the calling user (SECURITY INVOKER by default). Using `auth.uid()` inside these functions means every policy check is automatically scoped to the currently authenticated user — there is no way for a client to impersonate another user at the SQL level."
+    },
+    {
+      "order": 12,
+      "title": "Governance Schema v2",
+      "description": "The governance v2 migration is the most recent and most sophisticated schema layer. It adds a `governance_events` audit table that records every administrative action (approvals, rejections, role changes) with actor, target, and timestamp — this is what the AdminDashboardScreen's audit log tab displays. It also introduces the App-RBAC tables (per-app roles and permissions), a formal `approval_status` enum replacing freeform strings, and a sync trigger that keeps older boolean columns in step with the new enum.",
+      "nodeIds": [
+        "table:supabase/migrations/20260518120000_community_platform_governance_v2.sql:governance_events"
+      ],
+      "languageLesson": "Audit tables with append-only semantics (no UPDATE/DELETE) are a common governance pattern. PostgreSQL triggers can automatically insert into the audit table on every state-change operation, ensuring no admin action goes unrecorded even if the application layer skips the log."
+    },
+    {
+      "order": 13,
+      "title": "Supabase Edge Functions",
+      "description": "Three Edge Functions extend the portal with server-side capabilities that cannot be safely exposed to the client. `get-users-auth-info` queries the Supabase admin API to return auth metadata (email, last sign-in, created date) for all users — admin-only, used by AdminDashboardScreen. `delete-users` performs hard user deletion with role verification. `send-notification-email` dispatches transactional emails via the Resend API whenever a pending resident submits their details. All three verify the caller has the required admin role before executing.",
+      "nodeIds": [
+        "file:supabase/functions/get-users-auth-info/index.ts",
+        "file:supabase/functions/delete-users/index.ts",
+        "file:supabase/functions/send-notification-email/index.ts"
+      ],
+      "languageLesson": "Supabase Edge Functions run on Deno Deploy at the edge and share the same JWT secret as the database. By verifying `Authorization: Bearer <token>` and checking the user's role before executing privileged operations, they act as a secure server-side boundary for actions that would be dangerous to allow directly from client-side Supabase queries."
+    },
+    {
+      "order": 14,
+      "title": "Containerization & Deployment",
+      "description": "The Dockerfile uses a two-stage build: a Node 20 builder stage installs dependencies and compiles the Vite/TypeScript app into static assets, then a minimal `nginx:alpine` stage copies only those assets and serves them. The `nginx.conf` configures the SPA routing fallback (all paths return `index.html`) and enables gzip compression. `fly.toml` declares the Fly.io deployment targeting the Singapore region, and `.env.example` documents the environment variables required at runtime for Supabase credentials and ecosystem app URLs.",
+      "nodeIds": [
+        "service:Dockerfile",
+        "config:nginx.conf",
+        "config:fly.toml",
+        "config:.env.example"
+      ],
+      "languageLesson": "Multi-stage Docker builds are essential for SPA deployment. The build stage needs Node, npm, TypeScript, and all devDependencies — but none of those belong in production. The final stage starts from a fresh nginx image and copies only the compiled `/dist` folder, resulting in an image under 30MB compared to hundreds of MB if node_modules were included."
+    },
+    {
+      "order": 15,
+      "title": "Architecture Reference Docs",
+      "description": "Two remaining documents complete the picture. `current-supabase-architecture.md` is a living reference for the schema as it exists today — useful when the migrations alone do not tell the full story of the current state. `community-platform-implementation-plan.md` explains the reasoning behind architectural choices and the governance model design. Together with the identity protocol spec from Step 7, these documents make the portal's design intent explicit and serve as the authoritative guide for contributors extending the ecosystem.",
+      "nodeIds": [
+        "document:docs/current-supabase-architecture.md",
+        "document:docs/community-platform-implementation-plan.md"
+      ]
+    }
+  ]
+}

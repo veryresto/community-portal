@@ -1,0 +1,1139 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "aa0bd2aeae1d7fdcb60f0fefdd82b438dc92c110",
+  "generatedAt": "2026-05-22T15:20:22.149Z",
+  "files": {
+    ".env.example": {
+      "filePath": ".env.example",
+      "contentHash": "07469e32d463b080ff1fa73b0e6542707b430c60e887fc853807a654e3de147c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "12aa435d90ec6384a420a8676adfadeca121645a07931fb9209be5af5be33ad0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": false
+    },
+    "Dockerfile": {
+      "filePath": "Dockerfile",
+      "contentHash": "ea67a3f4f615a10b27301959b5e90d0027a2a81845224523b8fbcd5d91882042",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "docs/auth-integration-guide.md": {
+      "filePath": "docs/auth-integration-guide.md",
+      "contentHash": "2e444c694405abe1c7cbd2a48e9245cb2c2fcd4c30fa3d3a20ef39773913d726",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107,
+      "hasStructuralAnalysis": true
+    },
+    "docs/auth/go-fiber.md": {
+      "filePath": "docs/auth/go-fiber.md",
+      "contentHash": "2c41a955829a9e7795f24cd6e12d2ebf5062d01980324c1eac7a59df51de4e07",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "docs/auth/laravel.md": {
+      "filePath": "docs/auth/laravel.md",
+      "contentHash": "c4bbdf69b10a97080afcf0b86056417936bc682cc85b9b8cd9b6c475aefabbd8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "docs/auth/nextjs.md": {
+      "filePath": "docs/auth/nextjs.md",
+      "contentHash": "63d52932c89d53126dba8567f6fef77c103b74efa700e5deb18a6487a112e80c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": true
+    },
+    "docs/auth/node-express.md": {
+      "filePath": "docs/auth/node-express.md",
+      "contentHash": "8f0e546bbed1c6e8f1d91035229fb62cb13dfcab457b626995588a525f52f607",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 236,
+      "hasStructuralAnalysis": true
+    },
+    "docs/auth/react-vite.md": {
+      "filePath": "docs/auth/react-vite.md",
+      "contentHash": "465feabe4e58d49dd97052be7343c3f71e0a1a33e50e1de685e28469a9ceb7a8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 314,
+      "hasStructuralAnalysis": true
+    },
+    "docs/community-platform-implementation-plan.md": {
+      "filePath": "docs/community-platform-implementation-plan.md",
+      "contentHash": "60d329bf0503f7e5c8adb8c78b5fccbd634fb4eeef8dd5def76228907a5801f1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 331,
+      "hasStructuralAnalysis": true
+    },
+    "docs/current-supabase-architecture.md": {
+      "filePath": "docs/current-supabase-architecture.md",
+      "contentHash": "2a1e7dcc0caf9930cdd5d38dc4421ed68a68482cad5bf5edea4636ab00c77e10",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 324,
+      "hasStructuralAnalysis": true
+    },
+    "docs/migration-approval-status.sql": {
+      "filePath": "docs/migration-approval-status.sql",
+      "contentHash": "b6ec7b8fb3b56147e3e2255a51efef87cbf4c4d9497b98464e203216ed3228bc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "docs/veryresto-identity-protocol.md": {
+      "filePath": "docs/veryresto-identity-protocol.md",
+      "contentHash": "a09fe8730d209887fe6173f5b55f21cc7e99e7d2e0bf4cb12f7d34dddf48f9fb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 326,
+      "hasStructuralAnalysis": true
+    },
+    "eslint.config.js": {
+      "filePath": "eslint.config.js",
+      "contentHash": "cf80a7510234dcd5ae594b30b44682b8b45ba13c0fcb5bf8928bea143802aa1c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@eslint/js",
+          "specifiers": [
+            "js"
+          ]
+        },
+        {
+          "source": "globals",
+          "specifiers": [
+            "globals"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react-hooks",
+          "specifiers": [
+            "reactHooks"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react-refresh",
+          "specifiers": [
+            "reactRefresh"
+          ]
+        },
+        {
+          "source": "typescript-eslint",
+          "specifiers": [
+            "tseslint"
+          ]
+        },
+        {
+          "source": "eslint/config",
+          "specifiers": [
+            "defineConfig",
+            "globalIgnores"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "fly.toml": {
+      "filePath": "fly.toml",
+      "contentHash": "cdff93e4875e6465c348550182c2bb077368f3d572db5eccada9b68669353b45",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "index.html": {
+      "filePath": "index.html",
+      "contentHash": "2604c5a7bc940dfed0b52ad1e9c3a691d4666e8bfc883b13e3a4573699512d12",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "nginx.conf": {
+      "filePath": "nginx.conf",
+      "contentHash": "0b98d1f47fdb0b63f52a5a23f5577a1de65d00570ea26f8b60575cb7c119e558",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "200c84d2b6f13c2e844e47317d26371f2d28b921c34b6990f35133d0cf067bc7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "af341a4da7992ac23cac30ad55e14a067d56c31191804c3c8fe460a4e9a696a1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 151,
+      "hasStructuralAnalysis": true
+    },
+    "src/App.css": {
+      "filePath": "src/App.css",
+      "contentHash": "6e25a776d3e8102da5bacb3cb99f4a5fc662a2e01e6143140671a556d28c3d5c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 185,
+      "hasStructuralAnalysis": false
+    },
+    "src/App.tsx": {
+      "filePath": "src/App.tsx",
+      "contentHash": "cb673447dfde0512b7d9e99bb2dcbb05034d3d8c8f7f7c8dfbf0b5d50b664962",
+      "functions": [
+        {
+          "name": "MainAppContent",
+          "params": [],
+          "exported": false,
+          "lineCount": 63
+        },
+        {
+          "name": "getValidatedRedirectUrl",
+          "params": [
+            "urlParam"
+          ],
+          "returnType": "string | null",
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "App",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./hooks/useAuth",
+          "specifiers": [
+            "AuthProvider",
+            "useAuth"
+          ]
+        },
+        {
+          "source": "./hooks/usePermissions",
+          "specifiers": [
+            "usePermissions"
+          ]
+        },
+        {
+          "source": "./components/LoginScreen",
+          "specifiers": [
+            "LoginScreen"
+          ]
+        },
+        {
+          "source": "./components/PendingApprovalScreen",
+          "specifiers": [
+            "PendingApprovalScreen"
+          ]
+        },
+        {
+          "source": "./components/RejectedScreen",
+          "specifiers": [
+            "RejectedScreen"
+          ]
+        },
+        {
+          "source": "./components/EcosystemLandingScreen",
+          "specifiers": [
+            "EcosystemLandingScreen"
+          ]
+        }
+      ],
+      "exports": [
+        "App"
+      ],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/AdminDashboardScreen.tsx": {
+      "filePath": "src/components/AdminDashboardScreen.tsx",
+      "contentHash": "496862773520a8bc9902fd4f7cebb0a1aa6f86a547dc137a05acd8ca3f5c672e",
+      "functions": [
+        {
+          "name": "AdminDashboardScreen",
+          "params": [
+            "{ onBack }"
+          ],
+          "exported": true,
+          "lineCount": 1047
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Users",
+            "Shield",
+            "Database",
+            "Activity",
+            "Check",
+            "X",
+            "ShieldAlert",
+            "Info",
+            "AlertTriangle",
+            "ArrowLeft",
+            "Sparkles",
+            "Edit"
+          ]
+        },
+        {
+          "source": "../lib/supabase",
+          "specifiers": [
+            "supabase"
+          ]
+        },
+        {
+          "source": "../hooks/useAuth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "../hooks/usePermissions",
+          "specifiers": [
+            "usePermissions"
+          ]
+        }
+      ],
+      "exports": [
+        "AdminDashboardScreen"
+      ],
+      "totalLines": 1108,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/EcosystemLandingScreen.tsx": {
+      "filePath": "src/components/EcosystemLandingScreen.tsx",
+      "contentHash": "a923c4c448e3a314d46d0cb01a2fc9867eb826aaf8fdd328bf816c9e1d70eb24",
+      "functions": [
+        {
+          "name": "EcosystemLandingScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 211
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "LogOut",
+            "LayoutGrid",
+            "FileText",
+            "CheckCircle2",
+            "UserIcon",
+            "ExternalLink",
+            "HelpCircle",
+            "Shield"
+          ]
+        },
+        {
+          "source": "../hooks/useAuth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "../hooks/usePermissions",
+          "specifiers": [
+            "usePermissions"
+          ]
+        },
+        {
+          "source": "../lib/supabase",
+          "specifiers": [
+            "supabase"
+          ]
+        },
+        {
+          "source": "./AdminDashboardScreen",
+          "specifiers": [
+            "AdminDashboardScreen"
+          ]
+        }
+      ],
+      "exports": [
+        "EcosystemLandingScreen"
+      ],
+      "totalLines": 219,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/LoginScreen.tsx": {
+      "filePath": "src/components/LoginScreen.tsx",
+      "contentHash": "247687707704d35209eac0f77f378161ec4319b8b0774bf7b226b98f30685bee",
+      "functions": [
+        {
+          "name": "LoginScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 77
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Shield",
+            "KeyRound",
+            "ArrowRight"
+          ]
+        },
+        {
+          "source": "../hooks/useAuth",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginScreen"
+      ],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/PendingApprovalScreen.tsx": {
+      "filePath": "src/components/PendingApprovalScreen.tsx",
+      "contentHash": "7d65f409fe9559d50f04178768b2ef027e1b1d0646d0756883a96261f3eb21f0",
+      "functions": [
+        {
+          "name": "PendingApprovalScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 244
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "Clock",
+            "LogOut",
+            "Check",
+            "Home",
+            "Phone",
+            "ArrowRight",
+            "ShieldCheck"
+          ]
+        },
+        {
+          "source": "../hooks/useAuth",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "../lib/supabase",
+          "specifiers": [
+            "supabase"
+          ]
+        }
+      ],
+      "exports": [
+        "PendingApprovalScreen"
+      ],
+      "totalLines": 250,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/RejectedScreen.tsx": {
+      "filePath": "src/components/RejectedScreen.tsx",
+      "contentHash": "95d11519a81f4782fc6f2c3875d9aa2f2c091d551f5b4701b99ce3f4edf6d501",
+      "functions": [
+        {
+          "name": "RejectedScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 48
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "lucide-react",
+          "specifiers": [
+            "XCircle",
+            "LogOut",
+            "Info"
+          ]
+        },
+        {
+          "source": "../hooks/useAuth",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "RejectedScreen"
+      ],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "src/hooks/useAuth.tsx": {
+      "filePath": "src/hooks/useAuth.tsx",
+      "contentHash": "f972716ed22f53d3b7f023b8d03dddecfe27181dc7f4179aa8b1347f50c218c3",
+      "functions": [
+        {
+          "name": "AuthProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "useAuth",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useContext",
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "@supabase/supabase-js",
+          "specifiers": [
+            "User",
+            "Session"
+          ]
+        },
+        {
+          "source": "../lib/supabase",
+          "specifiers": [
+            "supabase"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthProvider",
+        "useAuth"
+      ],
+      "totalLines": 79,
+      "hasStructuralAnalysis": true
+    },
+    "src/hooks/usePermissions.tsx": {
+      "filePath": "src/hooks/usePermissions.tsx",
+      "contentHash": "2a9c8ecdf4bdcec6538b3f82da8ace695425893f14dc303b1847308661bc52c3",
+      "functions": [
+        {
+          "name": "usePermissions",
+          "params": [],
+          "returnType": "Permissions",
+          "exported": true,
+          "lineCount": 127
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "../lib/supabase",
+          "specifiers": [
+            "supabase"
+          ]
+        },
+        {
+          "source": "./useAuth",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "usePermissions"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "src/index.css": {
+      "filePath": "src/index.css",
+      "contentHash": "dbf3fbda932881f7ff3c53553cd90c17ef63285fe4cb5fe9cfbeab4c3746ff8a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1462,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/supabase.ts": {
+      "filePath": "src/lib/supabase.ts",
+      "contentHash": "203962aa60bbc9b465808de89118d25e138f1c71c205bdb8cbb1eede9444dab1",
+      "functions": [
+        {
+          "name": "parseJwt",
+          "params": [
+            "token"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "getCookieDomain",
+          "params": [],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "isLocalHostOrIP",
+          "params": [
+            "hostname"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 8
+        }
+      ],
+      "classes": [
+        {
+          "name": "CookieStorage",
+          "methods": [
+            "constructor",
+            "getItem",
+            "setItem",
+            "removeItem"
+          ],
+          "properties": [
+            "domain",
+            "isLocalOrIP"
+          ],
+          "exported": false,
+          "lineCount": 107
+        }
+      ],
+      "imports": [
+        {
+          "source": "@supabase/supabase-js",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@supabase/supabase-js",
+          "specifiers": [
+            "SupportedStorage"
+          ]
+        }
+      ],
+      "exports": [
+        "supabase"
+      ],
+      "totalLines": 166,
+      "hasStructuralAnalysis": true
+    },
+    "src/main.tsx": {
+      "filePath": "src/main.tsx",
+      "contentHash": "6e9e5807fcbd48b75a96db5cbef36c996262196be42e6d4760dc86babbe61ad2",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "StrictMode"
+          ]
+        },
+        {
+          "source": "react-dom/client",
+          "specifiers": [
+            "createRoot"
+          ]
+        },
+        {
+          "source": "./index.css",
+          "specifiers": []
+        },
+        {
+          "source": "./App.tsx",
+          "specifiers": [
+            "App"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "src/test-db.js": {
+      "filePath": "src/test-db.js",
+      "contentHash": "618e0de0d07ee89e6d94ad6537cf8a9ed3b029e715cb7c13a89153e264ed0285",
+      "functions": [
+        {
+          "name": "testFetch",
+          "params": [],
+          "exported": false,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fs",
+          "specifiers": [
+            "fs"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "path"
+          ]
+        },
+        {
+          "source": "url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/config.toml": {
+      "filePath": "supabase/config.toml",
+      "contentHash": "c520496cdda6418714185fffa86befa15193b19c21331acd5a69196c1511eb85",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/functions/delete-users/index.ts": {
+      "filePath": "supabase/functions/delete-users/index.ts",
+      "contentHash": "bbd95a0763ca6462fe5dc4e64cb5ab8b2f2f154989292131157a514d4bd4a35c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "https://deno.land/std@0.190.0/http/server.ts",
+          "specifiers": [
+            "serve"
+          ]
+        },
+        {
+          "source": "https://esm.sh/@supabase/supabase-js@2",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 143,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/functions/get-users-auth-info/index.ts": {
+      "filePath": "supabase/functions/get-users-auth-info/index.ts",
+      "contentHash": "34b8ec6c55582da428796981e96ece2cff9747be5e8472d5431f2384dfee68a1",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "https://deno.land/std@0.168.0/http/server.ts",
+          "specifiers": [
+            "serve"
+          ]
+        },
+        {
+          "source": "https://esm.sh/@supabase/supabase-js@2",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/functions/send-notification-email/index.ts": {
+      "filePath": "supabase/functions/send-notification-email/index.ts",
+      "contentHash": "9cd26faeb9d5724a0b35411479e3cba3d6766d318638b9e32ab798976091dd6a",
+      "functions": [
+        {
+          "name": "sendEmail",
+          "params": [
+            "to",
+            "subject",
+            "html"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "generateNewUserEmailHtml",
+          "params": [
+            "userName",
+            "userEmail",
+            "houseNumber"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "generateApprovalEmailHtml",
+          "params": [
+            "userName",
+            "permissions"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 42
+        },
+        {
+          "name": "generateRejectionEmailHtml",
+          "params": [
+            "userName"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 34
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "https://deno.land/std@0.190.0/http/server.ts",
+          "specifiers": [
+            "serve"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 284,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql": {
+      "filePath": "supabase/migrations/20260105012830_de72e034-bf94-4781-964f-a97a520825c4.sql",
+      "contentHash": "070bc3f0dd2f85c6380a7cd93c506fb6b2d5ae242c6efa995837100b1073e022",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 115,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql": {
+      "filePath": "supabase/migrations/20260107001509_6480dc80-c4ee-4e62-97b2-4cdd9239d569.sql",
+      "contentHash": "bd524fc82b8c87445d0f77d4529524cbccf39cebb5d535911e2f6fc1097d70c6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 159,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260107002340_bde62e4c-7ed7-433a-98d3-f3126dd97fcb.sql": {
+      "filePath": "supabase/migrations/20260107002340_bde62e4c-7ed7-433a-98d3-f3126dd97fcb.sql",
+      "contentHash": "c161b40227ef908e2c74cbcc4d1f506a326f18b547d6edbc0c3cc115abf23712",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260107093614_b77bcd8d-cd09-4d60-b2d6-3f46c42f31e4.sql": {
+      "filePath": "supabase/migrations/20260107093614_b77bcd8d-cd09-4d60-b2d6-3f46c42f31e4.sql",
+      "contentHash": "73959617de719b0495c5992b2b6745231687a71f73bfa5a8381b41010e4cea04",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260113041311_e90a3627-9370-4f34-b8a2-701e96855830.sql": {
+      "filePath": "supabase/migrations/20260113041311_e90a3627-9370-4f34-b8a2-701e96855830.sql",
+      "contentHash": "b84e5c333216bb81cd7183b9cd4a42e952a3a73e6f57f792a8657c99eb4e52ae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260115044000_5dffb68e-75da-4f30-9614-e1335ebdd0ef.sql": {
+      "filePath": "supabase/migrations/20260115044000_5dffb68e-75da-4f30-9614-e1335ebdd0ef.sql",
+      "contentHash": "e9d48c60c9cd40d787140ed8011d998125a29b143f2dfd519fda31a125e25209",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260115045406_1f7dc294-01ac-43ed-bdbb-45791e8302e1.sql": {
+      "filePath": "supabase/migrations/20260115045406_1f7dc294-01ac-43ed-bdbb-45791e8302e1.sql",
+      "contentHash": "6b1a87bef1cd713c724ff8a773723bb86970003d3cf8e63c701150fc254a7953",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260311063103_22ee9810-95f1-49a5-b0a4-67917bd07232.sql": {
+      "filePath": "supabase/migrations/20260311063103_22ee9810-95f1-49a5-b0a4-67917bd07232.sql",
+      "contentHash": "518a67f6c381b2b8dc89f87bedae12c3616bf4c76680de63f4ba1727c28bbf6c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260518103000_community_platform_governance.sql": {
+      "filePath": "supabase/migrations/20260518103000_community_platform_governance.sql",
+      "contentHash": "ca8f30300d881c27615b1f73f9d87ac08242f967ac094a2e2b9fd0a423986d4f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260518120000_community_platform_governance_v2.sql": {
+      "filePath": "supabase/migrations/20260518120000_community_platform_governance_v2.sql",
+      "contentHash": "4fabfd448e5bbba3785a2c4675307965ac0273b0eb38ce04aa92cf6535526a3d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 299,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260519090000_hotfix_sync_legacy_permissions.sql": {
+      "filePath": "supabase/migrations/20260519090000_hotfix_sync_legacy_permissions.sql",
+      "contentHash": "cd678e70d0f43e096fa9a79397b5084fbb3ce85ea15d9f96cb376241ec90bd06",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 161,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260519100000_profiles_update_policy.sql": {
+      "filePath": "supabase/migrations/20260519100000_profiles_update_policy.sql",
+      "contentHash": "b30e7e0726238542b49be5d9c40b6217411f00bd074065eadcbf856642742d63",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260519110000_is_platform_manager_refactor.sql": {
+      "filePath": "supabase/migrations/20260519110000_is_platform_manager_refactor.sql",
+      "contentHash": "b5bc8dfd794721eaf0eae672c70c7a707a6e79a35f189d838a9aa7540eed272a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260519120000_restrict_profile_updates.sql": {
+      "filePath": "supabase/migrations/20260519120000_restrict_profile_updates.sql",
+      "contentHash": "79d5487cc28e91a6ec3f4f7d503bede3ec371b2a3e8f2ba95ab6cadd638aa0db",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260519130000_update_ipl_finder_rls.sql": {
+      "filePath": "supabase/migrations/20260519130000_update_ipl_finder_rls.sql",
+      "contentHash": "373a518cce29edea86e346c1e5fd857deb2491db183440b19ef6421affb342db",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20260520000000_register_rekap_viewer.sql": {
+      "filePath": "supabase/migrations/20260520000000_register_rekap_viewer.sql",
+      "contentHash": "bfbdf200a827f94a13de786e255f9e8db6bdb9024ff5bdf3d7245df06bcb525d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.app.json": {
+      "filePath": "tsconfig.app.json",
+      "contentHash": "b1eac9ba6cd1c01d59ebca159805e052c798d9d4ab904680b79ce3e306ea0bbd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.json": {
+      "filePath": "tsconfig.json",
+      "contentHash": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.node.json": {
+      "filePath": "tsconfig.node.json",
+      "contentHash": "90a22c920cbc14624fb4658b58f15c875abf3234224f3933f211849c3ada3242",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "vite.config.ts": {
+      "filePath": "vite.config.ts",
+      "contentHash": "8f234c55d889987b22bc344545d272e7f959ca39f46d5434fccdc8fe3ee6ce5d",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "vite",
+          "specifiers": [
+            "defineConfig"
+          ]
+        },
+        {
+          "source": "@vitejs/plugin-react",
+          "specifiers": [
+            "react"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    }
+  }
+}
