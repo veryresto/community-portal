@@ -79,7 +79,10 @@ const ALLOWED_ORIGINS = [
   'https://rekap.veryresto.com',
   'https://ipl-finder.veryresto.com',
   'https://community.veryresto.com',
-  'https://ipl-finder.fly.dev'
+  'https://ipl-finder.fly.dev',
+  'http://as-macbook-pro.tailc513e0.ts.net:5173',
+  'http://as-macbook-pro.tailc513e0.ts.net:8080',
+  'http://as-macbook-pro.tailc513e0.ts.net:3000'
 ];
 
 const getValidatedRedirectUrl = (urlParam: string | null): string | null => {

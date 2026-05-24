@@ -9,7 +9,9 @@ export default defineConfig({
     allowedHosts: [
       "community.lvh.me",
       "community.localtest.me",
-      "localhost"
+      "localhost",
+      "as-macbook-pro.tailc513e0.ts.net",
+      ".tailc513e0.ts.net"
     ]
 
   },
