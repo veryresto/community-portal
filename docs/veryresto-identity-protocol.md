@@ -6,7 +6,7 @@
 
 This document is a **platform-agnostic specification**. It defines the contracts that every resident application must conform to in order to participate in the shared Veryresto identity system. It makes no assumption about your programming language, runtime, or framework.
 
-For concrete implementation examples, see the [reference implementations](./auth-integration-guide.md).
+For concrete implementation examples, see the [reference implementations](./auth-integration-guide.md). For visual step-by-step sequence diagrams of the flows, see the [Authentication Sequence Diagrams](./auth-sequence-diagram.md).
 
 ---
 

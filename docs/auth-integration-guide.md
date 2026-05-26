@@ -2,7 +2,7 @@
 
 > **For resident developers building apps in the Veryresto ecosystem.**
 
-Veryresto uses a **centralized identity system**. You do not build your own login — you integrate with the Community Platform portal and share its session.
+Veryresto uses a **centralized identity system**. You do not build your own login — you integrate with the Community Platform portal and share its session. For a visual overview of how authentication redirects, SSO, and background refreshes work, see the [Authentication Sequence Diagrams](./auth-sequence-diagram.md).
 
 This guide is split into two layers.
 
