@@ -26,6 +26,10 @@
   --error: #ef4444; /* Red */
   --error-bg: rgba(239, 68, 68, 0.08);
   --error-border: rgba(239, 68, 68, 0.25);
+  
+  --verifier: #8b5cf6; /* Violet */
+  --verifier-bg: rgba(139, 92, 246, 0.08);
+  --verifier-border: rgba(139, 92, 246, 0.25);
 
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -61,6 +65,10 @@
     --error: #f87171; /* Red */
     --error-bg: rgba(248, 113, 113, 0.08);
     --error-border: rgba(248, 113, 113, 0.2);
+    
+    --verifier: #a78bfa; /* Violet */
+    --verifier-bg: rgba(167, 139, 250, 0.08);
+    --verifier-border: rgba(167, 139, 250, 0.2);
 
     /* Glassmorphism settings */
     --glass-bg: rgba(17, 24, 39, 0.6);
@@ -853,6 +861,18 @@ a {
   background-color: var(--primary-glow);
   border: 1px solid var(--primary);
   color: var(--primary);
+}
+
+.role-tag.status-verifier {
+  background-color: var(--verifier-bg);
+  border: 1px solid var(--verifier-border);
+  color: var(--verifier);
+}
+
+.role-tag.status-moderator {
+  background-color: var(--pending-bg);
+  border: 1px solid var(--pending-border);
+  color: var(--pending);
 }
 
 .profile-details {

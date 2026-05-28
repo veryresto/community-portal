@@ -7,7 +7,7 @@ import { AdminDashboardScreen } from './AdminDashboardScreen';
 
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
-  const { isAdmin, isGovernanceManager } = usePermissions();
+  const { isAdmin, isVerifier, isModerator, isGovernanceManager } = usePermissions();
   const [houseNumber, setHouseNumber] = useState<string | null>(null);
   const [whatsappNumber, setWhatsappNumber] = useState<string | null>(null);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
@@ -148,6 +148,8 @@ export function EcosystemLandingScreen() {
               <div className="role-tags">
                 <span className="role-tag status-approved">Approved Resident</span>
                 {isAdmin && <span className="role-tag status-admin">Global Admin</span>}
+                {isVerifier && <span className="role-tag status-verifier">Verifier</span>}
+                {isModerator && <span className="role-tag status-moderator">Moderator</span>}
               </div>
             </div>
           </div>
