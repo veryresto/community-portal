@@ -60,10 +60,21 @@ interface GovernanceEvent {
 
 export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   const { user } = useAuth();
-  const { isAdmin, isVerifier, isModerator } = usePermissions();
+  const { isAdmin, isVerifier, isModerator, loading: permLoading } = usePermissions();
   
   // Tab states: 'approvals', 'roles', 'app_governance', 'audit'
-  const [activeTab, setActiveTab] = useState<'approvals' | 'roles' | 'app_governance' | 'audit'>('approvals');
+  const [activeTab, setActiveTab] = useState<'approvals' | 'roles' | 'app_governance' | 'audit'>(() => {
+    const saved = sessionStorage.getItem('admin_active_tab');
+    if (saved === 'approvals' || saved === 'roles' || saved === 'app_governance' || saved === 'audit') {
+      return saved;
+    }
+    return 'approvals';
+  });
+
+  const handleTabChange = (tab: 'approvals' | 'roles' | 'app_governance' | 'audit') => {
+    setActiveTab(tab);
+    sessionStorage.setItem('admin_active_tab', tab);
+  };
   
   // Shared States
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -100,6 +111,15 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   useEffect(() => {
     fetchBaselineData();
   }, []);
+
+  // Redirect to approvals tab if permissions load and user is not admin but viewing admin-only tabs
+  useEffect(() => {
+    if (!permLoading) {
+      if ((activeTab === 'roles' || activeTab === 'audit') && !isAdmin) {
+        handleTabChange('approvals');
+      }
+    }
+  }, [isAdmin, permLoading, activeTab]);
 
   const fetchBaselineData = async () => {
     try {
@@ -522,7 +542,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       <nav className="admin-nav-tabs">
         {(isAdmin || isVerifier) && (
           <button 
-            onClick={() => { setActiveTab('approvals'); setSearchQuery(''); }}
+            onClick={() => { handleTabChange('approvals'); setSearchQuery(''); }}
             className={`admin-tab-btn ${activeTab === 'approvals' ? 'active' : ''}`}
           >
             <Users style={{ width: '16px' }} />
@@ -532,7 +552,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         
         {isAdmin && (
           <button 
-            onClick={() => { setActiveTab('roles'); setSearchQuery(''); }}
+            onClick={() => { handleTabChange('roles'); setSearchQuery(''); }}
             className={`admin-tab-btn ${activeTab === 'roles' ? 'active' : ''}`}
           >
             <Shield style={{ width: '16px' }} />
@@ -542,7 +562,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
         {(isAdmin || isVerifier) && (
           <button 
-            onClick={() => { setActiveTab('app_governance'); setSearchQuery(''); setSelectedProfileId(profiles[0]?.id || null); }}
+            onClick={() => { handleTabChange('app_governance'); setSearchQuery(''); setSelectedProfileId(profiles[0]?.id || null); }}
             className={`admin-tab-btn ${activeTab === 'app_governance' ? 'active' : ''}`}
           >
             <Database style={{ width: '16px' }} />
@@ -552,7 +572,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
         {isAdmin && (
           <button 
-            onClick={() => { setActiveTab('audit'); setSearchQuery(''); }}
+            onClick={() => { handleTabChange('audit'); setSearchQuery(''); }}
             className={`admin-tab-btn ${activeTab === 'audit' ? 'active' : ''}`}
           >
             <Activity style={{ width: '16px' }} />

@@ -10,7 +10,19 @@ export function EcosystemLandingScreen() {
   const { isAdmin, isVerifier, isModerator, isGovernanceManager } = usePermissions();
   const [houseNumber, setHouseNumber] = useState<string | null>(null);
   const [whatsappNumber, setWhatsappNumber] = useState<string | null>(null);
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [showAdminDashboard, setShowAdminDashboard] = useState(() => {
+    return sessionStorage.getItem('current_view') === 'admin_dashboard';
+  });
+
+  const handleOpenAdmin = () => {
+    setShowAdminDashboard(true);
+    sessionStorage.setItem('current_view', 'admin_dashboard');
+  };
+
+  const handleCloseAdmin = () => {
+    setShowAdminDashboard(false);
+    sessionStorage.setItem('current_view', 'hub');
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -83,7 +95,7 @@ export function EcosystemLandingScreen() {
   if (showAdminDashboard && isGovernanceManager) {
     return (
       <div className="ecosystem-container">
-        <AdminDashboardScreen onBack={() => setShowAdminDashboard(false)} />
+        <AdminDashboardScreen onBack={handleCloseAdmin} />
       </div>
     );
   }
@@ -106,7 +118,7 @@ export function EcosystemLandingScreen() {
         <div style={{ display: 'flex', gap: '12px' }}>
           {isGovernanceManager && (
             <button 
-              onClick={() => setShowAdminDashboard(true)} 
+              onClick={handleOpenAdmin} 
               className="hub-signout-btn" 
               type="button"
               style={{ 
