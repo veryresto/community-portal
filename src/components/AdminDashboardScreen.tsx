@@ -19,6 +19,9 @@ interface Profile {
   house_number: string;
   whatsapp_number: string;
   approval_status: 'pending' | 'approved' | 'suspended' | 'rejected';
+  participant_type?: 'resident' | 'non_resident';
+  resident_subtype?: 'owner' | 'renter' | null;
+  requested_affiliation?: string | null;
 }
 
 interface UserRole {
@@ -101,7 +104,13 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
   // Inline Profile Edit States (Option 2)
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ house_number: '', whatsapp_number: '' });
+  const [editForm, setEditForm] = useState({
+    house_number: '',
+    whatsapp_number: '',
+    participant_type: 'resident' as 'resident' | 'non_resident',
+    resident_subtype: 'owner' as 'owner' | 'renter' | '',
+    requested_affiliation: ''
+  });
   const [editError, setEditError] = useState<string | null>(null);
 
   // Determine if actor has rights to edit/approve profiles (admin or verifier only)
@@ -124,11 +133,11 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   const fetchBaselineData = async () => {
     try {
       setLoading(true);
-      // 1. Fetch Profiles (Residents with house number)
+      // 1. Fetch Profiles that have completed onboarding (i.e. participant_type is not null)
       const { data: pData } = await supabase
         .from('profiles')
         .select('*')
-        .not('house_number', 'is', null)
+        .not('participant_type', 'is', null)
         .order('created_at', { ascending: false });
       setProfiles(pData || []);
 
@@ -207,12 +216,23 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   const normalizeHouseNumber = (val: string) => val.trim().replace(/\s+/g, ' ');
   const normalizeWhatsAppNumber = (val: string) => val.replace(/[^\d+]/g, '');
 
-  const validateProfileEdit = (houseNumber: string, whatsappNumber: string): string | null => {
-    if (!houseNumber) return 'House number is required.';
-    if (houseNumber.length > 25) return 'House number must be 25 characters or less.';
+  const validateProfileEdit = (
+    partType: 'resident' | 'non_resident',
+    houseNum: string,
+    whatsappNum: string,
+    subType: string,
+    affiliation: string
+  ): string | null => {
+    if (partType === 'resident') {
+      if (!houseNum) return 'House number is required for residents.';
+      if (houseNum.length > 25) return 'House number must be 25 characters or less.';
+      if (!subType) return 'Resident subtype (owner/renter) is required.';
+    } else {
+      if (!affiliation) return 'Affiliation is required for non-residents.';
+    }
     
-    if (whatsappNumber) {
-      const digitsOnly = whatsappNumber.replace(/\D/g, '');
+    if (whatsappNum) {
+      const digitsOnly = whatsappNum.replace(/\D/g, '');
       if (digitsOnly.length < 9 || digitsOnly.length > 15) {
         return 'WhatsApp number must contain between 9 and 15 digits.';
       }
@@ -224,7 +244,10 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     setEditingProfileId(profile.id);
     setEditForm({
       house_number: profile.house_number || '',
-      whatsapp_number: profile.whatsapp_number || ''
+      whatsapp_number: profile.whatsapp_number || '',
+      participant_type: (profile.participant_type || 'resident') as 'resident' | 'non_resident',
+      resident_subtype: (profile.resident_subtype || 'owner') as 'owner' | 'renter' | '',
+      requested_affiliation: profile.requested_affiliation || ''
     });
     setEditError(null);
   };
@@ -235,10 +258,17 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   };
 
   const handleSaveProfileEdit = async (profile: Profile) => {
-    const normHouse = normalizeHouseNumber(editForm.house_number);
+    const normHouse = editForm.participant_type === 'resident' ? normalizeHouseNumber(editForm.house_number) : '';
     const normWhatsApp = editForm.whatsapp_number ? normalizeWhatsAppNumber(editForm.whatsapp_number) : '';
-    
-    const validationError = validateProfileEdit(normHouse, normWhatsApp);
+    const affiliation = editForm.participant_type === 'non_resident' ? editForm.requested_affiliation.trim() : '';
+
+    const validationError = validateProfileEdit(
+      editForm.participant_type,
+      normHouse,
+      normWhatsApp,
+      editForm.resident_subtype,
+      affiliation
+    );
     if (validationError) {
       setEditError(validationError);
       return;
@@ -250,7 +280,10 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       const { error } = await supabase
         .from('profiles')
         .update({
-          house_number: normHouse,
+          participant_type: editForm.participant_type,
+          resident_subtype: editForm.participant_type === 'resident' ? editForm.resident_subtype : null,
+          house_number: editForm.participant_type === 'resident' ? normHouse : null,
+          requested_affiliation: editForm.participant_type === 'non_resident' ? affiliation : null,
           whatsapp_number: normWhatsApp || null
         })
         .eq('id', profile.id);
@@ -261,15 +294,21 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       await logGovernanceAction(
         profile.id,
         'modified_resident_profile',
-        'Corrected resident contact/house details',
+        'Corrected user profile classification details',
         profile.email,
         {
           before: {
+            participant_type: profile.participant_type,
+            resident_subtype: profile.resident_subtype,
             house_number: profile.house_number,
+            requested_affiliation: profile.requested_affiliation,
             whatsapp_number: profile.whatsapp_number
           },
           after: {
-            house_number: normHouse,
+            participant_type: editForm.participant_type,
+            resident_subtype: editForm.participant_type === 'resident' ? editForm.resident_subtype : null,
+            house_number: editForm.participant_type === 'resident' ? normHouse : null,
+            requested_affiliation: editForm.participant_type === 'non_resident' ? affiliation : null,
             whatsapp_number: normWhatsApp || null
           }
         }
@@ -617,8 +656,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Resident Info</th>
-                      <th>House Number</th>
+                      <th>User Info</th>
+                      <th>House / Affiliation</th>
                       <th>WhatsApp Contact</th>
                       <th>Approval Status</th>
                       <th style={{ textAlign: 'right' }}>Actions</th>
@@ -630,26 +669,85 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                       return (
                         <tr key={profile.id}>
                           <td>
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous Resident'}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous User'}</span>
                               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
+                              <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
+                                <span className={`role-tag ${profile.participant_type === 'resident' ? 'status-approved' : 'status-verifier'}`} style={{ fontSize: '9px', padding: '1px 6px' }}>
+                                  {profile.participant_type || 'resident'}
+                                </span>
+                                {profile.participant_type === 'resident' && profile.resident_subtype && (
+                                  <span className="role-tag status-admin" style={{ fontSize: '9px', padding: '1px 6px', backgroundColor: 'transparent' }}>
+                                    {profile.resident_subtype}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </td>
                           <td>
                             {editingProfileId === profile.id ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <input
-                                  type="text"
-                                  className="search-input"
-                                  style={{ padding: '6px 8px', fontSize: '14px', width: '130px', margin: 0 }}
-                                  value={editForm.house_number}
-                                  onChange={(e) => setEditForm(prev => ({ ...prev, house_number: e.target.value }))}
-                                />
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <div>
+                                  <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Type</label>
+                                  <select
+                                    value={editForm.participant_type}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, participant_type: e.target.value as any }))}
+                                    className="search-input"
+                                    style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                  >
+                                    <option value="resident">Resident</option>
+                                    <option value="non_resident">Non-Resident</option>
+                                  </select>
+                                </div>
+                                {editForm.participant_type === 'resident' ? (
+                                  <>
+                                    <div>
+                                      <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Subtype</label>
+                                      <select
+                                        value={editForm.resident_subtype}
+                                        onChange={(e) => setEditForm(prev => ({ ...prev, resident_subtype: e.target.value as any }))}
+                                        className="search-input"
+                                        style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                      >
+                                        <option value="owner">Owner</option>
+                                        <option value="renter">Renter</option>
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>House No.</label>
+                                      <input
+                                        type="text"
+                                        className="search-input"
+                                        style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                        value={editForm.house_number}
+                                        onChange={(e) => setEditForm(prev => ({ ...prev, house_number: e.target.value }))}
+                                      />
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div>
+                                    <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Affiliation</label>
+                                    <input
+                                      type="text"
+                                      className="search-input"
+                                      style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                      placeholder="e.g. security, secretariat"
+                                      value={editForm.requested_affiliation}
+                                      onChange={(e) => setEditForm(prev => ({ ...prev, requested_affiliation: e.target.value }))}
+                                    />
+                                  </div>
+                                )}
                                 {editError && <span style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</span>}
                               </div>
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span>{profile.house_number}</span>
+                                {profile.participant_type === 'non_resident' ? (
+                                  <span style={{ fontWeight: 600, color: 'var(--pending)' }}>
+                                    {profile.requested_affiliation || 'Non-Resident Staff'}
+                                  </span>
+                                ) : (
+                                  <span>{profile.house_number}</span>
+                                )}
                                 {houseEditEvent && (
                                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }} title={`Edited: ${houseEditEvent.reason}`}>
                                     Corrected by {houseEditEvent.actor_email}
@@ -942,7 +1040,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                             <h3 style={{ fontSize: '16px' }}>{activeProfile.full_name}</h3>
                             <p style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>{activeProfile.email}</p>
                             <span className="pill-badge approved" style={{ marginTop: '6px' }}>
-                              🟢 Approved Resident
+                              🟢 Approved {activeProfile.participant_type === 'non_resident' ? 'Non-Resident' : 'Resident'}
                             </span>
                           </div>
                         </div>
