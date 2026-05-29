@@ -41,24 +41,32 @@ export function PendingApprovalScreen() {
         if (error) throw error;
 
         if (data) {
-          if (data.participant_type) {
+          // Check if onboarding details have actually been submitted
+          const hasSubmitted = 
+            (data.participant_type === 'resident' && data.house_number) ||
+            (data.participant_type === 'non_resident' && data.requested_affiliation);
+
+          if (hasSubmitted) {
             setSavedParticipantType(data.participant_type);
+            setSavedResidentSubtype(data.resident_subtype);
+            setSavedHouseNumber(data.house_number);
+            setSavedRequestedAffiliation(data.requested_affiliation);
+            setSavedWhatsappNumber(data.whatsapp_number);
+          }
+
+          if (data.participant_type) {
             setParticipantType(data.participant_type as 'resident' | 'non_resident');
           }
           if (data.resident_subtype) {
-            setSavedResidentSubtype(data.resident_subtype);
             setResidentSubtype(data.resident_subtype as 'owner' | 'renter');
           }
           if (data.house_number) {
-            setSavedHouseNumber(data.house_number);
             setHouseNumber(data.house_number);
           }
           if (data.whatsapp_number) {
-            setSavedWhatsappNumber(data.whatsapp_number);
             setWhatsappNumber(data.whatsapp_number);
           }
           if (data.requested_affiliation) {
-            setSavedRequestedAffiliation(data.requested_affiliation);
             const standardAffiliations = ['security', 'secretariat', 'vendor', 'assistant', 'contractor'];
             if (standardAffiliations.includes(data.requested_affiliation)) {
               setRequestedAffiliation(data.requested_affiliation);
