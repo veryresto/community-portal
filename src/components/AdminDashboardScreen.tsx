@@ -932,7 +932,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Resident Info</th>
+                    <th>User Info</th>
                     <th>WhatsApp Contact</th>
                     <th>Global Privileges</th>
                     <th style={{ textAlign: 'right' }}>Manage Privilege</th>
@@ -945,16 +945,25 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     return (
                       <tr key={profile.id}>
                         <td>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous Resident'}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous User'}</span>
                             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
+                            <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
+                              <span className={`role-tag ${profile.participant_type === 'non_resident' ? 'status-verifier' : 'status-approved'}`} style={{ fontSize: '9px', padding: '1px 6px' }}>
+                                {profile.participant_type === 'non_resident' 
+                                  ? getAffiliationLabel(profile.requested_affiliation || 'Non-Resident')
+                                  : `Resident (${profile.resident_subtype || 'owner'})`}
+                              </span>
+                            </div>
                           </div>
                         </td>
                         <td>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)' }}>-</span>}</td>
                         <td>
                           <div className="role-tags">
                             {roles.length === 0 ? (
-                              <span className="role-tag status-approved" style={{ color: 'var(--text-muted)', border: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>Standard Resident</span>
+                              <span className="role-tag status-approved" style={{ color: 'var(--text-muted)', border: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>
+                                {profile.participant_type === 'non_resident' ? 'Standard Non-Resident' : 'Standard Resident'}
+                              </span>
                             ) : (
                               roles.map(r => (
                                 <span key={r} className="role-tag status-admin" style={{ 
