@@ -6,6 +6,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { usePermissions } from '../hooks/usePermissions';
+import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
 
 interface AdminDashboardScreenProps {
   onBack: () => void;
@@ -727,14 +728,42 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 ) : (
                                   <div>
                                     <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Affiliation</label>
-                                    <input
-                                      type="text"
+                                    <select
+                                      value={
+                                        AFFILIATION_OPTIONS.map(o => o.value).filter(v => v !== 'other').includes(editForm.requested_affiliation)
+                                          ? editForm.requested_affiliation
+                                          : editForm.requested_affiliation ? 'other' : ''
+                                      }
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setEditForm(prev => ({
+                                          ...prev,
+                                          requested_affiliation: val === 'other' ? '' : val
+                                        }));
+                                      }}
                                       className="search-input"
-                                      style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
-                                      placeholder="e.g. security, secretariat"
-                                      value={editForm.requested_affiliation}
-                                      onChange={(e) => setEditForm(prev => ({ ...prev, requested_affiliation: e.target.value }))}
-                                    />
+                                      style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: '0 0 8px 0' }}
+                                    >
+                                      <option value="">-- Select --</option>
+                                      {AFFILIATION_OPTIONS.map(opt => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                      ))}
+                                    </select>
+                                    
+                                    {(!AFFILIATION_OPTIONS.map(o => o.value).filter(v => v !== 'other').includes(editForm.requested_affiliation) ||
+                                      editForm.requested_affiliation === '') && (
+                                      <div>
+                                        <label style={{ fontSize: '10px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Specify Details</label>
+                                        <input
+                                          type="text"
+                                          className="search-input"
+                                          style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                          placeholder="Specify affiliation"
+                                          value={editForm.requested_affiliation}
+                                          onChange={(e) => setEditForm(prev => ({ ...prev, requested_affiliation: e.target.value }))}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                                 {editError && <span style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</span>}
@@ -743,7 +772,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 {profile.participant_type === 'non_resident' ? (
                                   <span style={{ fontWeight: 600, color: 'var(--pending)' }}>
-                                    {profile.requested_affiliation || 'Non-Resident Staff'}
+                                    {getAffiliationLabel(profile.requested_affiliation || 'Non-Resident Staff')}
                                   </span>
                                 ) : (
                                   <span>{profile.house_number}</span>

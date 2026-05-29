@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Clock, LogOut, Check, Home, Phone, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
+import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
 
 export function PendingApprovalScreen() {
   const { user, signOut } = useAuth();
@@ -67,8 +68,8 @@ export function PendingApprovalScreen() {
             setWhatsappNumber(data.whatsapp_number);
           }
           if (data.requested_affiliation) {
-            const standardAffiliations = ['security', 'secretariat', 'vendor', 'assistant', 'contractor'];
-            if (standardAffiliations.includes(data.requested_affiliation)) {
+            const standardKeys = AFFILIATION_OPTIONS.map(o => o.value).filter(v => v !== 'other');
+            if (standardKeys.includes(data.requested_affiliation)) {
               setRequestedAffiliation(data.requested_affiliation);
             } else {
               setRequestedAffiliation('other');
@@ -241,8 +242,8 @@ export function PendingApprovalScreen() {
                 {savedParticipantType === 'non_resident' && savedRequestedAffiliation && (
                   <div className="detail-row">
                     <span className="row-label">Requested Affiliation:</span>
-                    <span className="row-value" style={{ textTransform: 'capitalize' }}>
-                      {savedRequestedAffiliation}
+                    <span className="row-value">
+                      {getAffiliationLabel(savedRequestedAffiliation)}
                     </span>
                   </div>
                 )}
@@ -412,12 +413,9 @@ export function PendingApprovalScreen() {
                       }}
                     >
                       <option value="">-- Select your affiliation --</option>
-                      <option value="security">Security Staff</option>
-                      <option value="secretariat">Secretariat Admin</option>
-                      <option value="vendor">Vendor / Contractor</option>
-                      <option value="assistant">Resident's Assistant</option>
-                      <option value="contractor">Independent Contractor</option>
-                      <option value="other">Other / Support Staff</option>
+                      {AFFILIATION_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
                     </select>
                   </div>
 
