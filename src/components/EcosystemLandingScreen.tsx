@@ -4,12 +4,16 @@ import { useAuth } from '../hooks/useAuth';
 import { usePermissions } from '../hooks/usePermissions';
 import { supabase } from '../lib/supabase';
 import { AdminDashboardScreen } from './AdminDashboardScreen';
+import { getAffiliationLabel } from '../constants/affiliations';
 
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
   const { isAdmin, isVerifier, isModerator, isGovernanceManager } = usePermissions();
   const [houseNumber, setHouseNumber] = useState<string | null>(null);
   const [whatsappNumber, setWhatsappNumber] = useState<string | null>(null);
+  const [participantType, setParticipantType] = useState<string | null>(null);
+  const [residentSubtype, setResidentSubtype] = useState<string | null>(null);
+  const [requestedAffiliation, setRequestedAffiliation] = useState<string | null>(null);
   const [showAdminDashboard, setShowAdminDashboard] = useState(() => {
     return sessionStorage.getItem('current_view') === 'admin_dashboard';
   });
@@ -30,13 +34,16 @@ export function EcosystemLandingScreen() {
       try {
         const { data } = await supabase
           .from('profiles')
-          .select('house_number, whatsapp_number')
+          .select('house_number, whatsapp_number, participant_type, resident_subtype, requested_affiliation')
           .eq('id', user.id)
           .maybeSingle();
 
         if (data) {
           setHouseNumber(data.house_number);
           setWhatsappNumber(data.whatsapp_number);
+          setParticipantType(data.participant_type);
+          setResidentSubtype(data.resident_subtype);
+          setRequestedAffiliation(data.requested_affiliation);
         }
       } catch (err) {
         console.error('Error fetching landing profile:', err);
@@ -158,7 +165,11 @@ export function EcosystemLandingScreen() {
               <h2>{user?.user_metadata?.full_name || user?.email}</h2>
               <p className="user-email">{user?.email}</p>
               <div className="role-tags">
-                <span className="role-tag status-approved">Approved Resident</span>
+                <span className="role-tag status-approved">
+                  {participantType === 'non_resident' 
+                    ? 'Approved Non-Resident' 
+                    : `Approved Resident${residentSubtype ? ` (${residentSubtype})` : ''}`}
+                </span>
                 {isAdmin && <span className="role-tag status-admin">Global Admin</span>}
                 {isVerifier && <span className="role-tag status-verifier">Verifier</span>}
                 {isModerator && <span className="role-tag status-moderator">Moderator</span>}
@@ -167,10 +178,19 @@ export function EcosystemLandingScreen() {
           </div>
 
           <div className="profile-details">
-            <div className="p-detail">
-              <span className="p-label">Registered House:</span>
-              <span className="p-value">{houseNumber || 'Not specified'}</span>
-            </div>
+            {participantType === 'non_resident' ? (
+              requestedAffiliation && (
+                <div className="p-detail">
+                  <span className="p-label">Affiliation:</span>
+                  <span className="p-value">{getAffiliationLabel(requestedAffiliation)}</span>
+                </div>
+              )
+            ) : (
+              <div className="p-detail">
+                <span className="p-label">Registered House:</span>
+                <span className="p-value">{houseNumber || 'Not specified'}</span>
+              </div>
+            )}
             {whatsappNumber && (
               <div className="p-detail">
                 <span className="p-label">WhatsApp Contact:</span>
