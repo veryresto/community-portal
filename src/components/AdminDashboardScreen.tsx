@@ -87,9 +87,43 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   const [appRoles, setAppRoles] = useState<AppRole[]>([]);
   const [userAppRoles, setUserAppRoles] = useState<UserAppRole[]>([]);
   const [governanceEvents, setGovernanceEvents] = useState<GovernanceEvent[]>([]);
+  const [auditLogs, setAuditLogs] = useState<GovernanceEvent[]>([]);
   
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeProfileDetails, setActiveProfileDetails] = useState<Profile | null>(null);
+
+  // Approvals tab pagination & filters
+  const [approvalsPage, setApprovalsPage] = useState(1);
+  const [approvalsPageSize, setApprovalsPageSize] = useState(10);
+  const [approvalsTotalCount, setApprovalsTotalCount] = useState(0);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterSubtype, setFilterSubtype] = useState<string>('all');
+  const [approvalsSearchQuery, setApprovalsSearchQuery] = useState('');
+  const [debouncedApprovalsSearchQuery, setDebouncedApprovalsSearchQuery] = useState('');
+
+  // Roles tab pagination & filters
+  const [rolesPage, setRolesPage] = useState(1);
+  const [rolesPageSize, setRolesPageSize] = useState(10);
+  const [rolesTotalCount, setRolesTotalCount] = useState(0);
+  const [rolesSearchQuery, setRolesSearchQuery] = useState('');
+  const [debouncedRolesSearchQuery, setDebouncedRolesSearchQuery] = useState('');
+  const [rolesFilterType, setRolesFilterType] = useState<string>('all');
+  const [rolesFilterSubtype, setRolesFilterSubtype] = useState<string>('all');
+
+  // App Governance tab pagination & filters
+  const [appGovPage, setAppGovPage] = useState(1);
+  const [appGovPageSize, setAppGovPageSize] = useState(10);
+  const [appGovTotalCount, setAppGovTotalCount] = useState(0);
+  const [appGovSearchQuery, setAppGovSearchQuery] = useState('');
+  const [debouncedAppGovSearchQuery, setDebouncedAppGovSearchQuery] = useState('');
+
+  // Audit tab pagination & filters
+  const [auditPage, setAuditPage] = useState(1);
+  const [auditPageSize, setAuditPageSize] = useState(10);
+  const [auditTotalCount, setAuditTotalCount] = useState(0);
+  const [auditSearchQuery, setAuditSearchQuery] = useState('');
+  const [debouncedAuditSearchQuery, setDebouncedAuditSearchQuery] = useState('');
   
   // Modal / Context states for Rejection or Suspension Reason
   const [reasonModalOpen, setReasonModalOpen] = useState(false);
@@ -117,10 +151,66 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   // Determine if actor has rights to edit/approve profiles (admin or verifier only)
   const canManageProfiles = isAdmin || isVerifier;
 
-  // Load baseline data on mount
+  // Filter handlers
+  const handleFilterStatusChange = (status: string) => {
+    setFilterStatus(status);
+    setApprovalsPage(1);
+  };
+
+  const handleFilterTypeChange = (type: string) => {
+    setFilterType(type);
+    setFilterSubtype('all');
+    setApprovalsPage(1);
+  };
+
+  const handleFilterSubtypeChange = (subtype: string) => {
+    setFilterSubtype(subtype);
+    setApprovalsPage(1);
+  };
+
+  const handleRolesFilterTypeChange = (type: string) => {
+    setRolesFilterType(type);
+    setRolesFilterSubtype('all');
+    setRolesPage(1);
+  };
+
+  const handleRolesFilterSubtypeChange = (subtype: string) => {
+    setRolesFilterSubtype(subtype);
+    setRolesPage(1);
+  };
+
+  // Debounce effects
   useEffect(() => {
-    fetchBaselineData();
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedApprovalsSearchQuery(approvalsSearchQuery);
+      setApprovalsPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [approvalsSearchQuery]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedRolesSearchQuery(rolesSearchQuery);
+      setRolesPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [rolesSearchQuery]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedAppGovSearchQuery(appGovSearchQuery);
+      setAppGovPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [appGovSearchQuery]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedAuditSearchQuery(auditSearchQuery);
+      setAuditPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [auditSearchQuery]);
 
   // Redirect to approvals tab if permissions load and user is not admin but viewing admin-only tabs
   useEffect(() => {
@@ -131,60 +221,285 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     }
   }, [isAdmin, permLoading, activeTab]);
 
-  const fetchBaselineData = async () => {
+  const fetchStaticData = async () => {
     try {
-      setLoading(true);
-      // 1. Fetch Profiles that have completed onboarding (i.e. participant_type is not null)
-      const { data: pData } = await supabase
-        .from('profiles')
-        .select('*')
-        .not('participant_type', 'is', null)
-        .order('created_at', { ascending: false });
-      setProfiles(pData || []);
-
-      // 2. Fetch Global Roles
-      const { data: rData } = await supabase
-        .from('user_roles')
-        .select('*');
-      setUserRoles(rData || []);
-
-      // 3. Fetch applications registry
-      const { data: appData } = await supabase
-        .from('applications')
-        .select('*');
+      const { data: appData } = await supabase.from('applications').select('*');
       setApplications(appData || []);
 
-      // 4. Fetch application roles/templates
-      const { data: roleTemplates } = await supabase
-        .from('app_roles')
-        .select('*');
+      const { data: roleTemplates } = await supabase.from('app_roles').select('*');
       setAppRoles(roleTemplates || []);
-
-      // 5. Fetch user assigned app roles
-      const { data: uarData } = await supabase
-        .from('user_app_roles')
-        .select('*');
-      setUserAppRoles(uarData || []);
-
-      // 6. Fetch Governance Events (Audit Log)
-      const { data: evData } = await supabase
-        .from('governance_events')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      const mappedEvents = (evData || []).map(ev => ({
-        ...ev,
-        actor_email: ev.metadata?.actor_email || 'System',
-        target_email: ev.metadata?.target_email || 'Resident'
-      }));
-      setGovernanceEvents(mappedEvents);
-
     } catch (err) {
-      console.error('Failed to load dashboard data:', err);
+      console.error('Failed to load static admin data:', err);
+    }
+  };
+
+  const fetchApprovalsTab = async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('profiles')
+        .select('*', { count: 'exact' })
+        .not('participant_type', 'is', null);
+
+      if (filterStatus !== 'all') {
+        query = query.eq('approval_status', filterStatus);
+      }
+      if (filterType !== 'all') {
+        query = query.eq('participant_type', filterType);
+      }
+      if (filterSubtype !== 'all') {
+        query = query.eq('resident_subtype', filterSubtype);
+      }
+
+      if (debouncedApprovalsSearchQuery) {
+        query = query.or(`full_name.ilike.%${debouncedApprovalsSearchQuery}%,email.ilike.%${debouncedApprovalsSearchQuery}%,house_number.ilike.%${debouncedApprovalsSearchQuery}%`);
+      }
+
+      const from = (approvalsPage - 1) * approvalsPageSize;
+      const to = from + approvalsPageSize - 1;
+
+      const { data, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      setProfiles(data || []);
+      setApprovalsTotalCount(count || 0);
+
+      // Fetch audit logs contextually for visible profiles
+      if (data && data.length > 0) {
+        const userIds = data.map(p => p.id);
+        const { data: evData, error: evError } = await supabase
+          .from('governance_events')
+          .select('*')
+          .in('target_user_id', userIds)
+          .order('created_at', { ascending: false });
+
+        if (!evError && evData) {
+          const mappedEvents = evData.map(ev => ({
+            ...ev,
+            actor_email: ev.metadata?.actor_email || 'System',
+            target_email: ev.metadata?.target_email || 'Resident'
+          }));
+          setGovernanceEvents(mappedEvents);
+        } else {
+          setGovernanceEvents([]);
+        }
+      } else {
+        setGovernanceEvents([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch approvals:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchRolesTab = async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('profiles')
+        .select('*', { count: 'exact' })
+        .eq('approval_status', 'approved');
+
+      if (rolesFilterType !== 'all') {
+        query = query.eq('participant_type', rolesFilterType);
+      }
+      if (rolesFilterSubtype !== 'all') {
+        query = query.eq('resident_subtype', rolesFilterSubtype);
+      }
+
+      if (debouncedRolesSearchQuery) {
+        query = query.or(`full_name.ilike.%${debouncedRolesSearchQuery}%,email.ilike.%${debouncedRolesSearchQuery}%,house_number.ilike.%${debouncedRolesSearchQuery}%`);
+      }
+
+      const from = (rolesPage - 1) * rolesPageSize;
+      const to = from + rolesPageSize - 1;
+
+      const { data, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      setProfiles(data || []);
+      setRolesTotalCount(count || 0);
+
+      if (data && data.length > 0) {
+        const userIds = data.map(p => p.id);
+        const { data: rData, error: rError } = await supabase
+          .from('user_roles')
+          .select('*')
+          .in('user_id', userIds);
+
+        if (!rError && rData) {
+          setUserRoles(rData || []);
+        } else {
+          setUserRoles([]);
+        }
+      } else {
+        setUserRoles([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch roles:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAppGovTab = async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('profiles')
+        .select('*', { count: 'exact' })
+        .eq('approval_status', 'approved');
+
+      if (debouncedAppGovSearchQuery) {
+        query = query.or(`full_name.ilike.%${debouncedAppGovSearchQuery}%,email.ilike.%${debouncedAppGovSearchQuery}%,house_number.ilike.%${debouncedAppGovSearchQuery}%`);
+      }
+
+      const from = (appGovPage - 1) * appGovPageSize;
+      const to = from + appGovPageSize - 1;
+
+      const { data, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      setProfiles(data || []);
+      setAppGovTotalCount(count || 0);
+
+      // Auto select first user on list if none is selected
+      if (data && data.length > 0 && !selectedProfileId) {
+        setSelectedProfileId(data[0].id);
+      }
+    } catch (err) {
+      console.error('Failed to fetch app governance users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserAppRoles = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_app_roles')
+        .select('*')
+        .eq('user_id', userId);
+      if (error) throw error;
+      setUserAppRoles(data || []);
+    } catch (err) {
+      console.error('Failed to fetch user app roles:', err);
+    }
+  };
+
+  const fetchAuditTab = async () => {
+    try {
+      setLoading(true);
+      let query = supabase
+        .from('governance_events')
+        .select('*', { count: 'exact' });
+
+      if (debouncedAuditSearchQuery) {
+        query = query.or(`action.ilike.%${debouncedAuditSearchQuery}%,reason.ilike.%${debouncedAuditSearchQuery}%,metadata->>actor_email.ilike.%${debouncedAuditSearchQuery}%,metadata->>target_email.ilike.%${debouncedAuditSearchQuery}%`);
+      }
+
+      const from = (auditPage - 1) * auditPageSize;
+      const to = from + auditPageSize - 1;
+
+      const { data, count, error } = await query
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+
+      const mappedEvents = (data || []).map(ev => ({
+        ...ev,
+        actor_email: ev.metadata?.actor_email || 'System',
+        target_email: ev.metadata?.target_email || 'Resident'
+      }));
+      setAuditLogs(mappedEvents);
+      setAuditTotalCount(count || 0);
+    } catch (err) {
+      console.error('Failed to fetch audit logs:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshActiveTab = async () => {
+    if (activeTab === 'approvals') {
+      await fetchApprovalsTab();
+    } else if (activeTab === 'roles') {
+      await fetchRolesTab();
+    } else if (activeTab === 'app_governance') {
+      await fetchAppGovTab();
+      if (selectedProfileId) {
+        await fetchUserAppRoles(selectedProfileId);
+      }
+    } else if (activeTab === 'audit') {
+      await fetchAuditTab();
+    }
+  };
+
+  // Run on mount
+  useEffect(() => {
+    fetchStaticData();
+  }, []);
+
+  // Sync tab loading
+  useEffect(() => {
+    if (activeTab === 'approvals') {
+      fetchApprovalsTab();
+    }
+  }, [activeTab, approvalsPage, approvalsPageSize, debouncedApprovalsSearchQuery, filterStatus, filterType, filterSubtype]);
+
+  useEffect(() => {
+    if (activeTab === 'roles') {
+      fetchRolesTab();
+    }
+  }, [activeTab, rolesPage, rolesPageSize, debouncedRolesSearchQuery, rolesFilterType, rolesFilterSubtype]);
+
+  useEffect(() => {
+    if (activeTab === 'app_governance') {
+      fetchAppGovTab();
+    }
+  }, [activeTab, appGovPage, appGovPageSize, debouncedAppGovSearchQuery]);
+
+  // Sync activeProfileDetails and userAppRoles when selected user changes
+  useEffect(() => {
+    if (activeTab === 'app_governance' && selectedProfileId) {
+      fetchUserAppRoles(selectedProfileId);
+      const found = profiles.find(p => p.id === selectedProfileId);
+      if (found) {
+        setActiveProfileDetails(found);
+      } else {
+        const fetchActiveProfileDetails = async () => {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', selectedProfileId)
+            .single();
+          if (!error && data) {
+            setActiveProfileDetails(data);
+          }
+        };
+        fetchActiveProfileDetails();
+      }
+    } else {
+      setActiveProfileDetails(null);
+    }
+  }, [activeTab, selectedProfileId, profiles]);
+
+  useEffect(() => {
+    if (activeTab === 'audit') {
+      fetchAuditTab();
+    }
+  }, [activeTab, auditPage, auditPageSize, debouncedAuditSearchQuery]);
 
   // Helper to log audit event to governance_events
   const logGovernanceAction = async (
@@ -316,7 +631,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       );
 
       setEditingProfileId(null);
-      await fetchBaselineData();
+      await refreshActiveTab();
     } catch (err: any) {
       console.error(err);
       setEditError(err.message || 'Failed to save changes.');
@@ -366,7 +681,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       await logGovernanceAction(profile.id, 'approved_resident', 'Verification check passed', profile.email);
       showToastBanner('Resident globally approved successfully', 'success');
-      await fetchBaselineData();
+      await refreshActiveTab();
     } catch (err: any) {
       showToastBanner(err.message || 'Approval failed', 'error');
     } finally {
@@ -418,7 +733,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       );
 
       showToastBanner(`Resident successfully ${action}ed`, 'success');
-      await fetchBaselineData();
+      await refreshActiveTab();
     } catch (err: any) {
       showToastBanner(err.message || 'Operation failed', 'error');
     } finally {
@@ -440,7 +755,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       await logGovernanceAction(targetUserId, `assigned_global_role:${role}`, 'Elevated platform privileges', targetEmail);
       showToastBanner(`Elevated privilege to global ${role}`, 'success');
-      await fetchBaselineData();
+      await refreshActiveTab();
     } catch (err: any) {
       showToastBanner(err.message || 'Role assignment failed', 'error');
     } finally {
@@ -462,7 +777,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       await logGovernanceAction(targetUserId, `removed_global_role:${role}`, 'Revoked global privilege', targetEmail);
       showToastBanner(`Revoked global role: ${role}`, 'success');
-      await fetchBaselineData();
+      await refreshActiveTab();
     } catch (err: any) {
       showToastBanner(err.message || 'Role removal failed', 'error');
     } finally {
@@ -523,7 +838,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         showToastBanner(`Revoked all access to ${app.name}`, 'success');
       }
 
-      await fetchBaselineData();
+      await refreshActiveTab();
     } catch (err: any) {
       showToastBanner(err.message || 'Template mapping failed', 'error');
     } finally {
@@ -538,16 +853,101 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Filtering
-  const filteredProfiles = profiles.filter(p => {
-    const searchString = `${p.full_name || ''} ${p.email || ''} ${p.house_number || ''}`.toLowerCase();
-    return searchString.includes(searchQuery.toLowerCase());
-  });
+  const renderPagination = (
+    currentPage: number,
+    pageSize: number,
+    totalCount: number,
+    onPageChange: (page: number) => void,
+    onPageSizeChange: (size: number) => void
+  ) => {
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
+    const from = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const to = Math.min(currentPage * pageSize, totalCount);
 
-  const filteredEvents = governanceEvents.filter(ev => {
-    const searchString = `${ev.action} ${ev.reason || ''} ${ev.actor_email || ''} ${ev.target_email || ''}`.toLowerCase();
-    return searchString.includes(searchQuery.toLowerCase());
-  });
+    return (
+      <div className="pagination-panel" style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: '20px',
+        paddingTop: '16px',
+        borderTop: '1px solid var(--border-color)',
+        flexWrap: 'wrap',
+        gap: '12px'
+      }}>
+        <div style={{ fontSize: '13.5px', color: 'var(--text-secondary)' }}>
+          Showing <strong style={{ color: 'var(--text-primary)' }}>{from}</strong> to{' '}
+          <strong style={{ color: 'var(--text-primary)' }}>{to}</strong> of{' '}
+          <strong style={{ color: 'var(--text-primary)' }}>{totalCount}</strong> records
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              className="search-input"
+              style={{ width: '70px', padding: '4px 8px', margin: 0, fontSize: '13px' }}
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              disabled={currentPage === 1}
+              onClick={() => onPageChange(1)}
+              className="admin-btn secondary"
+              style={{ padding: '6px 12px', margin: 0, minWidth: 'auto' }}
+              title="First Page"
+            >
+              «
+            </button>
+            <button
+              disabled={currentPage === 1}
+              onClick={() => onPageChange(currentPage - 1)}
+              className="admin-btn secondary"
+              style={{ padding: '6px 12px', margin: 0, minWidth: 'auto' }}
+              title="Previous Page"
+            >
+              ‹
+            </button>
+            <span style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0 12px',
+              fontSize: '13.5px',
+              color: 'var(--text-primary)',
+              fontWeight: 600
+            }}>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              disabled={currentPage >= totalPages}
+              onClick={() => onPageChange(currentPage + 1)}
+              className="admin-btn secondary"
+              style={{ padding: '6px 12px', margin: 0, minWidth: 'auto' }}
+              title="Next Page"
+            >
+              ›
+            </button>
+            <button
+              disabled={currentPage >= totalPages}
+              onClick={() => onPageChange(totalPages)}
+              className="admin-btn secondary"
+              style={{ padding: '6px 12px', margin: 0, minWidth: 'auto' }}
+              title="Last Page"
+            >
+              »
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="admin-dashboard-layout animate-fade-in">
@@ -582,7 +982,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       <nav className="admin-nav-tabs">
         {(isAdmin || isVerifier) && (
           <button 
-            onClick={() => { handleTabChange('approvals'); setSearchQuery(''); }}
+            onClick={() => handleTabChange('approvals')}
             className={`admin-tab-btn ${activeTab === 'approvals' ? 'active' : ''}`}
           >
             <Users style={{ width: '16px' }} />
@@ -592,7 +992,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         
         {isAdmin && (
           <button 
-            onClick={() => { handleTabChange('roles'); setSearchQuery(''); }}
+            onClick={() => handleTabChange('roles')}
             className={`admin-tab-btn ${activeTab === 'roles' ? 'active' : ''}`}
           >
             <Shield style={{ width: '16px' }} />
@@ -602,7 +1002,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
         {(isAdmin || isVerifier) && (
           <button 
-            onClick={() => { handleTabChange('app_governance'); setSearchQuery(''); setSelectedProfileId(profiles[0]?.id || null); }}
+            onClick={() => { handleTabChange('app_governance'); setSelectedProfileId(null); }}
             className={`admin-tab-btn ${activeTab === 'app_governance' ? 'active' : ''}`}
           >
             <Database style={{ width: '16px' }} />
@@ -612,7 +1012,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
         {isAdmin && (
           <button 
-            onClick={() => { handleTabChange('audit'); setSearchQuery(''); }}
+            onClick={() => handleTabChange('audit')}
             className={`admin-tab-btn ${activeTab === 'audit' ? 'active' : ''}`}
           >
             <Activity style={{ width: '16px' }} />
@@ -637,17 +1037,65 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               <p>Verify newly registered house numbers and grant baseline community standing.</p>
             </div>
 
-            <div className="search-bar-wrapper">
-              <input 
-                type="text"
-                placeholder="Search by name, email, or house number..."
-                className="search-input"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <div className="toolbar-wrapper" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+              <div className="search-bar-wrapper" style={{ flex: '1', minWidth: '250px', margin: 0 }}>
+                <input 
+                  type="text"
+                  placeholder="Search by name, email, or house number..."
+                  className="search-input"
+                  value={approvalsSearchQuery}
+                  onChange={(e) => setApprovalsSearchQuery(e.target.value)}
+                  style={{ margin: 0 }}
+                />
+              </div>
+              
+              <div className="filters-group" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div className="filter-select-wrapper">
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => handleFilterStatusChange(e.target.value)}
+                    className="search-input"
+                    style={{ width: '150px', margin: 0, padding: '10px 14px' }}
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+
+                <div className="filter-select-wrapper">
+                  <select
+                    value={filterType}
+                    onChange={(e) => handleFilterTypeChange(e.target.value)}
+                    className="search-input"
+                    style={{ width: '150px', margin: 0, padding: '10px 14px' }}
+                  >
+                    <option value="all">All Types</option>
+                    <option value="resident">Resident</option>
+                    <option value="non_resident">Non-Resident</option>
+                  </select>
+                </div>
+
+                {(filterType === 'all' || filterType === 'resident') && (
+                  <div className="filter-select-wrapper">
+                    <select
+                      value={filterSubtype}
+                      onChange={(e) => handleFilterSubtypeChange(e.target.value)}
+                      className="search-input"
+                      style={{ width: '150px', margin: 0, padding: '10px 14px' }}
+                    >
+                      <option value="all">All Subtypes</option>
+                      <option value="owner">Owner</option>
+                      <option value="renter">Renter</option>
+                    </select>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {filteredProfiles.length === 0 ? (
+            {profiles.length === 0 ? (
               <div className="empty-state">
                 <Users className="empty-icon" />
                 <p>No residents match the active search criteria.</p>
@@ -665,7 +1113,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProfiles.map(profile => {
+                    {profiles.map(profile => {
                       const { stateEvent, houseEditEvent, whatsappEditEvent } = getProfileAuditDetails(profile.id);
                       return (
                         <tr key={profile.id}>
@@ -916,6 +1364,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     })}
                   </tbody>
                 </table>
+                {renderPagination(approvalsPage, approvalsPageSize, approvalsTotalCount, setApprovalsPage, setApprovalsPageSize)}
               </div>
             )}
           </div>
@@ -928,98 +1377,149 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               <p>Elevate verified community members to manage approvals, settings, or platform security.</p>
             </div>
 
-            <div className="admin-table-container">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>User Info</th>
-                    <th>WhatsApp Contact</th>
-                    <th>Global Privileges</th>
-                    <th style={{ textAlign: 'right' }}>Manage Privilege</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {profiles.filter(p => p.approval_status === 'approved').map(profile => {
-                    const roles = userRoles.filter(ur => ur.user_id === profile.id).map(r => r.role);
-                    
-                    return (
-                      <tr key={profile.id}>
-                        <td>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous User'}</span>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
-                              <span className={`role-tag ${profile.participant_type === 'non_resident' ? 'status-verifier' : 'status-approved'}`} style={{ fontSize: '9px', padding: '1px 6px' }}>
-                                {profile.participant_type === 'non_resident' 
-                                  ? getAffiliationLabel(profile.requested_affiliation || 'Non-Resident')
-                                  : `Resident (${profile.resident_subtype || 'owner'})`}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)' }}>-</span>}</td>
-                        <td>
-                          <div className="role-tags">
-                            {roles.length === 0 ? (
-                              <span className="role-tag status-approved" style={{ color: 'var(--text-muted)', border: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>
-                                {profile.participant_type === 'non_resident' ? 'Standard Non-Resident' : 'Standard Resident'}
-                              </span>
-                            ) : (
-                              roles.map(r => (
-                                <span key={r} className="role-tag status-admin" style={{ 
-                                  backgroundColor: r === 'admin' ? 'var(--primary-glow)' : 'var(--success-bg)',
-                                  borderColor: r === 'admin' ? 'var(--primary)' : 'var(--success-border)',
-                                  color: r === 'admin' ? 'var(--primary)' : 'var(--success)'
-                                }}>
-                                  {r === 'admin' ? 'Super Admin' : r.replace('_', ' ')}
-                                </span>
-                              ))
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          <div className="admin-action-group" style={{ justifyContent: 'flex-end' }}>
-                            {/* Toggle Verifier */}
-                            {roles.includes('resident_verifier') ? (
-                              <button 
-                                onClick={() => handleRemoveGlobalRole(profile.id, 'resident_verifier', profile.email)}
-                                className="admin-btn danger"
-                              >
-                                <span>Demote Verifier</span>
-                              </button>
-                            ) : (
-                              <button 
-                                onClick={() => handleAssignGlobalRole(profile.id, 'resident_verifier', profile.email)}
-                                className="admin-btn secondary"
-                              >
-                                <span>Promote Verifier</span>
-                              </button>
-                            )}
+            <div className="toolbar-wrapper" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+              <div className="search-bar-wrapper" style={{ flex: '1', minWidth: '250px', margin: 0 }}>
+                <input 
+                  type="text"
+                  placeholder="Search by name, email, or house number..."
+                  className="search-input"
+                  value={rolesSearchQuery}
+                  onChange={(e) => setRolesSearchQuery(e.target.value)}
+                  style={{ margin: 0 }}
+                />
+              </div>
+              
+              <div className="filters-group" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div className="filter-select-wrapper">
+                  <select
+                    value={rolesFilterType}
+                    onChange={(e) => handleRolesFilterTypeChange(e.target.value)}
+                    className="search-input"
+                    style={{ width: '150px', margin: 0, padding: '10px 14px' }}
+                  >
+                    <option value="all">All Types</option>
+                    <option value="resident">Resident</option>
+                    <option value="non_resident">Non-Resident</option>
+                  </select>
+                </div>
 
-                            {/* Toggle Moderator */}
-                            {roles.includes('platform_moderator') ? (
-                              <button 
-                                onClick={() => handleRemoveGlobalRole(profile.id, 'platform_moderator', profile.email)}
-                                className="admin-btn danger"
-                              >
-                                <span>Demote Moderator</span>
-                              </button>
-                            ) : (
-                              <button 
-                                onClick={() => handleAssignGlobalRole(profile.id, 'platform_moderator', profile.email)}
-                                className="admin-btn secondary"
-                              >
-                                <span>Promote Moderator</span>
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                {(rolesFilterType === 'all' || rolesFilterType === 'resident') && (
+                  <div className="filter-select-wrapper">
+                    <select
+                      value={rolesFilterSubtype}
+                      onChange={(e) => handleRolesFilterSubtypeChange(e.target.value)}
+                      className="search-input"
+                      style={{ width: '150px', margin: 0, padding: '10px 14px' }}
+                    >
+                      <option value="all">All Subtypes</option>
+                      <option value="owner">Owner</option>
+                      <option value="renter">Renter</option>
+                    </select>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {profiles.length === 0 ? (
+              <div className="empty-state">
+                <Shield className="empty-icon" />
+                <p>No approved users match the active search criteria.</p>
+              </div>
+            ) : (
+              <div className="admin-table-container">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>User Info</th>
+                      <th>WhatsApp Contact</th>
+                      <th>Global Privileges</th>
+                      <th style={{ textAlign: 'right' }}>Manage Privilege</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profiles.map(profile => {
+                      const roles = userRoles.filter(ur => ur.user_id === profile.id).map(r => r.role);
+                      
+                      return (
+                        <tr key={profile.id}>
+                          <td>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous User'}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
+                              <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
+                                <span className={`role-tag ${profile.participant_type === 'non_resident' ? 'status-verifier' : 'status-approved'}`} style={{ fontSize: '9px', padding: '1px 6px' }}>
+                                  {profile.participant_type === 'non_resident' 
+                                    ? getAffiliationLabel(profile.requested_affiliation || 'Non-Resident')
+                                    : `Resident (${profile.resident_subtype || 'owner'})`}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)' }}>-</span>}</td>
+                          <td>
+                            <div className="role-tags">
+                              {roles.length === 0 ? (
+                                <span className="role-tag status-approved" style={{ color: 'var(--text-muted)', border: '1px solid var(--border-color)', backgroundColor: 'transparent' }}>
+                                  {profile.participant_type === 'non_resident' ? 'Standard Non-Resident' : 'Standard Resident'}
+                                </span>
+                              ) : (
+                                roles.map(r => (
+                                  <span key={r} className="role-tag status-admin" style={{ 
+                                    backgroundColor: r === 'admin' ? 'var(--primary-glow)' : 'var(--success-bg)',
+                                    borderColor: r === 'admin' ? 'var(--primary)' : 'var(--success-border)',
+                                    color: r === 'admin' ? 'var(--primary)' : 'var(--success)'
+                                  }}>
+                                    {r === 'admin' ? 'Super Admin' : r.replace('_', ' ')}
+                                  </span>
+                                ))
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="admin-action-group" style={{ justifyContent: 'flex-end' }}>
+                              {/* Toggle Verifier */}
+                              {roles.includes('resident_verifier') ? (
+                                <button 
+                                  onClick={() => handleRemoveGlobalRole(profile.id, 'resident_verifier', profile.email)}
+                                  className="admin-btn danger"
+                                >
+                                  <span>Demote Verifier</span>
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={() => handleAssignGlobalRole(profile.id, 'resident_verifier', profile.email)}
+                                  className="admin-btn secondary"
+                                >
+                                  <span>Promote Verifier</span>
+                                </button>
+                              )}
+
+                              {/* Toggle Moderator */}
+                              {roles.includes('platform_moderator') ? (
+                                <button 
+                                  onClick={() => handleRemoveGlobalRole(profile.id, 'platform_moderator', profile.email)}
+                                  className="admin-btn danger"
+                                >
+                                  <span>Demote Moderator</span>
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={() => handleAssignGlobalRole(profile.id, 'platform_moderator', profile.email)}
+                                  className="admin-btn secondary"
+                                >
+                                  <span>Promote Moderator</span>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {renderPagination(rolesPage, rolesPageSize, rolesTotalCount, setRolesPage, setRolesPageSize)}
+              </div>
+            )}
           </div>
         )}
 
@@ -1038,28 +1538,65 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     type="text" 
                     placeholder="Search approved residents..." 
                     className="search-input"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={appGovSearchQuery}
+                    onChange={(e) => setAppGovSearchQuery(e.target.value)}
+                    style={{ margin: 0 }}
                   />
                 </div>
-                {profiles
-                  .filter(p => p.approval_status === 'approved' && `${p.full_name || ''} ${p.email || ''}`.toLowerCase().includes(searchQuery.toLowerCase()))
-                  .map(p => (
-                    <div 
-                      key={p.id}
-                      onClick={() => setSelectedProfileId(p.id)}
-                      className={`gov-user-item ${selectedProfileId === p.id ? 'active' : ''}`}
-                    >
-                      <span style={{ fontWeight: 600, display: 'block', fontSize: '13.5px' }}>{p.full_name}</span>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{p.email}</span>
+                <div style={{ flex: 1, overflowY: 'auto' }}>
+                  {profiles.length === 0 ? (
+                    <div style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+                      No approved residents found.
                     </div>
-                  ))}
+                  ) : (
+                    profiles.map(p => (
+                      <div 
+                        key={p.id}
+                        onClick={() => setSelectedProfileId(p.id)}
+                        className={`gov-user-item ${selectedProfileId === p.id ? 'active' : ''}`}
+                      >
+                        <span style={{ fontWeight: 600, display: 'block', fontSize: '13.5px' }}>{p.full_name}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{p.email}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                {/* Pagination Controls */}
+                <div style={{ 
+                  padding: '12px', 
+                  borderTop: '1px solid var(--border-color)', 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  backgroundColor: 'var(--bg-primary)' 
+                }}>
+                  <button
+                    disabled={appGovPage === 1}
+                    onClick={() => setAppGovPage(p => Math.max(1, p - 1))}
+                    className="admin-btn secondary"
+                    style={{ padding: '4px 8px', fontSize: '12px', margin: 0, minWidth: 'auto' }}
+                  >
+                    Prev
+                  </button>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    Page {appGovPage} of {Math.ceil(appGovTotalCount / appGovPageSize) || 1}
+                  </span>
+                  <button
+                    disabled={appGovPage * appGovPageSize >= appGovTotalCount}
+                    onClick={() => setAppGovPage(p => p + 1)}
+                    className="admin-btn secondary"
+                    style={{ padding: '4px 8px', fontSize: '12px', margin: 0, minWidth: 'auto' }}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
 
               {/* Right Column: App Access Matrix */}
               <div className="gov-detail-panel">
                 {selectedProfileId ? (() => {
-                  const activeProfile = profiles.find(p => p.id === selectedProfileId);
+                  const activeProfile = activeProfileDetails;
                   if (!activeProfile) return null;
 
                   return (
@@ -1163,12 +1700,12 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                 type="text"
                 placeholder="Search audit trail by actor, action, or context..."
                 className="search-input"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={auditSearchQuery}
+                onChange={(e) => setAuditSearchQuery(e.target.value)}
               />
             </div>
 
-            {filteredEvents.length === 0 ? (
+            {auditLogs.length === 0 ? (
               <div className="empty-state">
                 <Activity className="empty-icon" />
                 <p>No audit logging records matched your search query.</p>
@@ -1186,7 +1723,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredEvents.map(ev => (
+                    {auditLogs.map(ev => (
                       <tr key={ev.id}>
                         <td style={{ fontFamily: 'var(--font-mono)', fontSize: '11.5px', whiteSpace: 'nowrap' }}>
                           {new Date(ev.created_at).toLocaleString()}
@@ -1212,6 +1749,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     ))}
                   </tbody>
                 </table>
+                {renderPagination(auditPage, auditPageSize, auditTotalCount, setAuditPage, setAuditPageSize)}
               </div>
             )}
           </div>
