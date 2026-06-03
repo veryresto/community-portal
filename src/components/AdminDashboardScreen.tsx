@@ -113,10 +113,12 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
   // App Governance tab pagination & filters
   const [appGovPage, setAppGovPage] = useState(1);
-  const [appGovPageSize] = useState(10);
+  const [appGovPageSize, setAppGovPageSize] = useState(10);
   const [appGovTotalCount, setAppGovTotalCount] = useState(0);
   const [appGovSearchQuery, setAppGovSearchQuery] = useState('');
   const [debouncedAppGovSearchQuery, setDebouncedAppGovSearchQuery] = useState('');
+  const [appGovFilterType, setAppGovFilterType] = useState<string>('all');
+  const [appGovFilterSubtype, setAppGovFilterSubtype] = useState<string>('all');
 
   // Audit tab pagination & filters
   const [auditPage, setAuditPage] = useState(1);
@@ -177,6 +179,17 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   const handleRolesFilterSubtypeChange = (subtype: string) => {
     setRolesFilterSubtype(subtype);
     setRolesPage(1);
+  };
+
+  const handleAppGovFilterTypeChange = (type: string) => {
+    setAppGovFilterType(type);
+    setAppGovFilterSubtype('all');
+    setAppGovPage(1);
+  };
+
+  const handleAppGovFilterSubtypeChange = (subtype: string) => {
+    setAppGovFilterSubtype(subtype);
+    setAppGovPage(1);
   };
 
   // Debounce effects
@@ -357,6 +370,13 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         .select('*', { count: 'exact' })
         .eq('approval_status', 'approved');
 
+      if (appGovFilterType !== 'all') {
+        query = query.eq('participant_type', appGovFilterType);
+      }
+      if (appGovFilterSubtype !== 'all') {
+        query = query.eq('resident_subtype', appGovFilterSubtype);
+      }
+
       if (debouncedAppGovSearchQuery) {
         query = query.or(`full_name.ilike.%${debouncedAppGovSearchQuery}%,email.ilike.%${debouncedAppGovSearchQuery}%,house_number.ilike.%${debouncedAppGovSearchQuery}%`);
       }
@@ -468,7 +488,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     if (activeTab === 'app_governance') {
       fetchAppGovTab();
     }
-  }, [activeTab, appGovPage, appGovPageSize, debouncedAppGovSearchQuery]);
+  }, [activeTab, appGovPage, appGovPageSize, debouncedAppGovSearchQuery, appGovFilterType, appGovFilterSubtype]);
 
   // Sync activeProfileDetails and userAppRoles when selected user changes
   useEffect(() => {
@@ -944,6 +964,92 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               »
             </button>
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCompactPagination = (
+    currentPage: number,
+    pageSize: number,
+    totalCount: number,
+    onPageChange: (page: number) => void,
+    onPageSizeChange: (size: number) => void
+  ) => {
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
+    const from = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const to = Math.min(currentPage * pageSize, totalCount);
+
+    return (
+      <div style={{
+        padding: '12px',
+        borderTop: '1px solid var(--border-color)',
+        backgroundColor: 'var(--bg-primary)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px'
+      }}>
+        {/* Row count summary and dropdown */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+            Showing <strong>{from}</strong>-<strong>{to}</strong> of <strong>{totalCount}</strong>
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Show:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              className="search-input"
+              style={{ width: '60px', padding: '2px 4px', margin: 0, fontSize: '12px' }}
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Navigation arrows */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}>
+          <button
+            disabled={currentPage === 1}
+            onClick={() => onPageChange(1)}
+            className="admin-btn secondary"
+            style={{ padding: '4px 8px', margin: 0, minWidth: 'auto', fontSize: '12px' }}
+            title="First Page"
+          >
+            «
+          </button>
+          <button
+            disabled={currentPage === 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            className="admin-btn secondary"
+            style={{ padding: '4px 8px', margin: 0, minWidth: 'auto', fontSize: '12px' }}
+            title="Previous Page"
+          >
+            ‹
+          </button>
+          <span style={{ fontSize: '12.5px', color: 'var(--text-primary)', fontWeight: 600, padding: '0 8px' }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            className="admin-btn secondary"
+            style={{ padding: '4px 8px', margin: 0, minWidth: 'auto', fontSize: '12px' }}
+            title="Next Page"
+          >
+            ›
+          </button>
+          <button
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(totalPages)}
+            className="admin-btn secondary"
+            style={{ padding: '4px 8px', margin: 0, minWidth: 'auto', fontSize: '12px' }}
+            title="Last Page"
+          >
+            »
+          </button>
         </div>
       </div>
     );
@@ -1533,7 +1639,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
             <div className="gov-layout">
               {/* Left Column: User Selector */}
               <div className="gov-list-panel">
-                <div style={{ padding: '16px', borderBottom: '1px solid var(--border-color)' }}>
+                <div style={{ padding: '16px', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <input 
                     type="text" 
                     placeholder="Search approved residents..." 
@@ -1542,6 +1648,31 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     onChange={(e) => setAppGovSearchQuery(e.target.value)}
                     style={{ margin: 0 }}
                   />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select
+                      value={appGovFilterType}
+                      onChange={(e) => handleAppGovFilterTypeChange(e.target.value)}
+                      className="search-input"
+                      style={{ flex: 1, margin: 0, padding: '6px 10px', fontSize: '13px' }}
+                    >
+                      <option value="all">All Types</option>
+                      <option value="resident">Resident</option>
+                      <option value="non_resident">Non-Resident</option>
+                    </select>
+                    
+                    {(appGovFilterType === 'all' || appGovFilterType === 'resident') && (
+                      <select
+                        value={appGovFilterSubtype}
+                        onChange={(e) => handleAppGovFilterSubtypeChange(e.target.value)}
+                        className="search-input"
+                        style={{ flex: 1, margin: 0, padding: '6px 10px', fontSize: '13px' }}
+                      >
+                        <option value="all">All Subtypes</option>
+                        <option value="owner">Owner</option>
+                        <option value="renter">Renter</option>
+                      </select>
+                    )}
+                  </div>
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto' }}>
                   {profiles.length === 0 ? (
@@ -1563,34 +1694,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                 </div>
                 
                 {/* Pagination Controls */}
-                <div style={{ 
-                  padding: '12px', 
-                  borderTop: '1px solid var(--border-color)', 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  backgroundColor: 'var(--bg-primary)' 
-                }}>
-                  <button
-                    disabled={appGovPage === 1}
-                    onClick={() => setAppGovPage(p => Math.max(1, p - 1))}
-                    className="admin-btn secondary"
-                    style={{ padding: '4px 8px', fontSize: '12px', margin: 0, minWidth: 'auto' }}
-                  >
-                    Prev
-                  </button>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    Page {appGovPage} of {Math.ceil(appGovTotalCount / appGovPageSize) || 1}
-                  </span>
-                  <button
-                    disabled={appGovPage * appGovPageSize >= appGovTotalCount}
-                    onClick={() => setAppGovPage(p => p + 1)}
-                    className="admin-btn secondary"
-                    style={{ padding: '4px 8px', fontSize: '12px', margin: 0, minWidth: 'auto' }}
-                  >
-                    Next
-                  </button>
-                </div>
+                {renderCompactPagination(appGovPage, appGovPageSize, appGovTotalCount, setAppGovPage, setAppGovPageSize)}
               </div>
 
               {/* Right Column: App Access Matrix */}
