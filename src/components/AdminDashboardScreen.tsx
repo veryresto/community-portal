@@ -113,7 +113,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
   // App Governance tab pagination & filters
   const [appGovPage, setAppGovPage] = useState(1);
-  const [appGovPageSize, setAppGovPageSize] = useState(10);
+  const [appGovPageSize] = useState(10);
   const [appGovTotalCount, setAppGovTotalCount] = useState(0);
   const [appGovSearchQuery, setAppGovSearchQuery] = useState('');
   const [debouncedAppGovSearchQuery, setDebouncedAppGovSearchQuery] = useState('');
