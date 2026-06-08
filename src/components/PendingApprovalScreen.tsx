@@ -377,11 +377,11 @@ export function PendingApprovalScreen() {
                       placeholder="e.g., Z10A"
                       value={houseNumber}
                       onChange={(e) => setHouseNumber(e.target.value)}
-                      maxLength={25}
+                      maxLength={4}
                       required
                       disabled={loading}
                     />
-                    <span className="input-hint">Maximum 25 characters.</span>
+                    <span className="input-hint">Maximum 4 characters.</span>
                   </div>
                 </div>
               )}
