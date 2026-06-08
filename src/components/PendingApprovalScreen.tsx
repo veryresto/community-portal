@@ -43,7 +43,7 @@ export function PendingApprovalScreen() {
 
         if (data) {
           // Check if onboarding details have actually been submitted
-          const hasSubmitted = 
+          const hasSubmitted =
             (data.participant_type === 'resident' && data.house_number) ||
             (data.participant_type === 'non_resident' && data.requested_affiliation);
 
@@ -184,7 +184,7 @@ export function PendingApprovalScreen() {
     <div className="portal-container">
       {/* Decorative Blur Accents */}
       <div className="glow-accent glow-success"></div>
-      
+
       {/* Toast Alert */}
       {toastMessage && (
         <div className={`toast-overlay ${toastMessage.type} animate-slide-up`}>
@@ -222,13 +222,13 @@ export function PendingApprovalScreen() {
               <p className="summary-desc">
                 Your registration is currently under review by our community administrators. We will contact you or update your account status shortly.
               </p>
-              
+
               <div className="saved-details">
                 <div className="detail-row" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
                   <span className="row-label">Classification:</span>
                   <span className="row-value" style={{ textTransform: 'capitalize' }}>
-                    {savedParticipantType === 'resident' 
-                      ? `Resident (${savedResidentSubtype || ''})` 
+                    {savedParticipantType === 'resident'
+                      ? `Resident (${savedResidentSubtype || ''})`
                       : 'Non-Resident'}
                   </span>
                 </div>
@@ -374,7 +374,7 @@ export function PendingApprovalScreen() {
                     <input
                       id="houseNumber"
                       type="text"
-                      placeholder="e.g., Block A, No. 12"
+                      placeholder="e.g., Z10A"
                       value={houseNumber}
                       onChange={(e) => setHouseNumber(e.target.value)}
                       maxLength={25}
