@@ -1283,41 +1283,22 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                   <div>
                                     <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Affiliation</label>
                                     <select
-                                      value={
-                                        AFFILIATION_OPTIONS.map(o => o.value).filter(v => v !== 'other').includes(editForm.requested_affiliation)
-                                          ? editForm.requested_affiliation
-                                          : editForm.requested_affiliation ? 'other' : ''
-                                      }
+                                      value={editForm.requested_affiliation || ''}
                                       onChange={(e) => {
                                         const val = e.target.value;
                                         setEditForm(prev => ({
                                           ...prev,
-                                          requested_affiliation: val === 'other' ? '' : val
+                                          requested_affiliation: val
                                         }));
                                       }}
                                       className="search-input"
-                                      style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: '0 0 8px 0' }}
+                                      style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
                                     >
                                       <option value="">-- Select --</option>
                                       {AFFILIATION_OPTIONS.map(opt => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                                       ))}
                                     </select>
-                                    
-                                    {(!AFFILIATION_OPTIONS.map(o => o.value).filter(v => v !== 'other').includes(editForm.requested_affiliation) ||
-                                      editForm.requested_affiliation === '') && (
-                                      <div>
-                                        <label style={{ fontSize: '10px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Specify Details</label>
-                                        <input
-                                          type="text"
-                                          className="search-input"
-                                          style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
-                                          placeholder="Specify affiliation"
-                                          value={editForm.requested_affiliation}
-                                          onChange={(e) => setEditForm(prev => ({ ...prev, requested_affiliation: e.target.value }))}
-                                        />
-                                      </div>
-                                    )}
                                   </div>
                                 )}
                                 {editError && <span style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</span>}

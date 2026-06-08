@@ -4,12 +4,10 @@ export interface AffiliationOption {
 }
 
 export const AFFILIATION_OPTIONS: AffiliationOption[] = [
-  { value: 'security', label: 'Security Staff' },
   { value: 'secretariat', label: 'Secretariat Admin' },
-  { value: 'vendor', label: 'Vendor / Contractor' },
-  { value: 'assistant', label: 'Resident\'s Assistant' },
-  { value: 'contractor', label: 'Independent Contractor' },
-  { value: 'other', label: 'Other / Support Staff' }
+  { value: 'security', label: 'Security Staff' },
+  { value: 'vendor', label: 'Vendor / Provider' },
+  { value: 'assistant', label: 'Resident\'s Assistant' }
 ];
 
 export const getAffiliationLabel = (value: string): string => {

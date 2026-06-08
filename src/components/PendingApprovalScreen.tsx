@@ -11,7 +11,6 @@ export function PendingApprovalScreen() {
   const [houseNumber, setHouseNumber] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [requestedAffiliation, setRequestedAffiliation] = useState('');
-  const [otherAffiliation, setOtherAffiliation] = useState('');
 
   const [savedParticipantType, setSavedParticipantType] = useState<string | null>(null);
   const [savedResidentSubtype, setSavedResidentSubtype] = useState<string | null>(null);
@@ -68,13 +67,7 @@ export function PendingApprovalScreen() {
             setWhatsappNumber(data.whatsapp_number);
           }
           if (data.requested_affiliation) {
-            const standardKeys = AFFILIATION_OPTIONS.map(o => o.value).filter(v => v !== 'other');
-            if (standardKeys.includes(data.requested_affiliation)) {
-              setRequestedAffiliation(data.requested_affiliation);
-            } else {
-              setRequestedAffiliation('other');
-              setOtherAffiliation(data.requested_affiliation);
-            }
+            setRequestedAffiliation(data.requested_affiliation);
           }
         }
       } catch (err: any) {
@@ -109,10 +102,6 @@ export function PendingApprovalScreen() {
         showToast('Affiliation selection is required', 'error');
         return;
       }
-      if (requestedAffiliation === 'other' && !otherAffiliation.trim()) {
-        showToast('Please specify your affiliation', 'error');
-        return;
-      }
     }
 
     if (whatsappNumber && whatsappNumber.length > 25) {
@@ -122,7 +111,7 @@ export function PendingApprovalScreen() {
 
     setLoading(true);
     const isFirstSubmission = !savedParticipantType;
-    const finalAffiliation = requestedAffiliation === 'other' ? otherAffiliation.trim() : requestedAffiliation;
+    const finalAffiliation = requestedAffiliation;
 
     try {
       // 1. Update profiles table
@@ -419,23 +408,7 @@ export function PendingApprovalScreen() {
                     </select>
                   </div>
 
-                  {requestedAffiliation === 'other' && (
-                    <div className="form-group animate-slide-up">
-                      <label htmlFor="otherAffiliation">
-                        <span>Specify Affiliation <span className="required-star">*</span></span>
-                      </label>
-                      <input
-                        id="otherAffiliation"
-                        type="text"
-                        placeholder="e.g., Garden Maintenance, Electrician"
-                        value={otherAffiliation}
-                        onChange={(e) => setOtherAffiliation(e.target.value)}
-                        maxLength={25}
-                        required
-                        disabled={loading}
-                      />
-                    </div>
-                  )}
+
                 </div>
               )}
 
