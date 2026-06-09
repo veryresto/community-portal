@@ -109,5 +109,14 @@
         "description": "Instant official resident correspondence generation and custom PDF permit drafting tools."
       }
     }
+  },
+  "rejected": {
+    "access_denied": "Access Denied",
+    "title": "Registration Rejected",
+    "hello": "Hello, {name}",
+    "alert_title": "Your account registration was rejected by an administrator.",
+    "alert_desc": "Your credentials have been checked but do not match our authorized community member directory, or your submitted house verification could not be confirmed.",
+    "appeal_notice": "If you believe this is a mistake or wish to appeal this decision, please reach out to the community association administration office directly.",
+    "sign_out": "Sign Out"
   }
 }

@@ -109,5 +109,14 @@
         "description": "Pembuatan surat pengantar warga instan dan draf surat izin format PDF."
       }
     }
+  },
+  "rejected": {
+    "access_denied": "Akses Ditolak",
+    "title": "Pendaftaran Ditolak",
+    "hello": "Halo, {name}",
+    "alert_title": "Pendaftaran akun Anda ditolak oleh pengelola.",
+    "alert_desc": "Kredensial Anda telah diperiksa tetapi tidak cocok dengan daftar anggota warga resmi kami, atau verifikasi nomor rumah yang Anda ajukan tidak dapat dikonfirmasi.",
+    "appeal_notice": "Jika Anda yakin ini adalah kesalahan atau ingin mengajukan banding atas keputusan ini, silakan hubungi kantor sekretariat/pengelola lingkungan secara langsung.",
+    "sign_out": "Keluar Akun"
   }
 }
