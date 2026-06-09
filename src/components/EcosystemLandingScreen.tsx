@@ -5,6 +5,7 @@ import { usePermissions } from '../hooks/usePermissions';
 import { supabase } from '../lib/supabase';
 import { AdminDashboardScreen } from './AdminDashboardScreen';
 import { getAffiliationLabel } from '../constants/affiliations';
+import { t } from '../lib/i18n';
 
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
@@ -67,7 +68,7 @@ export function EcosystemLandingScreen() {
   const apps = [
     {
       name: 'IPL Finder',
-      description: 'Search, index, and manage bank e-statements and CSV records. Active document audit trail.',
+      description: t('landing.apps.ipl_finder.description'),
       icon: FileText,
       status: 'active',
       badgeText: 'Live',
@@ -75,7 +76,7 @@ export function EcosystemLandingScreen() {
     },
     {
       name: 'Rekap Viewer',
-      description: 'Fly.io cached backend display for Sheets logs, reports, and real-time community summaries.',
+      description: t('landing.apps.rekap_viewer.description'),
       icon: LayoutGrid,
       status: 'active',
       badgeText: 'Live',
@@ -83,18 +84,18 @@ export function EcosystemLandingScreen() {
     },
     {
       name: 'Kas Management',
-      description: 'Decentralized cashbook treasury, monthly billing tracking, and balance sheet reporting.',
+      description: t('landing.apps.kas_management.description'),
       icon: HelpCircle,
       status: 'planned',
-      badgeText: 'Planned',
+      badgeText: t('landing.coming_soon'),
       link: null,
     },
     {
       name: 'Surat Administration',
-      description: 'Instant official resident correspondence generation and custom PDF permit drafting tools.',
+      description: t('landing.apps.surat_admin.description'),
       icon: HelpCircle,
       status: 'planned',
-      badgeText: 'Planned',
+      badgeText: t('landing.coming_soon'),
       link: null,
     },
   ];
@@ -116,10 +117,10 @@ export function EcosystemLandingScreen() {
         <div className="header-brand">
           <div className="brand-badge">
             <CheckCircle2 className="badge-logo" />
-            <span>Identity Active</span>
+            <span>{t('landing.identity_active')}</span>
           </div>
           <h1>Veryresto Hub</h1>
-          <p>Central Community App Dashboard</p>
+          <p>{t('landing.dashboard_subtitle')}</p>
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -135,13 +136,13 @@ export function EcosystemLandingScreen() {
               }}
             >
               <Shield className="btn-icon" />
-              <span>Admin Center</span>
+              <span>{t('landing.admin_center')}</span>
             </button>
           )}
 
           <button onClick={signOut} className="hub-signout-btn" type="button">
             <LogOut className="btn-icon" />
-            <span>Sign Out</span>
+            <span>{t('landing.sign_out')}</span>
           </button>
         </div>
       </header>
@@ -167,12 +168,12 @@ export function EcosystemLandingScreen() {
               <div className="role-tags">
                 <span className="role-tag status-approved">
                   {participantType === 'non_resident' 
-                    ? 'Approved Non-Resident' 
-                    : `Approved Resident${residentSubtype ? ` (${residentSubtype})` : ''}`}
+                    ? t('landing.approved_non_resident') 
+                    : `${t('landing.approved_resident')}${residentSubtype ? ` (${t('house_relationships.' + residentSubtype + '.label')})` : ''}`}
                 </span>
-                {isAdmin && <span className="role-tag status-admin">Global Admin</span>}
-                {isVerifier && <span className="role-tag status-verifier">Verifier</span>}
-                {isModerator && <span className="role-tag status-moderator">Moderator</span>}
+                {isAdmin && <span className="role-tag status-admin">{t('landing.global_admin')}</span>}
+                {isVerifier && <span className="role-tag status-verifier">{t('landing.verifier')}</span>}
+                {isModerator && <span className="role-tag status-moderator">{t('landing.moderator')}</span>}
               </div>
             </div>
           </div>
@@ -181,24 +182,24 @@ export function EcosystemLandingScreen() {
             {participantType === 'non_resident' ? (
               requestedAffiliation && (
                 <div className="p-detail">
-                  <span className="p-label">Affiliation:</span>
+                  <span className="p-label">{t('landing.affiliation')}:</span>
                   <span className="p-value">{getAffiliationLabel(requestedAffiliation)}</span>
                 </div>
               )
             ) : (
               <div className="p-detail">
-                <span className="p-label">Registered House:</span>
-                <span className="p-value">{houseNumber || 'Not specified'}</span>
+                <span className="p-label">{t('landing.registered_house')}:</span>
+                <span className="p-value">{houseNumber || t('landing.not_specified')}</span>
               </div>
             )}
             {whatsappNumber && (
               <div className="p-detail">
-                <span className="p-label">WhatsApp Contact:</span>
+                <span className="p-label">{t('landing.whatsapp_contact')}:</span>
                 <span className="p-value">{whatsappNumber}</span>
               </div>
             )}
             <div className="p-detail">
-              <span className="p-label">Account ID:</span>
+              <span className="p-label">{t('landing.account_id')}:</span>
               <span className="p-value-mono">{user?.id.substring(0, 18)}...</span>
             </div>
           </div>
@@ -206,7 +207,7 @@ export function EcosystemLandingScreen() {
 
         {/* Directory Grid */}
         <section className="apps-section animate-slide-up delay-1">
-          <h2>Community Applications</h2>
+          <h2>{t('landing.community_apps')}</h2>
           <div className="apps-grid">
             {apps.map((app, index) => {
               const Icon = app.icon;
@@ -232,12 +233,12 @@ export function EcosystemLandingScreen() {
                         rel="noreferrer"
                         className="app-launch-btn"
                       >
-                        <span>Launch App</span>
+                        <span>{t('landing.launch_app')}</span>
                         <ExternalLink className="launch-icon" />
                       </a>
                     ) : (
                       <button className="app-launch-btn disabled" disabled type="button">
-                        <span>Coming Soon</span>
+                        <span>{t('landing.coming_soon')}</span>
                       </button>
                     )}
                   </div>

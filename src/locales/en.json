@@ -76,5 +76,38 @@
     "assistant": {
       "label": "Resident's Assistant"
     }
+  },
+  "landing": {
+    "identity_active": "Identity Active",
+    "dashboard_subtitle": "Central Community App Dashboard",
+    "admin_center": "Admin Center",
+    "sign_out": "Sign Out",
+    "approved_non_resident": "Approved Non-Resident",
+    "approved_resident": "Approved Resident",
+    "global_admin": "Global Admin",
+    "verifier": "Verifier",
+    "moderator": "Moderator",
+    "affiliation": "Affiliation",
+    "registered_house": "Registered House",
+    "not_specified": "Not specified",
+    "whatsapp_contact": "WhatsApp Contact",
+    "account_id": "Account ID",
+    "community_apps": "Community Applications",
+    "launch_app": "Launch App",
+    "coming_soon": "Coming Soon",
+    "apps": {
+      "ipl_finder": {
+        "description": "Search, index, and manage bank e-statements and CSV records. Active document audit trail."
+      },
+      "rekap_viewer": {
+        "description": "Fly.io cached backend display for Sheets logs, reports, and real-time community summaries."
+      },
+      "kas_management": {
+        "description": "Decentralized cashbook treasury, monthly billing tracking, and balance sheet reporting."
+      },
+      "surat_admin": {
+        "description": "Instant official resident correspondence generation and custom PDF permit drafting tools."
+      }
+    }
   }
 }

@@ -76,5 +76,38 @@
     "assistant": {
       "label": "Asisten Warga"
     }
+  },
+  "landing": {
+    "identity_active": "Identitas Aktif",
+    "dashboard_subtitle": "Dasbor Pusat Aplikasi Lingkungan",
+    "admin_center": "Pusat Admin",
+    "sign_out": "Keluar Akun",
+    "approved_non_resident": "Non-Warga Terverifikasi",
+    "approved_resident": "Warga Terverifikasi",
+    "global_admin": "Admin Global",
+    "verifier": "Verifikator",
+    "moderator": "Moderator",
+    "affiliation": "Afiliasi",
+    "registered_house": "Nomor Rumah",
+    "not_specified": "Belum ditentukan",
+    "whatsapp_contact": "Kontak WhatsApp",
+    "account_id": "ID Akun",
+    "community_apps": "Aplikasi Lingkungan",
+    "launch_app": "Buka Aplikasi",
+    "coming_soon": "Segera Hadir",
+    "apps": {
+      "ipl_finder": {
+        "description": "Cari, indeks, dan kelola rekening koran bank serta file CSV. Dilengkapi rekam jejak audit dokumen aktif."
+      },
+      "rekap_viewer": {
+        "description": "Tampilan log spreadsheet, laporan keuangan, dan rekapitulasi data warga secara langsung."
+      },
+      "kas_management": {
+        "description": "Pembukuan kas mandiri, pelacakan tagihan bulanan warga, dan laporan neraca keuangan."
+      },
+      "surat_admin": {
+        "description": "Pembuatan surat pengantar warga instan dan draf surat izin format PDF."
+      }
+    }
   }
 }
