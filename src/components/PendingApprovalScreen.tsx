@@ -129,10 +129,6 @@ export function PendingApprovalScreen() {
         showToast('Affiliation selection is required', 'error');
         return;
       }
-      if (houseNumber && !residentSubtype) {
-        showToast('Relationship to the associated house is required', 'error');
-        return;
-      }
     }
 
     if (whatsappNumber && whatsappNumber.length > 25) {
@@ -150,7 +146,9 @@ export function PendingApprovalScreen() {
         .from('profiles')
         .update({
           participant_type: participantType,
-          resident_subtype: (participantType === 'resident' || (participantType === 'non_resident' && houseNumber)) ? residentSubtype : null,
+          resident_subtype: participantType === 'resident' 
+            ? residentSubtype 
+            : (houseNumber ? 'caretaker' : null),
           house_number: houseNumber ? houseNumber.trim() : null,
           requested_affiliation: participantType === 'non_resident' ? finalAffiliation : null,
           whatsapp_number: whatsappNumber.trim() || null,
@@ -162,7 +160,7 @@ export function PendingApprovalScreen() {
 
       setSavedParticipantType(participantType);
       setSavedResidentSubtype(participantType === 'resident' ? residentSubtype : null);
-      setSavedHouseNumber(participantType === 'resident' ? houseNumber.trim() : null);
+      setSavedHouseNumber(houseNumber ? houseNumber.trim() : null);
       setSavedRequestedAffiliation(participantType === 'non_resident' ? finalAffiliation : null);
       setSavedWhatsappNumber(whatsappNumber.trim() || null);
 
@@ -173,7 +171,7 @@ export function PendingApprovalScreen() {
         if (participantType === 'resident') {
           customDesc = `Resident ${getSubtypeLabel(residentSubtype)} (House: ${houseNumber.trim()})`;
         } else {
-          customDesc = `Non-Resident (${finalAffiliation})${houseNumber ? ` (Associated House: ${houseNumber.trim()} as ${getSubtypeLabel(residentSubtype)})` : ''}`;
+          customDesc = `Non-Resident (${finalAffiliation})${houseNumber ? ` (Associated House: ${houseNumber.trim()})` : ''}`;
         }
 
         try {
@@ -272,7 +270,7 @@ export function PendingApprovalScreen() {
                     <Home className="row-icon" />
                     <span className="row-label">Associated House:</span>
                     <span className="row-value">
-                      {savedHouseNumber} ({getSubtypeLabel(savedResidentSubtype || '')})
+                      {savedHouseNumber}
                     </span>
                   </div>
                 )}
@@ -455,13 +453,7 @@ export function PendingApprovalScreen() {
                     <select
                       id="associatedHouse"
                       value={houseNumber}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setHouseNumber(val);
-                        if (!val) {
-                          setResidentSubtype('owner'); // Reset/default
-                        }
-                      }}
+                      onChange={(e) => setHouseNumber(e.target.value)}
                       disabled={loading}
                       style={{
                         width: '100%',
@@ -483,39 +475,6 @@ export function PendingApprovalScreen() {
                       ))}
                     </select>
                   </div>
-
-                  {houseNumber && (
-                    <div className="form-group animate-slide-up">
-                      <label htmlFor="associatedRelationship">
-                        <span>Relationship To House <span className="required-star">*</span></span>
-                      </label>
-                      <select
-                        id="associatedRelationship"
-                        value={residentSubtype}
-                        onChange={(e) => setResidentSubtype(e.target.value as any)}
-                        required
-                        disabled={loading}
-                        style={{
-                          width: '100%',
-                          padding: '12px',
-                          borderRadius: '12px',
-                          border: '1px solid var(--border-color)',
-                          backgroundColor: 'var(--bg-secondary)',
-                          color: 'var(--text-primary)',
-                          fontSize: '14px',
-                          fontFamily: 'var(--font-sans)',
-                          outline: 'none',
-                          transition: 'border-color 0.2s',
-                          marginTop: '8px'
-                        }}
-                      >
-                        <option value="owner">Owner</option>
-                        <option value="renter">Renter</option>
-                        <option value="household_member">Household Member</option>
-                        <option value="caretaker">Caretaker</option>
-                      </select>
-                    </div>
-                  )}
 
 
                 </div>

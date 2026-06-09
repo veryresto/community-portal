@@ -590,7 +590,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     if (partType === 'resident') {
       if (!houseNum) return 'House number is required for residents.';
       if (houseNum.length > 25) return 'House number must be 25 characters or less.';
-      if (!subType) return 'Resident subtype (owner/renter) is required.';
+      if (!subType) return 'Relationship to house is required.';
     } else {
       if (!affiliation) return 'Affiliation is required for non-residents.';
     }
@@ -637,12 +637,16 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           .eq('profile_id', manageAffiliationsProfile!.id);
       }
 
+      const targetAffType = manageAffiliationsProfile!.participant_type === 'resident'
+        ? newAffiliation.affiliation_type
+        : 'caretaker';
+
       const { error } = await supabase
         .from('profile_house_affiliations')
         .insert({
           profile_id: manageAffiliationsProfile!.id,
           house_id: houseData.id,
-          affiliation_type: newAffiliation.affiliation_type,
+          affiliation_type: targetAffType,
           is_primary: newAffiliation.is_primary
         });
 
@@ -653,7 +657,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           .from('profiles')
           .update({
             house_number: newAffiliation.house_number,
-            resident_subtype: newAffiliation.affiliation_type
+            resident_subtype: targetAffType
           })
           .eq('id', manageAffiliationsProfile!.id);
       }
@@ -806,7 +810,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   };
 
   const handleSaveProfileEdit = async (profile: Profile) => {
-    const normHouse = editForm.participant_type === 'resident' ? normalizeHouseNumber(editForm.house_number) : '';
+    const normHouse = editForm.house_number ? normalizeHouseNumber(editForm.house_number) : '';
     const normWhatsApp = editForm.whatsapp_number ? normalizeWhatsAppNumber(editForm.whatsapp_number) : '';
     const affiliation = editForm.participant_type === 'non_resident' ? editForm.requested_affiliation.trim() : '';
 
@@ -825,12 +829,16 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     setLoading(true);
     setEditError(null);
     try {
+      const targetSubtype = editForm.participant_type === 'resident'
+        ? editForm.resident_subtype
+        : (normHouse ? 'caretaker' : null);
+
       const { error } = await supabase
         .from('profiles')
         .update({
           participant_type: editForm.participant_type,
-          resident_subtype: editForm.participant_type === 'resident' ? editForm.resident_subtype : null,
-          house_number: editForm.participant_type === 'resident' ? normHouse : null,
+          resident_subtype: targetSubtype,
+          house_number: normHouse || null,
           requested_affiliation: editForm.participant_type === 'non_resident' ? affiliation : null,
           whatsapp_number: normWhatsApp || null
         })
@@ -838,7 +846,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       if (error) throw error;
 
-      if (profile.approval_status === 'approved' && editForm.participant_type === 'resident' && normHouse) {
+      if (profile.approval_status === 'approved' && normHouse) {
         const { data: houseData } = await supabase
           .from('houses')
           .select('id')
@@ -847,12 +855,16 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
         if (houseData) {
           const existingPrimary = profile.profile_house_affiliations?.find(a => a.is_primary);
+          const affiliationType = editForm.participant_type === 'resident'
+            ? (editForm.resident_subtype || 'owner')
+            : 'caretaker';
+
           if (existingPrimary) {
             await supabase
               .from('profile_house_affiliations')
               .update({
                 house_id: houseData.id,
-                affiliation_type: editForm.resident_subtype
+                affiliation_type: affiliationType
               })
               .eq('id', existingPrimary.id);
           } else {
@@ -861,10 +873,18 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               .insert({
                 profile_id: profile.id,
                 house_id: houseData.id,
-                affiliation_type: editForm.resident_subtype,
+                affiliation_type: affiliationType,
                 is_primary: true
               });
           }
+        }
+      } else if (profile.approval_status === 'approved' && !normHouse) {
+        const existingPrimary = profile.profile_house_affiliations?.find(a => a.is_primary);
+        if (existingPrimary) {
+          await supabase
+            .from('profile_house_affiliations')
+            .delete()
+            .eq('id', existingPrimary.id);
         }
       }
 
@@ -884,8 +904,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           },
           after: {
             participant_type: editForm.participant_type,
-            resident_subtype: editForm.participant_type === 'resident' ? editForm.resident_subtype : null,
-            house_number: editForm.participant_type === 'resident' ? normHouse : null,
+            resident_subtype: targetSubtype,
+            house_number: normHouse || null,
             requested_affiliation: editForm.participant_type === 'non_resident' ? affiliation : null,
             whatsapp_number: normWhatsApp || null
           }
@@ -1374,7 +1394,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <span style={{ fontWeight: 600, fontSize: '14px' }}>
-                      {aff.houses?.house_number} ({getSubtypeLabel(aff.affiliation_type)})
+                      {aff.houses?.house_number}
+                      {manageAffiliationsProfile?.participant_type === 'resident' && ` (${getSubtypeLabel(aff.affiliation_type)})`}
                     </span>
                     {aff.is_primary && (
                       <span style={{ color: 'var(--primary)', fontSize: '11px', fontWeight: 600 }}>[Primary]</span>
@@ -1421,20 +1442,22 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                     ))}
                   </select>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px' }}>Relationship</label>
-                  <select
-                    value={newAffiliation.affiliation_type}
-                    onChange={(e) => setNewAffiliation(prev => ({ ...prev, affiliation_type: e.target.value as any }))}
-                    className="search-input"
-                    style={{ width: '100%', padding: '6px 10px', fontSize: '13px', margin: 0 }}
-                  >
-                    <option value="owner">Owner</option>
-                    <option value="renter">Renter</option>
-                    <option value="household_member">Household Member</option>
-                    <option value="caretaker">Caretaker</option>
-                  </select>
-                </div>
+                {manageAffiliationsProfile?.participant_type === 'resident' && (
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px' }}>Relationship</label>
+                    <select
+                      value={newAffiliation.affiliation_type}
+                      onChange={(e) => setNewAffiliation(prev => ({ ...prev, affiliation_type: e.target.value as any }))}
+                      className="search-input"
+                      style={{ width: '100%', padding: '6px 10px', fontSize: '13px', margin: 0 }}
+                    >
+                      <option value="owner">Owner</option>
+                      <option value="renter">Renter</option>
+                      <option value="household_member">Household Member</option>
+                      <option value="caretaker">Caretaker</option>
+                    </select>
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                 <input 
@@ -1695,25 +1718,48 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                      </div>
                                   </>
                                 ) : (
-                                  <div>
-                                    <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Affiliation</label>
-                                    <select
-                                      value={editForm.requested_affiliation || ''}
-                                      onChange={(e) => {
-                                        const val = e.target.value;
-                                        setEditForm(prev => ({
-                                          ...prev,
-                                          requested_affiliation: val
-                                        }));
-                                      }}
-                                      className="search-input"
-                                      style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
-                                    >
-                                      <option value="">-- Select --</option>
-                                      {AFFILIATION_OPTIONS.map(opt => (
-                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                      ))}
-                                    </select>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <div>
+                                      <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Affiliation</label>
+                                      <select
+                                        value={editForm.requested_affiliation || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditForm(prev => ({
+                                            ...prev,
+                                            requested_affiliation: val
+                                          }));
+                                        }}
+                                        className="search-input"
+                                        style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                      >
+                                        <option value="">-- Select --</option>
+                                        {AFFILIATION_OPTIONS.map(opt => (
+                                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Assoc. House (Opt.)</label>
+                                      <select
+                                        className="search-input"
+                                        style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                        value={editForm.house_number || ''}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditForm(prev => ({ 
+                                            ...prev, 
+                                            house_number: val,
+                                            resident_subtype: val ? 'caretaker' : ''
+                                          }));
+                                        }}
+                                      >
+                                        <option value="">-- None --</option>
+                                        {houseOptions.map(num => (
+                                          <option key={num} value={num}>{num}</option>
+                                        ))}
+                                      </select>
+                                    </div>
                                   </div>
                                 )}
                                 {editError && <span style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</span>}
@@ -1729,7 +1775,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                     {profile.profile_house_affiliations.map(aff => (
                                       <span key={aff.id} style={{ fontSize: '13px' }}>
-                                        {aff.houses?.house_number} ({getSubtypeLabel(aff.affiliation_type)})
+                                        {aff.houses?.house_number}
+                                        {profile.participant_type === 'resident' && ` (${getSubtypeLabel(aff.affiliation_type)})`}
                                         {aff.is_primary && <span style={{ color: 'var(--primary)', marginLeft: '4px', fontSize: '10px', fontWeight: 600 }}>[Primary]</span>}
                                       </span>
                                     ))}
@@ -1737,7 +1784,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 ) : (
                                   profile.house_number ? (
                                     <span>
-                                      {profile.house_number} ({getSubtypeLabel(profile.resident_subtype || '')})
+                                      {profile.house_number}
+                                      {profile.participant_type === 'resident' && ` (${getSubtypeLabel(profile.resident_subtype || '')})`}
                                     </span>
                                   ) : (
                                     <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>
