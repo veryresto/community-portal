@@ -3,13 +3,12 @@ import { Clock, LogOut, Check, Home, Phone, ArrowRight, ShieldCheck } from 'luci
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
+import { t } from '../lib/i18n';
 
 const getSubtypeLabel = (value: string): string => {
-  if (value === 'owner') return 'Owner';
-  if (value === 'renter') return 'Renter';
-  if (value === 'household_member') return 'Household Member';
-  if (value === 'caretaker') return 'Caretaker';
-  return value;
+  const key = `house_relationships.${value}.label`;
+  const translated = t(key);
+  return translated !== key ? translated : value;
 };
 
 export function PendingApprovalScreen() {
@@ -67,7 +66,7 @@ export function PendingApprovalScreen() {
             setParticipantType(data.participant_type as 'resident' | 'non_resident');
           }
           if (data.resident_subtype) {
-            setResidentSubtype(data.resident_subtype as 'owner' | 'renter');
+            setResidentSubtype(data.resident_subtype as 'owner' | 'renter' | 'household_member' | 'caretaker');
           }
           if (data.house_number) {
             setHouseNumber(data.house_number);
@@ -79,9 +78,9 @@ export function PendingApprovalScreen() {
             setRequestedAffiliation(data.requested_affiliation);
           }
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error fetching profile:', err);
-        showToast('Error fetching profile details', 'error');
+        showToast(t('waiting_room.toast_fetch_error'), 'error');
       } finally {
         setFetching(false);
       }
@@ -113,26 +112,26 @@ export function PendingApprovalScreen() {
 
     if (participantType === 'resident') {
       if (!houseNumber.trim()) {
-        showToast('House number is required', 'error');
+        showToast(t('waiting_room.validation.house_number_required'), 'error');
         return;
       }
       if (houseNumber.length > 25) {
-        showToast('House number must be 25 characters or less', 'error');
+        showToast(t('waiting_room.validation.house_number_max_length'), 'error');
         return;
       }
       if (!residentSubtype) {
-        showToast('Resident subtype is required', 'error');
+        showToast(t('waiting_room.validation.subtype_required'), 'error');
         return;
       }
     } else {
       if (!requestedAffiliation) {
-        showToast('Affiliation selection is required', 'error');
+        showToast(t('waiting_room.validation.affiliation_required'), 'error');
         return;
       }
     }
 
     if (whatsappNumber && whatsappNumber.length > 25) {
-      showToast('WhatsApp number must be 25 characters or less', 'error');
+      showToast(t('waiting_room.validation.whatsapp_max_length'), 'error');
       return;
     }
 
@@ -169,7 +168,7 @@ export function PendingApprovalScreen() {
         // Construct description to send via the houseNumber email field
         let customDesc = '';
         if (participantType === 'resident') {
-          customDesc = `Resident ${getSubtypeLabel(residentSubtype)} (House: ${houseNumber.trim()})`;
+          customDesc = `Resident ${residentSubtype} (House: ${houseNumber.trim()})`;
         } else {
           customDesc = `Non-Resident (${finalAffiliation})${houseNumber ? ` (Associated House: ${houseNumber.trim()})` : ''}`;
         }
@@ -189,10 +188,10 @@ export function PendingApprovalScreen() {
         }
       }
 
-      showToast('Registration details saved successfully!', 'success');
-    } catch (error: any) {
+      showToast(t('waiting_room.toast_saved_success'), 'success');
+    } catch (error) {
       console.error(error);
-      showToast(error.message || 'Error saving registration details.', 'error');
+      showToast((error as Error).message || t('waiting_room.toast_save_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -214,11 +213,11 @@ export function PendingApprovalScreen() {
         <div className="status-header animate-fade-in">
           <div className="status-badge pending">
             <Clock className="badge-icon spin-subtle" />
-            <span>Awaiting Verification</span>
+            <span>{t('waiting_room.awaiting_verification')}</span>
           </div>
-          <h1 className="portal-title">Waiting Room</h1>
+          <h1 className="portal-title">{t('waiting_room.title')}</h1>
           <p className="portal-subtitle">
-            Welcome, <span className="highlight-text">{user?.user_metadata?.full_name || user?.email}</span>
+            {t('waiting_room.welcome', { name: user?.user_metadata?.full_name || user?.email || '' })}
           </p>
         </div>
 
@@ -228,38 +227,38 @@ export function PendingApprovalScreen() {
           {fetching ? (
             <div className="loading-container">
               <span className="spinner"></span>
-              <p>Loading your registration details...</p>
+              <p>{t('waiting_room.loading')}</p>
             </div>
           ) : savedParticipantType ? (
             /* Submissive Verification Card State */
             <div className="submission-summary">
               <div className="success-badge">
                 <Check className="check-icon" />
-                <span>Information Submitted</span>
+                <span>{t('waiting_room.submitted_title')}</span>
               </div>
               <p className="summary-desc">
-                Your registration is currently under review by our community administrators. We will contact you or update your account status shortly.
+                {t('waiting_room.submitted_desc')}
               </p>
 
               <div className="saved-details">
                 <div className="detail-row" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
-                  <span className="row-label">Classification:</span>
+                  <span className="row-label">{t('waiting_room.classification')}:</span>
                   <span className="row-value">
                     {savedParticipantType === 'resident'
-                      ? `Resident (${getSubtypeLabel(savedResidentSubtype || '')})`
-                      : 'Non-Resident'}
+                      ? `${t('waiting_room.resident')} (${getSubtypeLabel(savedResidentSubtype || '')})`
+                      : t('waiting_room.non_resident')}
                   </span>
                 </div>
                 {savedParticipantType === 'resident' && savedHouseNumber && (
                   <div className="detail-row">
                     <Home className="row-icon" />
-                    <span className="row-label">Registered House:</span>
+                    <span className="row-label">{t('waiting_room.registered_house')}:</span>
                     <span className="row-value">{savedHouseNumber}</span>
                   </div>
                 )}
                 {savedParticipantType === 'non_resident' && savedRequestedAffiliation && (
                   <div className="detail-row">
-                    <span className="row-label">Requested Affiliation:</span>
+                    <span className="row-label">{t('waiting_room.requested_affiliation')}:</span>
                     <span className="row-value">
                       {getAffiliationLabel(savedRequestedAffiliation)}
                     </span>
@@ -268,7 +267,7 @@ export function PendingApprovalScreen() {
                 {savedParticipantType === 'non_resident' && savedHouseNumber && (
                   <div className="detail-row">
                     <Home className="row-icon" />
-                    <span className="row-label">Associated House:</span>
+                    <span className="row-label">{t('waiting_room.associated_house')}:</span>
                     <span className="row-value">
                       {savedHouseNumber}
                     </span>
@@ -277,7 +276,7 @@ export function PendingApprovalScreen() {
                 {savedWhatsappNumber && (
                   <div className="detail-row">
                     <Phone className="row-icon" />
-                    <span className="row-label">WhatsApp Contact:</span>
+                    <span className="row-label">{t('waiting_room.whatsapp_contact')}:</span>
                     <span className="row-value">{savedWhatsappNumber}</span>
                   </div>
                 )}
@@ -285,19 +284,19 @@ export function PendingApprovalScreen() {
 
               <div className="notice-box">
                 <ShieldCheck className="notice-icon" />
-                <p>Once an admin grants approval, your account will be activated with appropriate application access mappings.</p>
+                <p>{t('waiting_room.activation_notice')}</p>
               </div>
             </div>
           ) : (
             /* Registration Form State */
             <form onSubmit={handleSubmit} className="portal-form">
               <p className="form-intro">
-                Please complete your local community profile details to request access to ecosystem applications.
+                {t('waiting_room.form_intro')}
               </p>
 
               {/* Step 1: Participant Classification Segmented Control */}
               <div className="form-group">
-                <label style={{ fontSize: '13px', fontWeight: 600 }}>Who are you in this community? <span className="required-star">*</span></label>
+                <label style={{ fontSize: '13px', fontWeight: 600 }}>{t('waiting_room.role_in_community')} <span className="required-star">*</span></label>
                 <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                   <button
                     type="button"
@@ -318,7 +317,7 @@ export function PendingApprovalScreen() {
                       fontSize: '13.5px'
                     }}
                   >
-                    Resident
+                    {t('waiting_room.resident')}
                   </button>
                   <button
                     type="button"
@@ -339,7 +338,7 @@ export function PendingApprovalScreen() {
                       fontSize: '13.5px'
                     }}
                   >
-                    Non-Resident
+                    {t('waiting_room.non_resident')}
                   </button>
                 </div>
               </div>
@@ -349,12 +348,12 @@ export function PendingApprovalScreen() {
                 <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '4px' }}>
                   <div className="form-group">
                     <label htmlFor="residentSubtype">
-                      <span>Relationship To House <span className="required-star">*</span></span>
+                      <span>{t('waiting_room.relationship_to_house')} <span className="required-star">*</span></span>
                     </label>
                     <select
                       id="residentSubtype"
                       value={residentSubtype}
-                      onChange={(e) => setResidentSubtype(e.target.value as any)}
+                      onChange={(e) => setResidentSubtype(e.target.value as 'owner' | 'renter' | 'household_member' | 'caretaker')}
                       required
                       disabled={loading}
                       style={{
@@ -371,44 +370,68 @@ export function PendingApprovalScreen() {
                         marginTop: '8px'
                       }}
                     >
-                      <option value="owner">Owner</option>
-                      <option value="renter">Renter</option>
-                      <option value="household_member">Household Member</option>
-                      <option value="caretaker">Caretaker</option>
+                      <option value="owner">{t('house_relationships.owner.label')}</option>
+                      <option value="renter">{t('house_relationships.renter.label')}</option>
+                      <option value="household_member">{t('house_relationships.household_member.label')}</option>
+                      <option value="caretaker">{t('house_relationships.caretaker.label')}</option>
                     </select>
+
+                    {/* Contextual help text */}
+                    {residentSubtype && (
+                      <div className="notice-box" style={{ marginTop: '8px', borderLeft: '3px solid var(--primary)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                            {t(`house_relationships.${residentSubtype}.description`)}
+                          </p>
+                          {residentSubtype === 'household_member' && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+                              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                                {t('house_relationships.household_member.examples_title')}
+                              </p>
+                              <ul style={{ paddingLeft: '16px', listStyleType: 'disc', fontSize: '11.5px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                <li>{t('house_relationships.household_member.examples.0')}</li>
+                                <li>{t('house_relationships.household_member.examples.1')}</li>
+                                <li>{t('house_relationships.household_member.examples.2')}</li>
+                                <li>{t('house_relationships.household_member.examples.3')}</li>
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="houseNumber">
                       <Home className="input-label-icon" />
-                      <span>House Number <span className="required-star">*</span></span>
+                      <span>{t('waiting_room.house_number')} <span className="required-star">*</span></span>
                     </label>
-                     <select
-                       id="houseNumber"
-                       value={houseNumber}
-                       onChange={(e) => setHouseNumber(e.target.value)}
-                       required
-                       disabled={loading}
-                       style={{
-                         width: '100%',
-                         padding: '12px',
-                         borderRadius: '12px',
-                         border: '1px solid var(--border-color)',
-                         backgroundColor: 'var(--bg-secondary)',
-                         color: 'var(--text-primary)',
-                         fontSize: '14px',
-                         fontFamily: 'var(--font-sans)',
-                         outline: 'none',
-                         transition: 'border-color 0.2s',
-                         marginTop: '8px'
-                       }}
-                     >
-                       <option value="">-- Select House Number --</option>
-                       {houseOptions.map(num => (
-                         <option key={num} value={num}>{num}</option>
-                       ))}
-                     </select>
-                   </div>
+                    <select
+                      id="houseNumber"
+                      value={houseNumber}
+                      onChange={(e) => setHouseNumber(e.target.value)}
+                      required
+                      disabled={loading}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--bg-secondary)',
+                        color: 'var(--text-primary)',
+                        fontSize: '14px',
+                        fontFamily: 'var(--font-sans)',
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                        marginTop: '8px'
+                      }}
+                    >
+                      <option value="">{t('waiting_room.select_house')}</option>
+                      {houseOptions.map(num => (
+                        <option key={num} value={num}>{num}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               )}
 
@@ -416,7 +439,7 @@ export function PendingApprovalScreen() {
                 <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '4px' }}>
                   <div className="form-group">
                     <label htmlFor="requestedAffiliation">
-                      <span>Requested Affiliation <span className="required-star">*</span></span>
+                      <span>{t('waiting_room.requested_affiliation_label')} <span className="required-star">*</span></span>
                     </label>
                     <select
                       id="requestedAffiliation"
@@ -438,9 +461,11 @@ export function PendingApprovalScreen() {
                         marginTop: '8px'
                       }}
                     >
-                      <option value="">-- Select your affiliation --</option>
+                      <option value="">{t('waiting_room.select_affiliation')}</option>
                       {AFFILIATION_OPTIONS.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        <option key={opt.value} value={opt.value}>
+                          {getAffiliationLabel(opt.value)}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -448,7 +473,7 @@ export function PendingApprovalScreen() {
                   <div className="form-group">
                     <label htmlFor="associatedHouse">
                       <Home className="input-label-icon" />
-                      <span>Associated House (Optional)</span>
+                      <span>{t('waiting_room.associated_house_label')}</span>
                     </label>
                     <select
                       id="associatedHouse"
@@ -469,14 +494,12 @@ export function PendingApprovalScreen() {
                         marginTop: '8px'
                       }}
                     >
-                      <option value="">-- No House Associated --</option>
+                      <option value="">{t('waiting_room.no_house_associated')}</option>
                       {houseOptions.map(num => (
                         <option key={num} value={num}>{num}</option>
                       ))}
                     </select>
                   </div>
-
-
                 </div>
               )}
 
@@ -484,7 +507,7 @@ export function PendingApprovalScreen() {
               <div className="form-group" style={{ marginTop: '4px' }}>
                 <label htmlFor="whatsappNumber">
                   <Phone className="input-label-icon" />
-                  <span>WhatsApp Number (Optional)</span>
+                  <span>{t('waiting_room.whatsapp_number_label')}</span>
                 </label>
                 <input
                   id="whatsappNumber"
@@ -495,7 +518,7 @@ export function PendingApprovalScreen() {
                   maxLength={25}
                   disabled={loading}
                 />
-                <span className="input-hint">Used solely by administrators for verification.</span>
+                <span className="input-hint">{t('waiting_room.whatsapp_hint')}</span>
               </div>
 
               <button
@@ -508,7 +531,7 @@ export function PendingApprovalScreen() {
                   <span className="spinner"></span>
                 ) : (
                   <>
-                    <span>Submit Details</span>
+                    <span>{t('waiting_room.submit_details')}</span>
                     <ArrowRight className="btn-arrow" />
                   </>
                 )}
@@ -520,7 +543,7 @@ export function PendingApprovalScreen() {
         <div className="card-footer actions">
           <button onClick={signOut} className="signout-button" type="button">
             <LogOut className="signout-icon" />
-            <span>Sign Out</span>
+            <span>{t('waiting_room.sign_out')}</span>
           </button>
         </div>
       </div>
