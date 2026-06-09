@@ -56,6 +56,20 @@ If you are building a new app that should authenticate using this portal, read t
 
 ---
 
+## Localization & i18n
+
+The platform features a lightweight path-based internationalization (i18n) layer to translate all user-facing UI copy dynamically.
+
+- **Default Language:** Bahasa Indonesia (`id`), with English (`en`) as the development reference and fallback.
+- **Strict Separation of Concerns**: 
+  - **Internal Domain Values** (database-level representation: `resident`, `non_resident`, `owner`, `renter`, `household_member`, `caretaker`, etc.) must remain stable and in language-neutral English.
+  - **UI Labels**: All visible user interface text, dropdown options, and descriptions are loaded from the translation dictionaries using `t('key.path')` lookups.
+- **Translation Files**:
+  - [id.json](./src/locales/id.json) — Indonesian dictionary.
+  - [en.json](./src/locales/en.json) — English dictionary.
+
+---
+
 ## Local Development
 
 ### Prerequisites
@@ -139,7 +153,11 @@ community-platform/
       useAuth.tsx               # Auth context (session, signInWithGoogle, signOut)
       usePermissions.tsx        # Approval status + platform roles
     lib/
+      i18n.ts                   # Core path-based translation helper t()
       supabase.ts               # Supabase client with cross-subdomain CookieStorage
+    locales/
+      id.json                   # Indonesian translation dictionary
+      en.json                   # English fallback translation dictionary
   supabase/
     migrations/                 # Database schema and RLS policies
     functions/                  # Supabase Edge Functions
