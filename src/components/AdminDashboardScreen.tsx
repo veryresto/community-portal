@@ -82,6 +82,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   
   // Shared States
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [houseOptions, setHouseOptions] = useState<string[]>([]);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [appRoles, setAppRoles] = useState<AppRole[]>([]);
@@ -241,6 +242,12 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       const { data: roleTemplates } = await supabase.from('app_roles').select('*');
       setAppRoles(roleTemplates || []);
+
+      const { data: houseData } = await supabase
+        .from('houses')
+        .select('house_number')
+        .order('house_number', { ascending: true });
+      setHouseOptions(houseData ? houseData.map(h => h.house_number) : []);
     } catch (err) {
       console.error('Failed to load static admin data:', err);
     }
@@ -1269,15 +1276,19 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                       </select>
                                     </div>
                                     <div>
-                                      <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>House No.</label>
-                                      <input
-                                        type="text"
-                                        className="search-input"
-                                        style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
-                                        value={editForm.house_number}
-                                        onChange={(e) => setEditForm(prev => ({ ...prev, house_number: e.target.value }))}
-                                      />
-                                    </div>
+                                       <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>House No.</label>
+                                       <select
+                                         className="search-input"
+                                         style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
+                                         value={editForm.house_number || ''}
+                                         onChange={(e) => setEditForm(prev => ({ ...prev, house_number: e.target.value }))}
+                                       >
+                                         <option value="">-- Select --</option>
+                                         {houseOptions.map(num => (
+                                           <option key={num} value={num}>{num}</option>
+                                         ))}
+                                       </select>
+                                     </div>
                                   </>
                                 ) : (
                                   <div>

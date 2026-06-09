@@ -11,6 +11,7 @@ export function PendingApprovalScreen() {
   const [houseNumber, setHouseNumber] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [requestedAffiliation, setRequestedAffiliation] = useState('');
+  const [houseOptions, setHouseOptions] = useState<string[]>([]);
 
   const [savedParticipantType, setSavedParticipantType] = useState<string | null>(null);
   const [savedResidentSubtype, setSavedResidentSubtype] = useState<string | null>(null);
@@ -80,6 +81,24 @@ export function PendingApprovalScreen() {
 
     fetchProfile();
   }, [user?.id]);
+
+  useEffect(() => {
+    const fetchHouses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('houses')
+          .select('house_number')
+          .order('house_number', { ascending: true });
+        if (error) throw error;
+        if (data) {
+          setHouseOptions(data.map(h => h.house_number));
+        }
+      } catch (err) {
+        console.error('Error fetching houses:', err);
+      }
+    };
+    fetchHouses();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -360,18 +379,32 @@ export function PendingApprovalScreen() {
                       <Home className="input-label-icon" />
                       <span>House Number <span className="required-star">*</span></span>
                     </label>
-                    <input
-                      id="houseNumber"
-                      type="text"
-                      placeholder="e.g., Z10A"
-                      value={houseNumber}
-                      onChange={(e) => setHouseNumber(e.target.value)}
-                      maxLength={4}
-                      required
-                      disabled={loading}
-                    />
-                    <span className="input-hint">Maximum 4 characters.</span>
-                  </div>
+                     <select
+                       id="houseNumber"
+                       value={houseNumber}
+                       onChange={(e) => setHouseNumber(e.target.value)}
+                       required
+                       disabled={loading}
+                       style={{
+                         width: '100%',
+                         padding: '12px',
+                         borderRadius: '12px',
+                         border: '1px solid var(--border-color)',
+                         backgroundColor: 'var(--bg-secondary)',
+                         color: 'var(--text-primary)',
+                         fontSize: '14px',
+                         fontFamily: 'var(--font-sans)',
+                         outline: 'none',
+                         transition: 'border-color 0.2s',
+                         marginTop: '8px'
+                       }}
+                     >
+                       <option value="">-- Select House Number --</option>
+                       {houseOptions.map(num => (
+                         <option key={num} value={num}>{num}</option>
+                       ))}
+                     </select>
+                   </div>
                 </div>
               )}
 
