@@ -118,5 +118,13 @@
     "alert_desc": "Kredensial Anda telah diperiksa tetapi tidak cocok dengan daftar anggota warga resmi kami, atau verifikasi nomor rumah yang Anda ajukan tidak dapat dikonfirmasi.",
     "appeal_notice": "Jika Anda yakin ini adalah kesalahan atau ingin mengajukan banding atas keputusan ini, silakan hubungi kantor sekretariat/pengelola lingkungan secara langsung.",
     "sign_out": "Keluar Akun"
+  },
+  "login": {
+    "portal_subtitle": "Portal Komunitas",
+    "secure_entry": "Akses Masuk Aman",
+    "description": "Masuk menggunakan akun Google warga yang terverifikasi untuk mengakses aplikasi ekosistem Veryresto (IPL Finder, Rekap, Kas, Surat).",
+    "continue_with_google": "Lanjutkan dengan Google",
+    "footer_notice": "Dilindungi oleh kebijakan tata tertib lingkungan. Akses tidak sah akan dicatat.",
+    "auth_failed": "Autentikasi gagal. Silakan coba lagi."
   }
 }

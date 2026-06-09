@@ -118,5 +118,13 @@
     "alert_desc": "Your credentials have been checked but do not match our authorized community member directory, or your submitted house verification could not be confirmed.",
     "appeal_notice": "If you believe this is a mistake or wish to appeal this decision, please reach out to the community association administration office directly.",
     "sign_out": "Sign Out"
+  },
+  "login": {
+    "portal_subtitle": "Community Portal",
+    "secure_entry": "Secure Identity Entry",
+    "description": "Sign in using your authorized community Google account to access Veryresto ecosystem applications (IPL Finder, Rekap, Kas, Surat).",
+    "continue_with_google": "Continue with Google",
+    "footer_notice": "Protected by Community Governance policies. Unauthorized access is recorded.",
+    "auth_failed": "Authentication failed. Please try again."
   }
 }
