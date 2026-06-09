@@ -1,0 +1,80 @@
+{
+  "waiting_room": {
+    "title": "Ruang Tunggu",
+    "awaiting_verification": "Menunggu Verifikasi",
+    "welcome": "Selamat datang, {name}",
+    "loading": "Memuat detail pendaftaran Anda...",
+    "submitted_title": "Data Pendaftaran Terkirim",
+    "submitted_desc": "Pendaftaran Anda sedang ditinjau oleh pengelola lingkungan. Kami akan segera menghubungi Anda atau memperbarui status akun Anda.",
+    "classification": "Kategori Peran",
+    "registered_house": "Nomor Rumah",
+    "requested_affiliation": "Peran yang Diajukan",
+    "associated_house": "Nomor Rumah Terkait",
+    "whatsapp_contact": "Kontak WhatsApp",
+    "activation_notice": "Setelah pengelola memberikan persetujuan, akun Anda akan diaktifkan dengan akses aplikasi yang sesuai.",
+    "form_intro": "Silakan lengkapi detail profil lingkungan Anda untuk mengajukan akses ke aplikasi ekosistem.",
+    "role_in_community": "Peran Anda di Lingkungan Ini",
+    "resident": "Warga",
+    "non_resident": "Non-Warga",
+    "relationship_to_house": "Status Anda di Rumah Ini",
+    "house_number": "Nomor Rumah",
+    "select_house": "-- Pilih Nomor Rumah --",
+    "requested_affiliation_label": "Peran yang Diajukan",
+    "select_affiliation": "-- Pilih peran Anda --",
+    "associated_house_label": "Nomor Rumah Terkait (Opsional)",
+    "no_house_associated": "-- Tidak Ada Rumah Terkait --",
+    "whatsapp_number_label": "Nomor WhatsApp (Opsional)",
+    "whatsapp_hint": "Hanya digunakan oleh pengelola untuk proses verifikasi.",
+    "submit_details": "Kirim Data",
+    "sign_out": "Keluar Akun",
+    "toast_saved_success": "Data pendaftaran berhasil disimpan!",
+    "toast_save_error": "Gagal menyimpan data pendaftaran.",
+    "toast_fetch_error": "Gagal memuat detail profil",
+    "validation": {
+      "house_number_required": "Nomor rumah wajib diisi",
+      "house_number_max_length": "Nomor rumah maksimal 25 karakter",
+      "subtype_required": "Status di rumah wajib diisi",
+      "affiliation_required": "Pilihan peran wajib diisi",
+      "whatsapp_max_length": "Nomor WhatsApp maksimal 25 karakter"
+    }
+  },
+  "house_relationships": {
+    "owner": {
+      "label": "Pemilik Rumah",
+      "description": "Anda adalah pemilik sah rumah ini."
+    },
+    "renter": {
+      "label": "Penyewa Rumah",
+      "description": "Anda adalah penyewa utama rumah ini."
+    },
+    "household_member": {
+      "label": "Penghuni Rumah",
+      "description": "Pilih opsi ini jika Anda tinggal di rumah tersebut tetapi bukan pemilik atau penyewa utama.",
+      "examples_title": "Contoh:",
+      "examples": [
+        "Suami / istri pemilik rumah",
+        "Anak pemilik rumah",
+        "Orang tua yang tinggal bersama",
+        "Anggota keluarga lain yang tinggal di rumah tersebut"
+      ]
+    },
+    "caretaker": {
+      "label": "Penjaga Rumah",
+      "description": "Anda bertanggung jawab menjaga atau mengawasi rumah ini."
+    }
+  },
+  "requested_affiliations": {
+    "secretariat": {
+      "label": "Sekretariat"
+    },
+    "security": {
+      "label": "Petugas Keamanan"
+    },
+    "vendor": {
+      "label": "Mitra / Penyedia Jasa"
+    },
+    "assistant": {
+      "label": "Asisten Warga"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "waiting_room": {
+    "title": "Waiting Room",
+    "awaiting_verification": "Awaiting Verification",
+    "welcome": "Welcome, {name}",
+    "loading": "Loading your registration details...",
+    "submitted_title": "Information Submitted",
+    "submitted_desc": "Your registration is currently under review by our community administrators. We will contact you or update your account status shortly.",
+    "classification": "Classification",
+    "registered_house": "Registered House",
+    "requested_affiliation": "Requested Affiliation",
+    "associated_house": "Associated House",
+    "whatsapp_contact": "WhatsApp Contact",
+    "activation_notice": "Once an admin grants approval, your account will be activated with appropriate application access mappings.",
+    "form_intro": "Please complete your local community profile details to request access to ecosystem applications.",
+    "role_in_community": "Who are you in this community?",
+    "resident": "Resident",
+    "non_resident": "Non-Resident",
+    "relationship_to_house": "Relationship To House",
+    "house_number": "House Number",
+    "select_house": "-- Select House Number --",
+    "requested_affiliation_label": "Requested Affiliation",
+    "select_affiliation": "-- Select your affiliation --",
+    "associated_house_label": "Associated House (Optional)",
+    "no_house_associated": "-- No House Associated --",
+    "whatsapp_number_label": "WhatsApp Number (Optional)",
+    "whatsapp_hint": "Used solely by administrators for verification.",
+    "submit_details": "Submit Details",
+    "sign_out": "Sign Out",
+    "toast_saved_success": "Registration details saved successfully!",
+    "toast_save_error": "Error saving registration details.",
+    "toast_fetch_error": "Error fetching profile details",
+    "validation": {
+      "house_number_required": "House number is required",
+      "house_number_max_length": "House number must be 25 characters or less",
+      "subtype_required": "Resident subtype is required",
+      "affiliation_required": "Affiliation selection is required",
+      "whatsapp_max_length": "WhatsApp number must be 25 characters or less"
+    }
+  },
+  "house_relationships": {
+    "owner": {
+      "label": "Owner",
+      "description": "You are the legal owner of this house."
+    },
+    "renter": {
+      "label": "Renter",
+      "description": "You are the primary renter of this house."
+    },
+    "household_member": {
+      "label": "Household Member",
+      "description": "Select this option if you live in the house but are not the owner or primary renter.",
+      "examples_title": "Examples:",
+      "examples": [
+        "Spouse of the house owner",
+        "Child of the house owner",
+        "Parent living together",
+        "Other family member living in the house"
+      ]
+    },
+    "caretaker": {
+      "label": "Caretaker",
+      "description": "You are responsible for guarding or supervising this house."
+    }
+  },
+  "requested_affiliations": {
+    "secretariat": {
+      "label": "Secretariat Admin"
+    },
+    "security": {
+      "label": "Security Staff"
+    },
+    "vendor": {
+      "label": "Vendor / Provider"
+    },
+    "assistant": {
+      "label": "Resident's Assistant"
+    }
+  }
+}
