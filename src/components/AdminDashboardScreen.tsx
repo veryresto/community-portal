@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Users, Shield, Database, Activity, Check, X, ShieldAlert, 
-  Info, AlertTriangle, ArrowLeft, Sparkles, Edit 
+  Info, AlertTriangle, ArrowLeft, Sparkles, Edit, Home
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -10,6 +10,17 @@ import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliati
 
 interface AdminDashboardScreenProps {
   onBack: () => void;
+}
+
+interface HouseAffiliation {
+  id: string;
+  profile_id: string;
+  house_id: string;
+  affiliation_type: 'owner' | 'renter' | 'household_member' | 'caretaker';
+  is_primary: boolean;
+  houses?: {
+    house_number: string;
+  } | null;
 }
 
 interface Profile {
@@ -21,8 +32,9 @@ interface Profile {
   whatsapp_number: string;
   approval_status: 'pending' | 'approved' | 'suspended' | 'rejected';
   participant_type?: 'resident' | 'non_resident';
-  resident_subtype?: 'owner' | 'renter' | null;
+  resident_subtype?: 'owner' | 'renter' | 'household_member' | 'caretaker' | null;
   requested_affiliation?: string | null;
+  profile_house_affiliations?: HouseAffiliation[];
 }
 
 interface UserRole {
@@ -146,10 +158,19 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     house_number: '',
     whatsapp_number: '',
     participant_type: 'resident' as 'resident' | 'non_resident',
-    resident_subtype: 'owner' as 'owner' | 'renter' | '',
+    resident_subtype: 'owner' as 'owner' | 'renter' | 'household_member' | 'caretaker' | '',
     requested_affiliation: ''
   });
   const [editError, setEditError] = useState<string | null>(null);
+
+  // Multi-house affiliation states
+  const [manageAffiliationsProfile, setManageAffiliationsProfile] = useState<Profile | null>(null);
+  const [newAffiliation, setNewAffiliation] = useState({
+    house_number: '',
+    affiliation_type: 'household_member' as 'owner' | 'renter' | 'household_member' | 'caretaker',
+    is_primary: false
+  });
+  const [affiliationsError, setAffiliationsError] = useState<string | null>(null);
 
   // Determine if actor has rights to edit/approve profiles (admin or verifier only)
   const canManageProfiles = isAdmin || isVerifier;
@@ -258,7 +279,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       setLoading(true);
       let query = supabase
         .from('profiles')
-        .select('*', { count: 'exact' })
+        .select('*, profile_house_affiliations(*, houses(house_number))', { count: 'exact' })
         .not('participant_type', 'is', null);
 
       if (filterStatus !== 'all') {
@@ -321,7 +342,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       setLoading(true);
       let query = supabase
         .from('profiles')
-        .select('*', { count: 'exact' })
+        .select('*, profile_house_affiliations(*, houses(house_number))', { count: 'exact' })
         .eq('approval_status', 'approved');
 
       if (rolesFilterType !== 'all') {
@@ -374,7 +395,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       setLoading(true);
       let query = supabase
         .from('profiles')
-        .select('*', { count: 'exact' })
+        .select('*, profile_house_affiliations(*, houses(house_number))', { count: 'exact' })
         .eq('approval_status', 'approved');
 
       if (appGovFilterType !== 'all') {
@@ -583,6 +604,190 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     return null;
   };
 
+  const getSubtypeLabel = (value: string): string => {
+    if (value === 'owner') return 'Owner';
+    if (value === 'renter') return 'Renter';
+    if (value === 'household_member') return 'Household Member';
+    if (value === 'caretaker') return 'Caretaker';
+    return value;
+  };
+
+  const handleAddAffiliation = async () => {
+    if (!newAffiliation.house_number) {
+      setAffiliationsError('House number is required');
+      return;
+    }
+    setLoading(true);
+    setAffiliationsError(null);
+    try {
+      const { data: houseData } = await supabase
+        .from('houses')
+        .select('id')
+        .eq('house_number', newAffiliation.house_number)
+        .maybeSingle();
+
+      if (!houseData) {
+        throw new Error('Invalid house number');
+      }
+
+      if (newAffiliation.is_primary) {
+        await supabase
+          .from('profile_house_affiliations')
+          .update({ is_primary: false })
+          .eq('profile_id', manageAffiliationsProfile!.id);
+      }
+
+      const { error } = await supabase
+        .from('profile_house_affiliations')
+        .insert({
+          profile_id: manageAffiliationsProfile!.id,
+          house_id: houseData.id,
+          affiliation_type: newAffiliation.affiliation_type,
+          is_primary: newAffiliation.is_primary
+        });
+
+      if (error) throw error;
+
+      if (newAffiliation.is_primary) {
+        await supabase
+          .from('profiles')
+          .update({
+            house_number: newAffiliation.house_number,
+            resident_subtype: newAffiliation.affiliation_type
+          })
+          .eq('id', manageAffiliationsProfile!.id);
+      }
+
+      showToastBanner('Affiliation added successfully', 'success');
+      await refreshActiveTab();
+
+      const updatedProfile = profiles.find(p => p.id === manageAffiliationsProfile!.id);
+      if (updatedProfile) {
+        setManageAffiliationsProfile(updatedProfile);
+      } else {
+        const { data: directProfile } = await supabase
+          .from('profiles')
+          .select('*, profile_house_affiliations(*, houses(house_number))')
+          .eq('id', manageAffiliationsProfile!.id)
+          .maybeSingle();
+        if (directProfile) {
+          setManageAffiliationsProfile(directProfile);
+        }
+      }
+      setNewAffiliation({ house_number: '', affiliation_type: 'household_member', is_primary: false });
+    } catch (err: any) {
+      setAffiliationsError(err.message || 'Failed to add affiliation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAffiliation = async (affId: string, isPrimary: boolean) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profile_house_affiliations')
+        .delete()
+        .eq('id', affId);
+
+      if (error) throw error;
+
+      if (isPrimary && manageAffiliationsProfile) {
+        const remaining = manageAffiliationsProfile.profile_house_affiliations?.filter(a => a.id !== affId) || [];
+        if (remaining.length > 0) {
+          const newPrimaryId = remaining[0].id;
+          await supabase
+            .from('profile_house_affiliations')
+            .update({ is_primary: true })
+            .eq('id', newPrimaryId);
+
+          await supabase
+            .from('profiles')
+            .update({
+              house_number: remaining[0].houses?.house_number || null,
+              resident_subtype: remaining[0].affiliation_type || null
+            })
+            .eq('id', manageAffiliationsProfile.id);
+        } else {
+          await supabase
+            .from('profiles')
+            .update({
+              house_number: null,
+              resident_subtype: null
+            })
+            .eq('id', manageAffiliationsProfile.id);
+        }
+      }
+
+      showToastBanner('Affiliation removed successfully', 'success');
+      await refreshActiveTab();
+
+      const updatedProfile = profiles.find(p => p.id === manageAffiliationsProfile!.id);
+      if (updatedProfile) {
+        setManageAffiliationsProfile(updatedProfile);
+      } else {
+        const { data: directProfile } = await supabase
+          .from('profiles')
+          .select('*, profile_house_affiliations(*, houses(house_number))')
+          .eq('id', manageAffiliationsProfile!.id)
+          .maybeSingle();
+        if (directProfile) {
+          setManageAffiliationsProfile(directProfile);
+        }
+      }
+    } catch (err: any) {
+      showToastBanner(err.message || 'Failed to remove affiliation', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSetPrimaryAffiliation = async (aff: HouseAffiliation) => {
+    setLoading(true);
+    try {
+      await supabase
+        .from('profile_house_affiliations')
+        .update({ is_primary: false })
+        .eq('profile_id', manageAffiliationsProfile!.id);
+
+      const { error } = await supabase
+        .from('profile_house_affiliations')
+        .update({ is_primary: true })
+        .eq('id', aff.id);
+
+      if (error) throw error;
+
+      await supabase
+        .from('profiles')
+        .update({
+          house_number: aff.houses?.house_number || null,
+          resident_subtype: aff.affiliation_type || null
+        })
+        .eq('id', manageAffiliationsProfile!.id);
+
+      showToastBanner('Primary affiliation updated successfully', 'success');
+      await refreshActiveTab();
+
+      const updatedProfile = profiles.find(p => p.id === manageAffiliationsProfile!.id);
+      if (updatedProfile) {
+        setManageAffiliationsProfile(updatedProfile);
+      } else {
+        const { data: directProfile } = await supabase
+          .from('profiles')
+          .select('*, profile_house_affiliations(*, houses(house_number))')
+          .eq('id', manageAffiliationsProfile!.id)
+          .maybeSingle();
+        if (directProfile) {
+          setManageAffiliationsProfile(directProfile);
+        }
+      }
+    } catch (err: any) {
+      showToastBanner(err.message || 'Failed to set primary affiliation', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleStartEdit = (profile: Profile) => {
     setEditingProfileId(profile.id);
     setEditForm({
@@ -632,6 +837,36 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         .eq('id', profile.id);
 
       if (error) throw error;
+
+      if (profile.approval_status === 'approved' && editForm.participant_type === 'resident' && normHouse) {
+        const { data: houseData } = await supabase
+          .from('houses')
+          .select('id')
+          .eq('house_number', normHouse)
+          .maybeSingle();
+
+        if (houseData) {
+          const existingPrimary = profile.profile_house_affiliations?.find(a => a.is_primary);
+          if (existingPrimary) {
+            await supabase
+              .from('profile_house_affiliations')
+              .update({
+                house_id: houseData.id,
+                affiliation_type: editForm.resident_subtype
+              })
+              .eq('id', existingPrimary.id);
+          } else {
+            await supabase
+              .from('profile_house_affiliations')
+              .insert({
+                profile_id: profile.id,
+                house_id: houseData.id,
+                affiliation_type: editForm.resident_subtype,
+                is_primary: true
+              });
+          }
+        }
+      }
 
       // Log structured metadata showing before and after states
       await logGovernanceAction(
@@ -705,6 +940,28 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         .eq('id', profile.id);
 
       if (error) throw error;
+
+      if (profile.house_number && profile.resident_subtype) {
+        const { data: houseData } = await supabase
+          .from('houses')
+          .select('id')
+          .eq('house_number', profile.house_number)
+          .maybeSingle();
+
+        if (houseData) {
+          const { error: affilError } = await supabase
+            .from('profile_house_affiliations')
+            .insert({
+              profile_id: profile.id,
+              house_id: houseData.id,
+              affiliation_type: profile.resident_subtype,
+              is_primary: true
+            });
+          if (affilError) {
+            console.error('Failed to create onboarding house affiliation:', affilError);
+          }
+        }
+      }
 
       await logGovernanceAction(profile.id, 'approved_resident', 'Verification check passed', profile.email);
       showToastBanner('Resident globally approved successfully', 'success');
@@ -1062,6 +1319,149 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     );
   };
 
+  const renderManageAffiliationsModal = () => {
+    if (!manageAffiliationsProfile) return null;
+
+    const currentAffils = manageAffiliationsProfile.profile_house_affiliations || [];
+
+    return (
+      <div className="modal-overlay animate-fade-in" style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000
+      }}>
+        <div className="glassmorphic" style={{
+          width: '500px',
+          padding: '24px',
+          borderRadius: '16px',
+          backgroundColor: 'var(--bg-secondary)',
+          border: '1px solid var(--border-color)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '18px' }}>Manage House Affiliations</h3>
+            <button onClick={() => setManageAffiliationsProfile(null)} className="admin-btn secondary" style={{ padding: '6px 12px', minWidth: 'auto' }}>
+              <X style={{ width: '16px' }} />
+            </button>
+          </div>
+
+          <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: 0 }}>
+            Resident: <strong>{manageAffiliationsProfile.full_name}</strong> ({manageAffiliationsProfile.email})
+          </p>
+
+          <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {currentAffils.length === 0 ? (
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>No active house affiliations.</span>
+            ) : (
+              currentAffils.map(aff => (
+                <div key={aff.id} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--bg-primary)',
+                  border: '1px solid var(--border-color)'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>
+                      {aff.houses?.house_number} ({getSubtypeLabel(aff.affiliation_type)})
+                    </span>
+                    {aff.is_primary && (
+                      <span style={{ color: 'var(--primary)', fontSize: '11px', fontWeight: 600 }}>[Primary]</span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {!aff.is_primary && (
+                      <button 
+                        onClick={() => handleSetPrimaryAffiliation(aff)}
+                        className="admin-btn secondary" 
+                        style={{ fontSize: '12px', padding: '4px 8px', minWidth: 'auto' }}
+                      >
+                        Set Primary
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => handleDeleteAffiliation(aff.id, aff.is_primary)}
+                      className="admin-btn danger" 
+                      style={{ padding: '4px 8px', minWidth: 'auto' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+            <h4 style={{ margin: '0 0 12px 0', fontSize: '14px' }}>Add Affiliation</h4>
+            <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px' }}>House No.</label>
+                  <select
+                    value={newAffiliation.house_number}
+                    onChange={(e) => setNewAffiliation(prev => ({ ...prev, house_number: e.target.value }))}
+                    className="search-input"
+                    style={{ width: '100%', padding: '6px 10px', fontSize: '13px', margin: 0 }}
+                  >
+                    <option value="">-- Select --</option>
+                    {houseOptions.map(num => (
+                      <option key={num} value={num}>{num}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px' }}>Relationship</label>
+                  <select
+                    value={newAffiliation.affiliation_type}
+                    onChange={(e) => setNewAffiliation(prev => ({ ...prev, affiliation_type: e.target.value as any }))}
+                    className="search-input"
+                    style={{ width: '100%', padding: '6px 10px', fontSize: '13px', margin: 0 }}
+                  >
+                    <option value="owner">Owner</option>
+                    <option value="renter">Renter</option>
+                    <option value="household_member">Household Member</option>
+                    <option value="caretaker">Caretaker</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                <input 
+                  type="checkbox" 
+                  id="new_aff_primary" 
+                  checked={newAffiliation.is_primary} 
+                  onChange={(e) => setNewAffiliation(prev => ({ ...prev, is_primary: e.target.checked }))} 
+                />
+                <label htmlFor="new_aff_primary" style={{ fontSize: '13px', userSelect: 'none' }}>Mark as Primary Affiliation</label>
+              </div>
+              {affiliationsError && (
+                <span style={{ color: 'var(--danger)', fontSize: '12px', marginTop: '4px' }}>{affiliationsError}</span>
+              )}
+              <button 
+                onClick={handleAddAffiliation}
+                className="admin-btn primary" 
+                style={{ marginTop: '8px', width: '100%' }}
+              >
+                Add Affiliation
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="admin-dashboard-layout animate-fade-in">
       {/* Glow Backdrop Accent */}
@@ -1202,6 +1602,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                       <option value="all">All Subtypes</option>
                       <option value="owner">Owner</option>
                       <option value="renter">Renter</option>
+                      <option value="household_member">Household Member</option>
+                      <option value="caretaker">Caretaker</option>
                     </select>
                   </div>
                 )}
@@ -1273,6 +1675,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                       >
                                         <option value="owner">Owner</option>
                                         <option value="renter">Renter</option>
+                                        <option value="household_member">Household Member</option>
+                                        <option value="caretaker">Caretaker</option>
                                       </select>
                                     </div>
                                     <div>
@@ -1315,13 +1719,29 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 {editError && <span style={{ color: 'var(--danger)', fontSize: '11px' }}>{editError}</span>}
                               </div>
                             ) : (
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                {profile.participant_type === 'non_resident' ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                {profile.participant_type === 'non_resident' && (
                                   <span style={{ fontWeight: 600, color: 'var(--pending)' }}>
                                     {getAffiliationLabel(profile.requested_affiliation || 'Non-Resident Staff')}
                                   </span>
+                                )}
+                                {profile.profile_house_affiliations && profile.profile_house_affiliations.length > 0 ? (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    {profile.profile_house_affiliations.map(aff => (
+                                      <span key={aff.id} style={{ fontSize: '13px' }}>
+                                        {aff.houses?.house_number} ({getSubtypeLabel(aff.affiliation_type)})
+                                        {aff.is_primary && <span style={{ color: 'var(--primary)', marginLeft: '4px', fontSize: '10px', fontWeight: 600 }}>[Primary]</span>}
+                                      </span>
+                                    ))}
+                                  </div>
                                 ) : (
-                                  <span>{profile.house_number}</span>
+                                  profile.house_number ? (
+                                    <span>
+                                      {profile.house_number} ({getSubtypeLabel(profile.resident_subtype || '')})
+                                    </span>
+                                  ) : (
+                                    <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>
+                                  )
                                 )}
                                 {houseEditEvent && (
                                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }} title={`Edited: ${houseEditEvent.reason}`}>
@@ -1397,6 +1817,18 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                       <Edit style={{ width: '14px' }} />
                                       <span>Edit</span>
                                     </button>
+
+                                    {profile.approval_status === 'approved' && profile.participant_type === 'resident' && (
+                                      <button 
+                                        onClick={() => setManageAffiliationsProfile(profile)}
+                                        className="admin-btn secondary"
+                                        style={{ borderColor: 'var(--primary)' }}
+                                        title="Manage multiple house affiliations"
+                                      >
+                                        <Home style={{ width: '14px' }} />
+                                        <span>Houses</span>
+                                      </button>
+                                    )}
 
                                     {profile.approval_status === 'pending' && (
                                       <>
@@ -1892,6 +2324,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           </div>
         </div>
       )}
+      {manageAffiliationsProfile && renderManageAffiliationsModal()}
     </div>
   );
 }

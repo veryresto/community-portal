@@ -4,10 +4,18 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
 
+const getSubtypeLabel = (value: string): string => {
+  if (value === 'owner') return 'Owner';
+  if (value === 'renter') return 'Renter';
+  if (value === 'household_member') return 'Household Member';
+  if (value === 'caretaker') return 'Caretaker';
+  return value;
+};
+
 export function PendingApprovalScreen() {
   const { user, signOut } = useAuth();
   const [participantType, setParticipantType] = useState<'resident' | 'non_resident'>('resident');
-  const [residentSubtype, setResidentSubtype] = useState<'owner' | 'renter'>('owner');
+  const [residentSubtype, setResidentSubtype] = useState<'owner' | 'renter' | 'household_member' | 'caretaker'>('owner');
   const [houseNumber, setHouseNumber] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [requestedAffiliation, setRequestedAffiliation] = useState('');
@@ -121,6 +129,10 @@ export function PendingApprovalScreen() {
         showToast('Affiliation selection is required', 'error');
         return;
       }
+      if (houseNumber && !residentSubtype) {
+        showToast('Relationship to the associated house is required', 'error');
+        return;
+      }
     }
 
     if (whatsappNumber && whatsappNumber.length > 25) {
@@ -138,8 +150,8 @@ export function PendingApprovalScreen() {
         .from('profiles')
         .update({
           participant_type: participantType,
-          resident_subtype: participantType === 'resident' ? residentSubtype : null,
-          house_number: participantType === 'resident' ? houseNumber.trim() : null,
+          resident_subtype: (participantType === 'resident' || (participantType === 'non_resident' && houseNumber)) ? residentSubtype : null,
+          house_number: houseNumber ? houseNumber.trim() : null,
           requested_affiliation: participantType === 'non_resident' ? finalAffiliation : null,
           whatsapp_number: whatsappNumber.trim() || null,
           approval_status: 'pending', // Explicitly mark status as pending on submission
@@ -159,9 +171,9 @@ export function PendingApprovalScreen() {
         // Construct description to send via the houseNumber email field
         let customDesc = '';
         if (participantType === 'resident') {
-          customDesc = `Resident ${residentSubtype === 'owner' ? 'Owner' : 'Renter'} (House: ${houseNumber.trim()})`;
+          customDesc = `Resident ${getSubtypeLabel(residentSubtype)} (House: ${houseNumber.trim()})`;
         } else {
-          customDesc = `Non-Resident (${finalAffiliation})`;
+          customDesc = `Non-Resident (${finalAffiliation})${houseNumber ? ` (Associated House: ${houseNumber.trim()} as ${getSubtypeLabel(residentSubtype)})` : ''}`;
         }
 
         try {
@@ -234,16 +246,16 @@ export function PendingApprovalScreen() {
               <div className="saved-details">
                 <div className="detail-row" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
                   <span className="row-label">Classification:</span>
-                  <span className="row-value" style={{ textTransform: 'capitalize' }}>
+                  <span className="row-value">
                     {savedParticipantType === 'resident'
-                      ? `Resident (${savedResidentSubtype || ''})`
+                      ? `Resident (${getSubtypeLabel(savedResidentSubtype || '')})`
                       : 'Non-Resident'}
                   </span>
                 </div>
                 {savedParticipantType === 'resident' && savedHouseNumber && (
                   <div className="detail-row">
                     <Home className="row-icon" />
-                    <span className="row-label">Registered House Number:</span>
+                    <span className="row-label">Registered House:</span>
                     <span className="row-value">{savedHouseNumber}</span>
                   </div>
                 )}
@@ -252,6 +264,15 @@ export function PendingApprovalScreen() {
                     <span className="row-label">Requested Affiliation:</span>
                     <span className="row-value">
                       {getAffiliationLabel(savedRequestedAffiliation)}
+                    </span>
+                  </div>
+                )}
+                {savedParticipantType === 'non_resident' && savedHouseNumber && (
+                  <div className="detail-row">
+                    <Home className="row-icon" />
+                    <span className="row-label">Associated House:</span>
+                    <span className="row-value">
+                      {savedHouseNumber} ({getSubtypeLabel(savedResidentSubtype || '')})
                     </span>
                   </div>
                 )}
@@ -329,49 +350,34 @@ export function PendingApprovalScreen() {
               {participantType === 'resident' && (
                 <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '4px' }}>
                   <div className="form-group">
-                    <label style={{ fontSize: '13px', fontWeight: 600 }}>Resident Subtype <span className="required-star">*</span></label>
-                    <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                      <button
-                        type="button"
-                        className={`segment-btn ${residentSubtype === 'owner' ? 'active' : ''}`}
-                        onClick={() => setResidentSubtype('owner')}
-                        style={{
-                          flex: 1,
-                          padding: '10px',
-                          borderRadius: '10px',
-                          border: '1px solid',
-                          borderColor: residentSubtype === 'owner' ? 'var(--primary)' : 'var(--border-color)',
-                          backgroundColor: residentSubtype === 'owner' ? 'var(--primary-glow)' : 'var(--bg-secondary)',
-                          color: residentSubtype === 'owner' ? 'var(--primary)' : 'var(--text-secondary)',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '13px'
-                        }}
-                      >
-                        Owner
-                      </button>
-                      <button
-                        type="button"
-                        className={`segment-btn ${residentSubtype === 'renter' ? 'active' : ''}`}
-                        onClick={() => setResidentSubtype('renter')}
-                        style={{
-                          flex: 1,
-                          padding: '10px',
-                          borderRadius: '10px',
-                          border: '1px solid',
-                          borderColor: residentSubtype === 'renter' ? 'var(--primary)' : 'var(--border-color)',
-                          backgroundColor: residentSubtype === 'renter' ? 'var(--primary-glow)' : 'var(--bg-secondary)',
-                          color: residentSubtype === 'renter' ? 'var(--primary)' : 'var(--text-secondary)',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '13px'
-                        }}
-                      >
-                        Renter
-                      </button>
-                    </div>
+                    <label htmlFor="residentSubtype">
+                      <span>Relationship To House <span className="required-star">*</span></span>
+                    </label>
+                    <select
+                      id="residentSubtype"
+                      value={residentSubtype}
+                      onChange={(e) => setResidentSubtype(e.target.value as any)}
+                      required
+                      disabled={loading}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--bg-secondary)',
+                        color: 'var(--text-primary)',
+                        fontSize: '14px',
+                        fontFamily: 'var(--font-sans)',
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                        marginTop: '8px'
+                      }}
+                    >
+                      <option value="owner">Owner</option>
+                      <option value="renter">Renter</option>
+                      <option value="household_member">Household Member</option>
+                      <option value="caretaker">Caretaker</option>
+                    </select>
                   </div>
 
                   <div className="form-group">
@@ -440,6 +446,76 @@ export function PendingApprovalScreen() {
                       ))}
                     </select>
                   </div>
+
+                  <div className="form-group">
+                    <label htmlFor="associatedHouse">
+                      <Home className="input-label-icon" />
+                      <span>Associated House (Optional)</span>
+                    </label>
+                    <select
+                      id="associatedHouse"
+                      value={houseNumber}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setHouseNumber(val);
+                        if (!val) {
+                          setResidentSubtype('owner'); // Reset/default
+                        }
+                      }}
+                      disabled={loading}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--bg-secondary)',
+                        color: 'var(--text-primary)',
+                        fontSize: '14px',
+                        fontFamily: 'var(--font-sans)',
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                        marginTop: '8px'
+                      }}
+                    >
+                      <option value="">-- No House Associated --</option>
+                      {houseOptions.map(num => (
+                        <option key={num} value={num}>{num}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {houseNumber && (
+                    <div className="form-group animate-slide-up">
+                      <label htmlFor="associatedRelationship">
+                        <span>Relationship To House <span className="required-star">*</span></span>
+                      </label>
+                      <select
+                        id="associatedRelationship"
+                        value={residentSubtype}
+                        onChange={(e) => setResidentSubtype(e.target.value as any)}
+                        required
+                        disabled={loading}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          borderRadius: '12px',
+                          border: '1px solid var(--border-color)',
+                          backgroundColor: 'var(--bg-secondary)',
+                          color: 'var(--text-primary)',
+                          fontSize: '14px',
+                          fontFamily: 'var(--font-sans)',
+                          outline: 'none',
+                          transition: 'border-color 0.2s',
+                          marginTop: '8px'
+                        }}
+                      >
+                        <option value="owner">Owner</option>
+                        <option value="renter">Renter</option>
+                        <option value="household_member">Household Member</option>
+                        <option value="caretaker">Caretaker</option>
+                      </select>
+                    </div>
+                  )}
 
 
                 </div>
