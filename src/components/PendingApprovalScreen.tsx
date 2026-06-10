@@ -146,8 +146,8 @@ export function PendingApprovalScreen() {
         .from('profiles')
         .update({
           participant_type: participantType,
-          resident_subtype: participantType === 'resident' 
-            ? residentSubtype 
+          resident_subtype: participantType === 'resident'
+            ? residentSubtype
             : (houseNumber ? 'caretaker' : null),
           house_number: houseNumber ? houseNumber.trim() : null,
           requested_affiliation: participantType === 'non_resident' ? finalAffiliation : null,
@@ -524,7 +524,6 @@ export function PendingApprovalScreen() {
                   maxLength={25}
                   disabled={loading}
                 />
-                <span className="input-hint">{t('waiting_room.whatsapp_hint')}</span>
               </div>
 
               <button
