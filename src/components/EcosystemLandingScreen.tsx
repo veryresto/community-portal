@@ -20,6 +20,10 @@ export function EcosystemLandingScreen() {
     return sessionStorage.getItem('current_view') === 'admin_dashboard';
   });
 
+  useEffect(() => {
+    analytics.track('page_viewed', { page: 'community_platform' });
+  }, []);
+
   const handleOpenAdmin = () => {
     setShowAdminDashboard(true);
     sessionStorage.setItem('current_view', 'admin_dashboard');
