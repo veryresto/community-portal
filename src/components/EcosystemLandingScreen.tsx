@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { AdminDashboardScreen } from './AdminDashboardScreen';
 import { getAffiliationLabel } from '../constants/affiliations';
 import { t } from '../lib/i18n';
+import * as analytics from '../lib/analytics';
 
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
@@ -232,6 +233,11 @@ export function EcosystemLandingScreen() {
                         target="_blank"
                         rel="noreferrer"
                         className="app-launch-btn"
+                        onClick={() => {
+                          analytics.track('application_opened', {
+                            application: app.name === 'IPL Finder' ? 'ipl_finder' : 'rekap_viewer'
+                          });
+                        }}
                       >
                         <span>{t('landing.launch_app')}</span>
                         <ExternalLink className="launch-icon" />

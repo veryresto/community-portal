@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import * as analytics from '../lib/analytics';
 
 interface AuthContextType {
   user: User | null;
@@ -12,6 +13,24 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const checkAndTrackSignUp = (currentUser: User) => {
+  try {
+    const signUpTrackedKey = `signUpTracked_${currentUser.id}`;
+    if (!localStorage.getItem(signUpTrackedKey)) {
+      const createdAt = new Date(currentUser.created_at).getTime();
+      const lastSignIn = new Date(currentUser.last_sign_in_at || '').getTime();
+      if (Math.abs(lastSignIn - createdAt) < 10000) {
+        localStorage.setItem(signUpTrackedKey, 'true');
+        analytics.track('user_signed_up', {
+          provider: currentUser.app_metadata?.provider || 'google',
+        }).catch(() => {});
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -25,6 +44,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         setLoading(false);
+        if (currentSession?.user) {
+          checkAndTrackSignUp(currentSession.user);
+        }
       }
     );
 
@@ -36,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Track last activity on app open
       if (currentSession?.user) {
+        checkAndTrackSignUp(currentSession.user);
         supabase
           .from('profiles')
           .update({ last_active_at: new Date().toISOString() })

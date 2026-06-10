@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
 import { t } from '../lib/i18n';
+import * as analytics from '../lib/analytics';
 
 const getSubtypeLabel = (value: string): string => {
   const key = `house_relationships.${value}.label`;
@@ -156,6 +157,11 @@ export function PendingApprovalScreen() {
         .eq('id', user?.id);
 
       if (error) throw error;
+
+      analytics.track('profile_completed', {
+        has_house_number: !!houseNumber,
+        has_whatsapp_number: !!whatsappNumber
+      });
 
       setSavedParticipantType(participantType);
       setSavedResidentSubtype(participantType === 'resident' ? residentSubtype : null);
