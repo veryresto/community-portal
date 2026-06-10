@@ -7,7 +7,6 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { usePermissions } from '../hooks/usePermissions';
 import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
-import * as analytics from '../lib/analytics';
 
 interface AdminDashboardScreenProps {
   onBack: () => void;
@@ -962,10 +961,6 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       if (error) throw error;
 
-      analytics.track('resident_approved', {
-        target_user_id: profile.id
-      });
-
       if (profile.house_number && profile.resident_subtype) {
         const { data: houseData } = await supabase
           .from('houses')
@@ -1025,12 +1020,6 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
         .eq('id', profile.id);
 
       if (error) throw error;
-
-      if (action === 'reject') {
-        analytics.track('resident_rejected', {
-          target_user_id: profile.id
-        });
-      }
 
       // If user is rejected or suspended, we also revoke all their assigned app role templates
       if (targetStatus === 'suspended' || targetStatus === 'rejected') {
