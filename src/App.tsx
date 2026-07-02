@@ -72,20 +72,17 @@ function MainAppContent() {
 const ALLOWED_ORIGINS = [
   'http://localhost:8080',
   'http://localhost:5173',
+
   'http://ipl-finder.localtest.me:8080',
   'http://community.localtest.me:5173',
   'http://rekap.localtest.me:3000',
   'http://docs.localtest.me:3001',
-  'https://ipl-finder-sr3.netlify.app',
+
   'https://rekap.veryresto.com',
   'https://ipl-finder.veryresto.com',
   'https://community.veryresto.com',
   'https://docs.veryresto.com',
-  'https://info.veryresto.com',
-  'https://ipl-finder.fly.dev',
-  'http://as-macbook-pro.tailc513e0.ts.net:5173',
-  'http://as-macbook-pro.tailc513e0.ts.net:8080',
-  'http://as-macbook-pro.tailc513e0.ts.net:3000'
+  'https://info.veryresto.com'
 ];
 
 const getValidatedRedirectUrl = (urlParam: string | null): string | null => {
