@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, LayoutGrid, FileText, CheckCircle2, User as UserIcon, ExternalLink, HelpCircle, Shield } from 'lucide-react';
+import { LogOut, LayoutGrid, FileText, CheckCircle2, User as UserIcon, ExternalLink, HelpCircle, Shield, FolderOpen } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { usePermissions } from '../hooks/usePermissions';
 import { supabase } from '../lib/supabase';
@@ -70,9 +70,14 @@ export function EcosystemLandingScreen() {
     ? (import.meta.env.VITE_REKAP_VIEWER_URL || 'http://rekap.localtest.me:3000')
     : (import.meta.env.VITE_REKAP_VIEWER_URL || 'https://rekap.veryresto.com');
 
+  const communityDocsUrl = isLocal
+    ? (import.meta.env.VITE_COMMUNITY_DOCS_URL || 'http://docs.localtest.me:3001')
+    : (import.meta.env.VITE_COMMUNITY_DOCS_URL || 'https://info.veryresto.com');
+
   const apps = [
     {
       name: 'IPL Finder',
+      slug: 'ipl_finder',
       description: t('landing.apps.ipl_finder.description'),
       icon: FileText,
       status: 'active',
@@ -81,6 +86,7 @@ export function EcosystemLandingScreen() {
     },
     {
       name: 'Rekap Viewer',
+      slug: 'rekap_viewer',
       description: t('landing.apps.rekap_viewer.description'),
       icon: LayoutGrid,
       status: 'active',
@@ -88,7 +94,17 @@ export function EcosystemLandingScreen() {
       link: rekapViewerUrl,
     },
     {
+      name: 'Community Documents',
+      slug: 'community_docs',
+      description: t('landing.apps.community_docs.description'),
+      icon: FolderOpen,
+      status: 'active',
+      badgeText: 'Live',
+      link: communityDocsUrl,
+    },
+    {
       name: 'Kas Management',
+      slug: 'kas_management',
       description: t('landing.apps.kas_management.description'),
       icon: HelpCircle,
       status: 'planned',
@@ -97,6 +113,7 @@ export function EcosystemLandingScreen() {
     },
     {
       name: 'Surat Administration',
+      slug: 'surat_admin',
       description: t('landing.apps.surat_admin.description'),
       icon: HelpCircle,
       status: 'planned',
@@ -239,7 +256,7 @@ export function EcosystemLandingScreen() {
                         className="app-launch-btn"
                         onClick={() => {
                           analytics.track('application_opened', {
-                            application: app.name === 'IPL Finder' ? 'ipl_finder' : 'rekap_viewer'
+                            application: app.slug
                           });
                         }}
                       >

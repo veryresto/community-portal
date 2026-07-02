@@ -102,6 +102,9 @@
       "rekap_viewer": {
         "description": "Fly.io cached backend display for Sheets logs, reports, and real-time community summaries."
       },
+      "community_docs": {
+        "description": "Governed, searchable access to official community documents, handbook regulations, and meeting records."
+      },
       "kas_management": {
         "description": "Decentralized cashbook treasury, monthly billing tracking, and balance sheet reporting."
       },

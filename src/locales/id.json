@@ -102,6 +102,9 @@
       "rekap_viewer": {
         "description": "Tampilan log spreadsheet, laporan keuangan, dan rekapitulasi data warga secara langsung."
       },
+      "community_docs": {
+        "description": "Akses aman dan teratur ke dokumen resmi lingkungan, peraturan tata tertib warga, dan risalah rapat."
+      },
       "kas_management": {
         "description": "Pembukuan kas mandiri, pelacakan tagihan bulanan warga, dan laporan neraca keuangan."
       },
