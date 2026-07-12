@@ -9,6 +9,8 @@ export default defineConfig({
     allowedHosts: [
       "community.lvh.me",
       "community.localtest.me",
+      "portal.lvh.me",
+      "portal.localtest.me",
       "localhost",
       "as-macbook-pro.tailc513e0.ts.net",
       ".tailc513e0.ts.net"

@@ -75,12 +75,14 @@ const ALLOWED_ORIGINS = [
 
   'http://ipl-finder.localtest.me:8080',
   'http://community.localtest.me:5173',
+  'http://portal.localtest.me:5173',
   'http://rekap.localtest.me:3000',
   'http://docs.localtest.me:3001',
 
   'https://rekap.veryresto.com',
   'https://ipl-finder.veryresto.com',
   'https://community.veryresto.com',
+  'https://portal.veryresto.com',
   'https://docs.veryresto.com',
   'https://info.veryresto.com'
 ];

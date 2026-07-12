@@ -2,7 +2,7 @@
 
 This document visualizes the authentication and authorization flow across the Veryresto ecosystem, as specified in the [Veryresto Identity Protocol](./veryresto-identity-protocol.md).
 
-It details how the **Community Platform (Portal)** acting as the central Identity Provider (IdP) interacts with **Ecosystem Apps** (like IPL Finder, Rekap, etc.), **Supabase**, and the **Google OAuth** provider.
+It details how the **Community Portal** acting as the central Identity Provider (IdP) interacts with **Ecosystem Apps** (like IPL Finder, Rekap, etc.), **Supabase**, and the **Google OAuth** provider.
 
 ---
 

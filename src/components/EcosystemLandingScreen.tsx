@@ -21,7 +21,7 @@ export function EcosystemLandingScreen() {
   });
 
   useEffect(() => {
-    analytics.track('page_viewed', { page: 'community_platform' });
+    analytics.track('page_viewed', { page: 'community_portal' });
   }, []);
 
   const handleOpenAdmin = () => {

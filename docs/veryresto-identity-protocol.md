@@ -21,7 +21,7 @@ The Veryresto ecosystem uses a **centralized identity provider (IdP)** model.
                      └──────────────────┬───────────────────┘
                                         │
                      ┌──────────────────▼───────────────────┐
-                     │     Community Platform (Portal)       │
+                     │      Community Portal (Identity)      │
                      │      community.veryresto.com          │
                      │                                       │
                      │  • The only app that initiates OAuth  │
@@ -151,7 +151,7 @@ Stored in `public.profiles.approval_status` in the shared Supabase database.
 | Status | Meaning | Required App Behavior |
 |---|---|---|
 | `pending` | New account, awaiting admin review | Deny access. Optionally show a "waiting for approval" message. |
-| `approved` | Resident verified by platform admin | Grant access. |
+| `approved` | Resident verified by portal admin | Grant access. |
 | `rejected` | Account explicitly denied | Deny access. Show a rejection message. |
 | `suspended` | Account suspended post-approval | Deny access. Treat as rejected. |
 
@@ -186,7 +186,7 @@ public.profiles (
 
 ## 5. RBAC Contract
 
-Beyond the platform-level approval gate, apps can define their own **fine-grained permissions** using the shared RBAC system.
+Beyond the portal-level approval gate, apps can define their own **fine-grained permissions** using the shared RBAC system.
 
 ### Concepts
 
@@ -230,15 +230,15 @@ SELECT public.has_namespaced_permission(
 
 ### Global Roles
 
-Some users hold platform-level roles independent of any app:
+Some users hold portal-level roles independent of any app:
 
 | Role | Description |
 |---|---|
-| `admin` | Full platform administrator. Has all permissions in all apps. |
+| `admin` | Full portal administrator. Has all permissions in all apps. |
 | `resident_verifier` | Can review and approve/reject resident registrations. |
 | `platform_moderator` | Can moderate content and users. |
 
-Global roles are stored in `public.user_roles`. Apps may query this table directly if they need to branch on platform-level authority, but most apps should use `has_namespaced_permission` instead.
+Global roles are stored in `public.user_roles`. Apps may query this table directly if they need to branch on portal-level authority, but most apps should use `has_namespaced_permission` instead.
 
 ### App Registration Requirement
 

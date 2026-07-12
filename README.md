@@ -1,9 +1,9 @@
-# Community Platform
+# Community Portal
 
 The **Veryresto Identity Portal** — the centralized authentication and identity management hub for the Veryresto resident ecosystem.
 
 **Live:** [community.veryresto.com](https://community.veryresto.com)  
-**GitHub:** [veryresto/community-platform](https://github.com/veryresto/community-platform)
+**GitHub:** [veryresto/community-portal](https://github.com/veryresto/community-portal)
 
 ---
 
@@ -22,7 +22,7 @@ This is the **single sign-on portal** for all Veryresto resident applications. I
 
 | App | URL | Status |
 |---|---|---|
-| Community Platform (this) | `community.veryresto.com` | ✅ Live |
+| Community Portal (this) | `community.veryresto.com` | ✅ Live |
 | IPL Finder | `ipl-finder.veryresto.com` | ✅ Live |
 | Rekap Viewer | `rekap.veryresto.com` | ✅ Live |
 | Kas Management | — | 📋 Planned |
@@ -80,8 +80,8 @@ The platform features a lightweight path-based internationalization (i18n) layer
 ### Setup
 
 ```bash
-git clone https://github.com/veryresto/community-platform.git
-cd community-platform
+git clone https://github.com/veryresto/community-portal.git
+cd community-portal
 npm install
 cp .env.example .env
 # Fill in your Supabase credentials in .env
@@ -141,7 +141,7 @@ Config: [`fly.toml`](./fly.toml) — app name `community-veryresto`, region `sin
 ## Project Structure
 
 ```
-community-platform/
+community-portal/
   src/
     components/
       LoginScreen.tsx           # Google sign-in UI

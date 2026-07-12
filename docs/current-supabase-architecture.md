@@ -1,10 +1,10 @@
 # Current Supabase Schema & Governance Architecture
 
-This document describes the current architecture of the Supabase project, database schema, relationships, governance model, and permission system for the `community-platform`. It serves as the ground truth for future redesigns and platform evolution.
+This document describes the current architecture of the Supabase project, database schema, relationships, governance model, and permission system for the `community-portal`. It serves as the ground truth for future redesigns and platform evolution.
 
 ## 1. High-Level Architecture Overview
 
-The `community-platform` utilizes Supabase for identity, authentication, and core relational data. The architecture implements a hybrid governance model featuring both Global RBAC (Role-Based Access Control) and App-Specific RBAC, alongside legacy compatibility layers.
+The `community-portal` utilizes Supabase for identity, authentication, and core relational data. The architecture implements a hybrid governance model featuring both Global RBAC (Role-Based Access Control) and App-Specific RBAC, alongside legacy compatibility layers.
 
 *   **Supabase Auth**: Manages core identities, credentials, and sessions. Supabase owns the `auth.users` table.
 *   **Profiles & Approval**: The platform extends identities via a `public.profiles` table, mapping 1-to-1 with `auth.users`. It tracks basic user information and, crucially, an `approval_status` ('pending', 'approved', 'suspended', 'rejected').

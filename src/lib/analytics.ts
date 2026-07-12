@@ -11,7 +11,7 @@ export async function track(
 
     await supabase.from('analytics_events').insert({
       user_id: user.id,
-      app_slug: 'community_platform',
+      app_slug: 'community_portal',
       event_name: eventName,
       properties,
     });
