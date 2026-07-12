@@ -12,6 +12,12 @@ RUN npm ci
 # Copy the rest of the application files
 COPY . .
 
+# Accept Supabase environment variables at build-time
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+
 # Build production static assets (this reads .env variables at build time)
 RUN npm run build
 
