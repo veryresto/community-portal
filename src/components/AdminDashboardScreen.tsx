@@ -1559,14 +1559,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       {/* Tab Panels */}
       <div className="admin-content-card glassmorphic animate-slide-up">
-        {loading && (
-          <div className="loading-container">
-            <span className="spinner"></span>
-            <p>Fetching platform data...</p>
-          </div>
-        )}
-
-        {!loading && activeTab === 'approvals' && (
+        {activeTab === 'approvals' && (
           <div>
             <div className="admin-section-header">
               <h2>Resident Approvals & Waiting Room</h2>
@@ -1633,7 +1626,12 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               </div>
             </div>
 
-            {profiles.length === 0 ? (
+            {loading ? (
+              <div className="loading-container" style={{ padding: '40px 0' }}>
+                <span className="spinner"></span>
+                <p>Fetching platform data...</p>
+              </div>
+            ) : profiles.length === 0 ? (
               <div className="empty-state">
                 <Users className="empty-icon" />
                 <p>No residents match the active search criteria.</p>
@@ -1948,7 +1946,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           </div>
         )}
 
-        {!loading && activeTab === 'roles' && (
+        {activeTab === 'roles' && (
           <div>
             <div className="admin-section-header">
               <h2>Global Privileged Roles</h2>
@@ -1998,7 +1996,12 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               </div>
             </div>
 
-            {profiles.length === 0 ? (
+            {loading ? (
+              <div className="loading-container" style={{ padding: '40px 0' }}>
+                <span className="spinner"></span>
+                <p>Fetching platform data...</p>
+              </div>
+            ) : profiles.length === 0 ? (
               <div className="empty-state">
                 <Shield className="empty-icon" />
                 <p>No approved users match the active search criteria.</p>
@@ -2101,7 +2104,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           </div>
         )}
 
-        {!loading && activeTab === 'app_governance' && (
+        {activeTab === 'app_governance' && (
           <div>
             <div className="admin-section-header">
               <h2>App Access Governance (App-RBAC)</h2>
@@ -2147,7 +2150,11 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                   </div>
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto' }}>
-                  {profiles.length === 0 ? (
+                  {loading ? (
+                    <div className="loading-container" style={{ padding: '20px 0' }}>
+                      <span className="spinner" style={{ width: '24px', height: '24px' }}></span>
+                    </div>
+                  ) : profiles.length === 0 ? (
                     <div style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
                       No approved residents found.
                     </div>
@@ -2264,7 +2271,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
           </div>
         )}
 
-        {!loading && activeTab === 'audit' && (
+        {activeTab === 'audit' && (
           <div>
             <div className="admin-section-header">
               <h2>Ecosystem Governance Logs</h2>
@@ -2281,7 +2288,12 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               />
             </div>
 
-            {auditLogs.length === 0 ? (
+            {loading ? (
+              <div className="loading-container" style={{ padding: '40px 0' }}>
+                <span className="spinner"></span>
+                <p>Fetching platform data...</p>
+              </div>
+            ) : auditLogs.length === 0 ? (
               <div className="empty-state">
                 <Activity className="empty-icon" />
                 <p>No audit logging records matched your search query.</p>
