@@ -275,6 +275,46 @@ export function EcosystemLandingScreen() {
           </div>
         </section>
       </main>
+
+      <footer style={{
+        marginTop: '40px',
+        padding: '24px 0 16px',
+        borderTop: '1px solid var(--border-color)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '12px',
+        fontSize: '12px',
+        color: 'var(--text-muted)'
+      }}>
+        <span>Veryresto Portal</span>
+        <span>•</span>
+        <a 
+          href={`https://github.com/veryresto/community-platform/releases/tag/v${import.meta.env.VITE_APP_VERSION || '1.0.0'}`}
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+        >
+          v{import.meta.env.VITE_APP_VERSION || '1.0.0'}
+        </a>
+        {import.meta.env.VITE_GIT_SHA && import.meta.env.VITE_GIT_SHA !== 'undefined' && (
+          <>
+            <span>•</span>
+            <a 
+              href={`https://github.com/veryresto/community-platform/commit/${import.meta.env.VITE_GIT_SHA}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: 'var(--text-muted)', textDecoration: 'none', fontFamily: 'monospace' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+            >
+              {import.meta.env.VITE_GIT_SHA.substring(0, 7)}
+            </a>
+          </>
+        )}
+      </footer>
     </div>
   );
 }
