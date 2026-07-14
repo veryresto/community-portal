@@ -28,3 +28,7 @@ dist-ssr
 
 # Supabase
 supabase/.temp/
+
+# Generated build files
+src/generated/
+

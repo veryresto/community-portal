@@ -7,6 +7,7 @@ import { AdminDashboardScreen } from './AdminDashboardScreen';
 import { getAffiliationLabel } from '../constants/affiliations';
 import { t } from '../lib/i18n';
 import * as analytics from '../lib/analytics';
+import { buildInfo } from '../generated/build-info';
 
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
@@ -281,39 +282,49 @@ export function EcosystemLandingScreen() {
         padding: '24px 0 16px',
         borderTop: '1px solid var(--border-color)',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: '12px',
+        gap: '6px',
         fontSize: '12px',
         color: 'var(--text-muted)'
       }}>
-        <span>Veryresto Portal</span>
-        <span>•</span>
-        <a 
-          href={`https://github.com/veryresto/community-platform/releases/tag/v${import.meta.env.VITE_APP_VERSION || '1.0.0'}`}
-          target="_blank"
-          rel="noreferrer"
-          style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-        >
-          v{import.meta.env.VITE_APP_VERSION || '1.0.0'}
-        </a>
-        {import.meta.env.VITE_GIT_SHA && import.meta.env.VITE_GIT_SHA !== 'undefined' && (
-          <>
-            <span>•</span>
-            <a 
-              href={`https://github.com/veryresto/community-platform/commit/${import.meta.env.VITE_GIT_SHA}`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: 'var(--text-muted)', textDecoration: 'none', fontFamily: 'monospace' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-            >
-              {import.meta.env.VITE_GIT_SHA.substring(0, 7)}
-            </a>
-          </>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span>Veryresto Portal</span>
+          <span>•</span>
+          <a 
+            href={`https://github.com/veryresto/community-platform/releases/tag/v${buildInfo.version}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            v{buildInfo.version}
+          </a>
+          {buildInfo.gitCommitSha && buildInfo.gitCommitSha !== 'unknown' && (
+            <>
+              <span>•</span>
+              <a 
+                href={`https://github.com/veryresto/community-platform/commit/${buildInfo.gitCommitSha}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ color: 'var(--text-muted)', textDecoration: 'none', fontFamily: 'monospace' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+              >
+                {buildInfo.gitCommitSha.substring(0, 7)}
+              </a>
+            </>
+          )}
+        </div>
+        <div style={{ fontSize: '10px', opacity: 0.8, display: 'flex', gap: '8px' }}>
+          {buildInfo.gitBranch && buildInfo.gitBranch !== 'unknown' && (
+            <span>Branch: {buildInfo.gitBranch}</span>
+          )}
+          <span>Built: {new Date(buildInfo.buildTimestamp).toLocaleString()}</span>
+          <span>Env: {buildInfo.environment}</span>
+        </div>
       </footer>
     </div>
   );
