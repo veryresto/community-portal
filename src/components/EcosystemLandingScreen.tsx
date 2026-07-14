@@ -290,7 +290,7 @@ export function EcosystemLandingScreen() {
         color: 'var(--text-muted)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span>Veryresto Portal</span>
+          <span>{buildInfo.appName}</span>
           <span>•</span>
           <a 
             href={`https://github.com/veryresto/community-platform/releases/tag/v${buildInfo.version}`}
