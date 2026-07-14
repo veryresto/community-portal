@@ -669,20 +669,18 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       showToastBanner('Affiliation added successfully', 'success');
       await refreshActiveTab();
 
-      const updatedProfile = profiles.find(p => p.id === manageAffiliationsProfile!.id);
-      if (updatedProfile) {
-        setManageAffiliationsProfile(updatedProfile);
-      } else {
-        const { data: directProfile } = await supabase
-          .from('profiles')
-          .select('*, profile_house_affiliations(*, houses(house_number))')
-          .eq('id', manageAffiliationsProfile!.id)
-          .maybeSingle();
-        if (directProfile) {
-          setManageAffiliationsProfile(directProfile);
-        }
+      const { data: directProfile } = await supabase
+        .from('profiles')
+        .select('*, profile_house_affiliations(*, houses(house_number))')
+        .eq('id', manageAffiliationsProfile!.id)
+        .maybeSingle();
+      if (directProfile) {
+        setManageAffiliationsProfile(directProfile);
       }
       setNewAffiliation({ house_number: '', affiliation_type: 'household_member', is_primary: false });
+      setModalHouseSearch(''); // clear search input on success too
+      // Close the modal upon successful addition to satisfy the close-on-add requirement
+      setManageAffiliationsProfile(null);
     } catch (err: any) {
       setAffiliationsError(err.message || 'Failed to add affiliation');
     } finally {
@@ -730,18 +728,15 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       showToastBanner('Affiliation removed successfully', 'success');
       await refreshActiveTab();
 
-      const updatedProfile = profiles.find(p => p.id === manageAffiliationsProfile!.id);
-      if (updatedProfile) {
-        setManageAffiliationsProfile(updatedProfile);
+      const { data: directProfile } = await supabase
+        .from('profiles')
+        .select('*, profile_house_affiliations(*, houses(house_number))')
+        .eq('id', manageAffiliationsProfile!.id)
+        .maybeSingle();
+      if (directProfile) {
+        setManageAffiliationsProfile(directProfile);
       } else {
-        const { data: directProfile } = await supabase
-          .from('profiles')
-          .select('*, profile_house_affiliations(*, houses(house_number))')
-          .eq('id', manageAffiliationsProfile!.id)
-          .maybeSingle();
-        if (directProfile) {
-          setManageAffiliationsProfile(directProfile);
-        }
+        setManageAffiliationsProfile(null);
       }
     } catch (err: any) {
       showToastBanner(err.message || 'Failed to remove affiliation', 'error');
@@ -776,18 +771,15 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
       showToastBanner('Primary affiliation updated successfully', 'success');
       await refreshActiveTab();
 
-      const updatedProfile = profiles.find(p => p.id === manageAffiliationsProfile!.id);
-      if (updatedProfile) {
-        setManageAffiliationsProfile(updatedProfile);
+      const { data: directProfile } = await supabase
+        .from('profiles')
+        .select('*, profile_house_affiliations(*, houses(house_number))')
+        .eq('id', manageAffiliationsProfile!.id)
+        .maybeSingle();
+      if (directProfile) {
+        setManageAffiliationsProfile(directProfile);
       } else {
-        const { data: directProfile } = await supabase
-          .from('profiles')
-          .select('*, profile_house_affiliations(*, houses(house_number))')
-          .eq('id', manageAffiliationsProfile!.id)
-          .maybeSingle();
-        if (directProfile) {
-          setManageAffiliationsProfile(directProfile);
-        }
+        setManageAffiliationsProfile(null);
       }
     } catch (err: any) {
       showToastBanner(err.message || 'Failed to set primary affiliation', 'error');
