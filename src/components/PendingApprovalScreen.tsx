@@ -20,6 +20,8 @@ export function PendingApprovalScreen() {
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [requestedAffiliation, setRequestedAffiliation] = useState('');
   const [houseOptions, setHouseOptions] = useState<string[]>([]);
+  const [houseSearch, setHouseSearch] = useState('');
+  const [showHouseDropdown, setShowHouseDropdown] = useState(false);
 
   const [savedParticipantType, setSavedParticipantType] = useState<string | null>(null);
   const [savedResidentSubtype, setSavedResidentSubtype] = useState<string | null>(null);
@@ -71,6 +73,7 @@ export function PendingApprovalScreen() {
           }
           if (data.house_number) {
             setHouseNumber(data.house_number);
+            setHouseSearch(data.house_number);
           }
           if (data.whatsapp_number) {
             setWhatsappNumber(data.whatsapp_number);
@@ -412,31 +415,49 @@ export function PendingApprovalScreen() {
                       <Home className="input-label-icon" />
                       <span>{t('waiting_room.house_number')} <span className="required-star">*</span></span>
                     </label>
-                    <select
-                      id="houseNumber"
-                      value={houseNumber}
-                      onChange={(e) => setHouseNumber(e.target.value)}
-                      required
-                      disabled={loading}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--bg-secondary)',
-                        color: 'var(--text-primary)',
-                        fontSize: '14px',
-                        fontFamily: 'var(--font-sans)',
-                        outline: 'none',
-                        transition: 'border-color 0.2s',
-                        marginTop: '8px'
-                      }}
-                    >
-                      <option value="">{t('waiting_room.select_house')}</option>
-                      {houseOptions.map(num => (
-                        <option key={num} value={num}>{num}</option>
-                      ))}
-                    </select>
+                    <div className="searchable-select-container">
+                      <input
+                        type="text"
+                        id="houseNumber"
+                        placeholder={t('waiting_room.select_house')}
+                        value={houseSearch}
+                        onChange={(e) => {
+                          setHouseSearch(e.target.value);
+                          setHouseNumber('');
+                          setShowHouseDropdown(true);
+                        }}
+                        onFocus={() => setShowHouseDropdown(true)}
+                        onBlur={() => {
+                          setTimeout(() => setShowHouseDropdown(false), 200);
+                        }}
+                        required
+                        disabled={loading}
+                        className="search-input"
+                        style={{ margin: 0, padding: '12px 16px', fontSize: '14px', borderRadius: '12px' }}
+                      />
+                      {showHouseDropdown && (
+                        <div className="searchable-select-dropdown">
+                          {houseOptions.filter(num => num.toLowerCase().startsWith(houseSearch.toLowerCase())).length === 0 ? (
+                            <div className="searchable-select-empty">No matching houses</div>
+                          ) : (
+                            houseOptions
+                              .filter(num => num.toLowerCase().startsWith(houseSearch.toLowerCase()))
+                              .map(num => (
+                                <div
+                                  key={num}
+                                  className={`searchable-select-item ${houseNumber === num ? 'selected' : ''}`}
+                                  onMouseDown={() => {
+                                    setHouseNumber(num);
+                                    setHouseSearch(num);
+                                  }}
+                                >
+                                  {num}
+                                </div>
+                              ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -481,30 +502,48 @@ export function PendingApprovalScreen() {
                       <Home className="input-label-icon" />
                       <span>{t('waiting_room.associated_house_label')}</span>
                     </label>
-                    <select
-                      id="associatedHouse"
-                      value={houseNumber}
-                      onChange={(e) => setHouseNumber(e.target.value)}
-                      disabled={loading}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--bg-secondary)',
-                        color: 'var(--text-primary)',
-                        fontSize: '14px',
-                        fontFamily: 'var(--font-sans)',
-                        outline: 'none',
-                        transition: 'border-color 0.2s',
-                        marginTop: '8px'
-                      }}
-                    >
-                      <option value="">{t('waiting_room.no_house_associated')}</option>
-                      {houseOptions.map(num => (
-                        <option key={num} value={num}>{num}</option>
-                      ))}
-                    </select>
+                    <div className="searchable-select-container">
+                      <input
+                        type="text"
+                        id="associatedHouse"
+                        placeholder={t('waiting_room.no_house_associated')}
+                        value={houseSearch}
+                        onChange={(e) => {
+                          setHouseSearch(e.target.value);
+                          setHouseNumber(e.target.value);
+                          setShowHouseDropdown(true);
+                        }}
+                        onFocus={() => setShowHouseDropdown(true)}
+                        onBlur={() => {
+                          setTimeout(() => setShowHouseDropdown(false), 200);
+                        }}
+                        disabled={loading}
+                        className="search-input"
+                        style={{ margin: 0, padding: '12px 16px', fontSize: '14px', borderRadius: '12px' }}
+                      />
+                      {showHouseDropdown && (
+                        <div className="searchable-select-dropdown">
+                          {houseOptions.filter(num => num.toLowerCase().startsWith(houseSearch.toLowerCase())).length === 0 ? (
+                            <div className="searchable-select-empty">No matching houses</div>
+                          ) : (
+                            houseOptions
+                              .filter(num => num.toLowerCase().startsWith(houseSearch.toLowerCase()))
+                              .map(num => (
+                                <div
+                                  key={num}
+                                  className={`searchable-select-item ${houseNumber === num ? 'selected' : ''}`}
+                                  onMouseDown={() => {
+                                    setHouseNumber(num);
+                                    setHouseSearch(num);
+                                  }}
+                                >
+                                  {num}
+                                </div>
+                              ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

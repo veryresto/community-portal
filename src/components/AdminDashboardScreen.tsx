@@ -171,6 +171,10 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
     is_primary: false
   });
   const [affiliationsError, setAffiliationsError] = useState<string | null>(null);
+  const [modalHouseSearch, setModalHouseSearch] = useState('');
+  const [showModalHouseDropdown, setShowModalHouseDropdown] = useState(false);
+  const [inlineHouseSearch, setInlineHouseSearch] = useState('');
+  const [showInlineHouseDropdown, setShowInlineHouseDropdown] = useState(false);
 
   // Determine if actor has rights to edit/approve profiles (admin or verifier only)
   const canManageProfiles = isAdmin || isVerifier;
@@ -794,6 +798,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
   const handleStartEdit = (profile: Profile) => {
     setEditingProfileId(profile.id);
+    setInlineHouseSearch(profile.house_number || '');
     setEditForm({
       house_number: profile.house_number || '',
       whatsapp_number: profile.whatsapp_number || '',
@@ -1430,17 +1435,46 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px' }}>House No.</label>
-                  <select
-                    value={newAffiliation.house_number}
-                    onChange={(e) => setNewAffiliation(prev => ({ ...prev, house_number: e.target.value }))}
-                    className="search-input"
-                    style={{ width: '100%', padding: '6px 10px', fontSize: '13px', margin: 0 }}
-                  >
-                    <option value="">-- Select --</option>
-                    {houseOptions.map(num => (
-                      <option key={num} value={num}>{num}</option>
-                    ))}
-                  </select>
+                  <div className="searchable-select-container">
+                    <input
+                      type="text"
+                      placeholder="-- Select --"
+                      value={modalHouseSearch}
+                      onChange={(e) => {
+                        setModalHouseSearch(e.target.value);
+                        setNewAffiliation(prev => ({ ...prev, house_number: '' }));
+                        setShowModalHouseDropdown(true);
+                      }}
+                      onFocus={() => setShowModalHouseDropdown(true)}
+                      onBlur={() => {
+                        setTimeout(() => setShowModalHouseDropdown(false), 200);
+                      }}
+                      className="search-input"
+                      style={{ width: '100%', padding: '6px 10px', fontSize: '13px', margin: 0 }}
+                    />
+                    {showModalHouseDropdown && (
+                      <div className="searchable-select-dropdown">
+                        {houseOptions.filter(num => num.toLowerCase().startsWith(modalHouseSearch.toLowerCase())).length === 0 ? (
+                          <div className="searchable-select-empty">No matching houses</div>
+                        ) : (
+                          houseOptions
+                            .filter(num => num.toLowerCase().startsWith(modalHouseSearch.toLowerCase()))
+                            .map(num => (
+                              <div
+                                key={num}
+                                className={`searchable-select-item ${newAffiliation.house_number === num ? 'selected' : ''}`}
+                                onMouseDown={() => {
+                                  setNewAffiliation(prev => ({ ...prev, house_number: num }));
+                                  setModalHouseSearch(num);
+                                }}
+                              >
+                                {num}
+                              </div>
+                            ))
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {manageAffiliationsProfile?.participant_type === 'resident' && (
                   <div style={{ flex: 1 }}>
@@ -1701,18 +1735,47 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                       </select>
                                     </div>
                                     <div>
-                                       <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>House No.</label>
-                                       <select
-                                         className="search-input"
-                                         style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
-                                         value={editForm.house_number || ''}
-                                         onChange={(e) => setEditForm(prev => ({ ...prev, house_number: e.target.value }))}
-                                       >
-                                         <option value="">-- Select --</option>
-                                         {houseOptions.map(num => (
-                                           <option key={num} value={num}>{num}</option>
-                                         ))}
-                                       </select>
+                                       <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>House</label>
+                                         <div className="searchable-select-container" style={{ width: '140px' }}>
+                                          <input
+                                            type="text"
+                                            placeholder="-- Select --"
+                                            value={inlineHouseSearch}
+                                            onChange={(e) => {
+                                              setInlineHouseSearch(e.target.value);
+                                              setEditForm(prev => ({ ...prev, house_number: '' }));
+                                              setShowInlineHouseDropdown(true);
+                                            }}
+                                            onFocus={() => setShowInlineHouseDropdown(true)}
+                                            onBlur={() => {
+                                              setTimeout(() => setShowInlineHouseDropdown(false), 200);
+                                            }}
+                                            className="search-input"
+                                            style={{ padding: '4px 6px', fontSize: '13px', width: '100%', margin: 0 }}
+                                          />
+                                          {showInlineHouseDropdown && (
+                                            <div className="searchable-select-dropdown" style={{ minWidth: '140px' }}>
+                                              {houseOptions.filter(num => num.toLowerCase().startsWith(inlineHouseSearch.toLowerCase())).length === 0 ? (
+                                                <div className="searchable-select-empty">No match</div>
+                                              ) : (
+                                                houseOptions
+                                                  .filter(num => num.toLowerCase().startsWith(inlineHouseSearch.toLowerCase()))
+                                                  .map(num => (
+                                                    <div
+                                                      key={num}
+                                                      className={`searchable-select-item ${editForm.house_number === num ? 'selected' : ''}`}
+                                                      onMouseDown={() => {
+                                                        setEditForm(prev => ({ ...prev, house_number: num }));
+                                                        setInlineHouseSearch(num);
+                                                      }}
+                                                    >
+                                                      {num}
+                                                    </div>
+                                                  ))
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
                                      </div>
                                   </>
                                 ) : (
@@ -1739,24 +1802,55 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                     </div>
                                     <div>
                                       <label style={{ fontSize: '11px', fontWeight: 600, display: 'block', marginBottom: '2px' }}>Assoc. House (Opt.)</label>
-                                      <select
-                                        className="search-input"
-                                        style={{ padding: '4px 6px', fontSize: '13px', width: '140px', margin: 0 }}
-                                        value={editForm.house_number || ''}
-                                        onChange={(e) => {
-                                          const val = e.target.value;
-                                          setEditForm(prev => ({ 
-                                            ...prev, 
-                                            house_number: val,
-                                            resident_subtype: val ? 'caretaker' : ''
-                                          }));
-                                        }}
-                                      >
-                                        <option value="">-- None --</option>
-                                        {houseOptions.map(num => (
-                                          <option key={num} value={num}>{num}</option>
-                                        ))}
-                                      </select>
+                                      <div className="searchable-select-container" style={{ width: '140px' }}>
+                                        <input
+                                          type="text"
+                                          placeholder="-- None --"
+                                          value={inlineHouseSearch}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            setInlineHouseSearch(val);
+                                            setEditForm(prev => ({ 
+                                              ...prev, 
+                                              house_number: val,
+                                              resident_subtype: val ? 'caretaker' : ''
+                                            }));
+                                            setShowInlineHouseDropdown(true);
+                                          }}
+                                          onFocus={() => setShowInlineHouseDropdown(true)}
+                                          onBlur={() => {
+                                            setTimeout(() => setShowInlineHouseDropdown(false), 200);
+                                          }}
+                                          className="search-input"
+                                          style={{ padding: '4px 6px', fontSize: '13px', width: '100%', margin: 0 }}
+                                        />
+                                        {showInlineHouseDropdown && (
+                                          <div className="searchable-select-dropdown" style={{ minWidth: '140px' }}>
+                                            {houseOptions.filter(num => num.toLowerCase().startsWith(inlineHouseSearch.toLowerCase())).length === 0 ? (
+                                              <div className="searchable-select-empty">No match</div>
+                                            ) : (
+                                              houseOptions
+                                                .filter(num => num.toLowerCase().startsWith(inlineHouseSearch.toLowerCase()))
+                                                .map(num => (
+                                                  <div
+                                                    key={num}
+                                                    className={`searchable-select-item ${editForm.house_number === num ? 'selected' : ''}`}
+                                                    onMouseDown={() => {
+                                                      setEditForm(prev => ({ 
+                                                        ...prev, 
+                                                        house_number: num,
+                                                        resident_subtype: 'caretaker'
+                                                      }));
+                                                      setInlineHouseSearch(num);
+                                                    }}
+                                                  >
+                                                    {num}
+                                                  </div>
+                                                ))
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 )}
@@ -1866,7 +1960,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
                                     {profile.approval_status === 'approved' && profile.participant_type === 'resident' && (
                                       <button 
-                                        onClick={() => setManageAffiliationsProfile(profile)}
+                                        onClick={() => { setManageAffiliationsProfile(profile); setModalHouseSearch(''); }}
                                         className="admin-btn secondary"
                                         style={{ borderColor: 'var(--primary)' }}
                                         title="Manage multiple house affiliations"
