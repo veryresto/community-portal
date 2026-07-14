@@ -26,8 +26,9 @@ export function LoginScreen() {
       <div className="glow-accent glow-1"></div>
       <div className="glow-accent glow-2"></div>
 
-      <div className="auth-card glassmorphic">
-        <div className="brand-section animate-fade-in">
+      <div style={{ width: '100%', maxWidth: '480px', display: 'flex', flexDirection: 'column' }} className="animate-fade-in">
+        <div className="auth-card glassmorphic">
+          <div className="brand-section">
           <div className="logo-container">
             <Shield className="brand-icon" />
             <KeyRound className="brand-icon-sub" />
@@ -93,5 +94,6 @@ export function LoginScreen() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
