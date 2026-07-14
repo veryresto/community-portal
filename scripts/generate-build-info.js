@@ -6,7 +6,12 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, '..');
 
-export function generate(mode = 'production') {
+export function generate(specifiedMode) {
+  // Auto-detect environment: argument override -> NODE_ENV -> npm lifecycle event -> production
+  const mode = specifiedMode || 
+                process.env.NODE_ENV || 
+                ((process.env.npm_lifecycle_event === 'dev' || process.env.npm_lifecycle_event === 'predev') ? 'development' : 'production');
+
   const pkgPath = join(projectRoot, 'package.json');
   let version = '0.0.0';
   let appName = 'Unknown App';
@@ -74,6 +79,6 @@ export type BuildInfo = typeof buildInfo;
 
 // Run if called directly
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const mode = process.argv[2] || 'production';
+  const mode = process.argv[2]; // Let generate() auto-detect if no arg is passed
   generate(mode);
 }

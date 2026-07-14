@@ -4,9 +4,9 @@
   "version": "1.0.10",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/generate-build-info.js development",
+    "predev": "node scripts/generate-build-info.js",
     "dev": "vite",
-    "prebuild": "node scripts/generate-build-info.js production",
+    "prebuild": "node scripts/generate-build-info.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
