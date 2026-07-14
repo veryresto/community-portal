@@ -77,6 +77,21 @@ export function LoginScreen() {
           <p>{t('login.footer_notice')}</p>
         </div>
       </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', marginTop: '32px', fontSize: '13px', color: 'var(--text-muted)', animation: 'fadeIn 0.8s ease-out' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ height: '8px', width: '8px', borderRadius: '50%', backgroundColor: 'var(--success)' }}></div>
+          <span>Secure</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ height: '8px', width: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)' }}></div>
+          <span>Portal Hub</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ height: '8px', width: '8px', borderRadius: '50%', backgroundColor: 'var(--pending)' }}></div>
+          <span>Verified Access</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,79 +1,89 @@
 /* Modern Premium Design System - community-portal */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Color Palette (HSL Light Mode Base) */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
+  /* Color Palette (HSL Light Mode Base) - Matches file-finder-sr3 */
+  --bg-primary: hsl(210 20% 98%);
+  --bg-secondary: hsl(0 0% 100%);
+  --text-primary: hsl(220 20% 10%);
+  --text-secondary: hsl(220 20% 20%);
+  --text-muted: hsl(220 10% 46%);
+  --border-color: hsl(220 13% 91%);
   
-  --primary: #6366f1; /* Indigo */
-  --primary-hover: #4f46e5;
-  --primary-glow: rgba(99, 102, 241, 0.15);
+  --primary: hsl(217 91% 50%); /* Vibrant royal blue */
+  --primary-hover: hsl(217 91% 40%);
+  --primary-glow: hsla(217, 91%, 50%, 0.15);
   
-  --success: #10b981; /* Emerald */
-  --success-bg: rgba(16, 185, 129, 0.08);
-  --success-border: rgba(16, 185, 129, 0.25);
+  --success: hsl(142 71% 45%);
+  --success-bg: hsla(142, 71%, 45%, 0.08);
+  --success-border: hsla(142, 71%, 45%, 0.2);
   
-  --pending: #f59e0b; /* Amber */
-  --pending-bg: rgba(245, 158, 11, 0.08);
-  --pending-border: rgba(245, 158, 11, 0.25);
+  --pending: hsl(38 92% 50%);
+  --pending-bg: hsla(38, 92%, 50%, 0.08);
+  --pending-border: hsla(38, 92%, 50%, 0.2);
   
-  --error: #ef4444; /* Red */
-  --error-bg: rgba(239, 68, 68, 0.08);
-  --error-border: rgba(239, 68, 68, 0.25);
+  --error: hsl(0 84% 60%);
+  --error-bg: hsla(0, 84%, 60%, 0.08);
+  --error-border: hsla(0, 84%, 60%, 0.2);
   
-  --verifier: #8b5cf6; /* Violet */
-  --verifier-bg: rgba(139, 92, 246, 0.08);
-  --verifier-border: rgba(139, 92, 246, 0.25);
+  --verifier: hsl(262 83% 58%);
+  --verifier-bg: hsla(262, 83%, 58%, 0.08);
+  --verifier-border: hsla(262, 83%, 58%, 0.2);
 
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
+  /* Shadows - Matches file-finder-sr3 */
+  --shadow-sm: 0 1px 2px 0 hsl(220 20% 10% / 0.03);
+  --shadow-md: 0 4px 6px -1px hsl(220 20% 10% / 0.05), 0 2px 4px -2px hsl(220 20% 10% / 0.05);
+  --shadow-lg: 0 10px 15px -3px hsl(220 20% 10% / 0.08), 0 4px 6px -4px hsl(220 20% 10% / 0.05);
+
   /* Glassmorphism settings */
-  --glass-bg: rgba(255, 255, 255, 0.45);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.03);
+  --glass-bg: hsla(0, 0%, 100%, 0.8);
+  --glass-border: hsla(220, 13%, 91%, 0.5);
+  --glass-shadow: var(--shadow-md);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Color Palette (HSL Dark Mode Base) */
-    --bg-primary: #0b0f19;
-    --bg-secondary: #111827;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    --border-color: #1f2937;
+    /* Color Palette (HSL Dark Mode Base) - Matches file-finder-sr3 */
+    --bg-primary: hsl(222 47% 6%);
+    --bg-secondary: hsl(222 47% 8%);
+    --text-primary: hsl(210 40% 98%);
+    --text-secondary: hsl(215 20% 65%);
+    --text-muted: hsl(215 15% 50%);
+    --border-color: hsl(217 32% 17%);
     
-    --primary: #818cf8; /* Light Indigo */
-    --primary-hover: #6366f1;
-    --primary-glow: rgba(129, 140, 248, 0.25);
+    --primary: hsl(217 91% 60%); /* Sky blue */
+    --primary-hover: hsl(217 91% 50%);
+    --primary-glow: hsla(217, 91%, 60%, 0.25);
     
-    --success: #34d399; /* Emerald */
-    --success-bg: rgba(52, 211, 153, 0.08);
-    --success-border: rgba(52, 211, 153, 0.2);
+    --success: hsl(142 71% 45%);
+    --success-bg: hsla(142, 71%, 45%, 0.08);
+    --success-border: hsla(142, 71%, 45%, 0.2);
     
-    --pending: #fbbf24; /* Amber */
-    --pending-bg: rgba(251, 191, 36, 0.08);
-    --pending-border: rgba(251, 191, 36, 0.2);
+    --pending: hsl(38 92% 50%);
+    --pending-bg: hsla(38, 92%, 50%, 0.08);
+    --pending-border: hsla(38, 92%, 50%, 0.2);
     
-    --error: #f87171; /* Red */
-    --error-bg: rgba(248, 113, 113, 0.08);
-    --error-border: rgba(248, 113, 113, 0.2);
+    --error: hsl(0 62% 50%);
+    --error-bg: hsla(0, 62% 50%, 0.08);
+    --error-border: hsla(0, 62% 50%, 0.2);
     
-    --verifier: #a78bfa; /* Violet */
-    --verifier-bg: rgba(167, 139, 250, 0.08);
-    --verifier-border: rgba(167, 139, 250, 0.2);
+    --verifier: hsl(262 83% 68%);
+    --verifier-bg: hsla(262, 83%, 68%, 0.08);
+    --verifier-border: hsla(262, 83%, 68%, 0.2);
+
+    /* Shadows - Matches file-finder-sr3 */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.2), 0 2px 4px -2px hsl(0 0% 0% / 0.15);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.25), 0 4px 6px -4px hsl(0 0% 0% / 0.15);
 
     /* Glassmorphism settings */
-    --glass-bg: rgba(17, 24, 39, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.04);
-    --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03);
+    --glass-bg: hsla(222, 47%, 8%, 0.8);
+    --glass-border: hsla(217, 32%, 17%, 0.5);
+    --glass-shadow: var(--shadow-md);
   }
 }
 
@@ -221,8 +231,8 @@ a {
   position: relative;
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
-  border-radius: 18px;
+  background: var(--primary);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1097,6 +1107,21 @@ a {
 @keyframes pulseSlow {
   0%, 100% { opacity: 0.12; }
   50% { opacity: 0.2; }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Premium Admin Dashboard Styling */

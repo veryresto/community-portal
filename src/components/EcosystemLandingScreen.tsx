@@ -228,13 +228,17 @@ export function EcosystemLandingScreen() {
         </section>
 
         {/* Directory Grid */}
-        <section className="apps-section animate-slide-up delay-1">
+        <section className="apps-section">
           <h2>{t('landing.community_apps')}</h2>
           <div className="apps-grid">
             {apps.map((app, index) => {
               const Icon = app.icon;
               return (
-                <div key={index} className={`app-hub-card glassmorphic ${app.status}`}>
+                <div
+                  key={index}
+                  className={`app-hub-card glassmorphic ${app.status} animate-slide-up`}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
                   <div className="card-top">
                     <div className="app-icon-wrapper">
                       <Icon className="app-card-icon" />
