@@ -1,5 +1,5 @@
 -- Migration: Seed initial document spaces
--- Target file: /Users/a/Codes/community-platform/supabase/migrations/20260628225000_seed_document_spaces.sql
+-- Target file: /Users/a/Codes/community-portal/supabase/migrations/20260628225000_seed_document_spaces.sql
 
 INSERT INTO public.document_spaces (name, slug, description, drive_folder_id, is_visible, permission, display_order)
 VALUES 

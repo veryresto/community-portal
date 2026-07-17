@@ -1,5 +1,5 @@
 -- Migration: Add audit columns to public.document_spaces and bind reusable timestamp update trigger
--- Target file: /Users/a/Codes/community-platform/supabase/migrations/20260702154500_add_document_spaces_audit_fields.sql
+-- Target file: /Users/a/Codes/community-portal/supabase/migrations/20260702154500_add_document_spaces_audit_fields.sql
 
 -- 1. Add audit columns
 ALTER TABLE public.document_spaces

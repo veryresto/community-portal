@@ -297,7 +297,7 @@ export function EcosystemLandingScreen() {
           <span>{buildInfo.appName}</span>
           <span>•</span>
           <a 
-            href={`https://github.com/veryresto/community-platform/releases/tag/v${buildInfo.version}`}
+            href={`https://github.com/veryresto/community-portal/releases/tag/v${buildInfo.version}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}
@@ -310,7 +310,7 @@ export function EcosystemLandingScreen() {
             <>
               <span>•</span>
               <a 
-                href={`https://github.com/veryresto/community-platform/commit/${buildInfo.gitCommitSha}`}
+                href={`https://github.com/veryresto/community-portal/commit/${buildInfo.gitCommitSha}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ color: 'var(--text-muted)', textDecoration: 'none', fontFamily: 'monospace' }}

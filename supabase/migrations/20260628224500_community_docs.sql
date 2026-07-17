@@ -1,5 +1,5 @@
 -- Migration: Initialize Community Documents application and tables
--- Target file: /Users/a/Codes/community-platform/supabase/migrations/20260628224500_community_docs.sql
+-- Target file: /Users/a/Codes/community-portal/supabase/migrations/20260628224500_community_docs.sql
 
 -- 1. Register the documents application
 INSERT INTO public.applications (slug, name, description, url)
