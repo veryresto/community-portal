@@ -19,7 +19,7 @@ To ensure future residents can safely build their own apps and teams can evolve 
 - resident approval and lifecycle
 - global governance and moderation
 
-### Shared Portal: `community-portal` (`community.veryresto.com`)
+### Shared Portal: `community-portal` (`portal.veryresto.com`)
 This application acts as the single source of truth for identity and governance.
 **Responsibilities:**
 - **Authentication Entrypoint**: Centralized login via Google OAuth.
@@ -197,7 +197,7 @@ Supabase sessions can become extremely large (often exceeding 4KB) due to extens
 - **JWT Claim Parsing (`getItem`)**: When restoring the session, the adapter reads the compressed payload and decodes the JWT claims from the `access_token` (such as `sub`, `email`, `role`, `user_metadata`, and `app_metadata`). It reconstructs the `user` profile object on-the-fly, ensuring complete compatibility with standard Supabase client methods.
 
 ### 3. OAuth State Retention
-When unauthenticated users access a consumer app (e.g., `ipl-finder.veryresto.com`), they are redirected to the community portal with a target URL parameter: `community.veryresto.com/?redirect_to=https://ipl-finder.veryresto.com`.
+When unauthenticated users access a consumer app (e.g., `ipl-finder.veryresto.com`), they are redirected to the community portal with a target URL parameter: `portal.veryresto.com/?redirect_to=https://ipl-finder.veryresto.com`.
 - **Session Cache**: To prevent the target URL from being lost when the browser is redirected to external Google OAuth screens and back, the portal caches the validated `redirect_to` value in `sessionStorage` on initial load.
 - **Automatic Restore**: Once the OAuth callback completes and the user session is active, the portal retrieves the target URL from `sessionStorage`, clears the cache, and redirects the user back to the destination app where the shared subdomain cookie immediately logs them in.
 
@@ -286,7 +286,7 @@ Future developers adding new apps must follow this standard integration checklis
 1. **Register the App**: Insert a record into the `applications` table.
 2. **Define Permissions & Roles**: Register capabilities in `app_permissions` and group them into templates in `app_roles`.
 3. **Configure Environment**: Point the app to the shared Supabase URL and configure DNS for `[app-name].veryresto.com`.
-4. **Implement Auth Hook**: Use standard middleware to redirect unauthenticated traffic to `community.veryresto.com`.
+4. **Implement Auth Hook**: Use standard middleware to redirect unauthenticated traffic to `portal.veryresto.com`.
 5. **Write App-Specific RLS**: Secure the app's isolated tables using the shared `has_namespaced_permission` function.
 
 ---
@@ -314,17 +314,17 @@ During the implementation and testing phases of the shared subdomain authenticat
 * **Resolution**: The custom `CookieStorage` dynamically strips out the massive nested `user` object prior to writing the cookie. The adapter reconstructs this object on the client side at read time by decoding the access token's JWT claims.
 
 ### 2. Google OAuth Redirect Whitelists
-* **Blocker**: When logging in locally, the application requests redirection back to `http://community.localtest.me:5173/`. However, if this URL is not explicitly whitelisted in the Supabase Dashboard under **Authentication > URL Configuration > Redirect URLs**, Supabase rejects the redirect request and defaults to the production Site URL, causing local logins to redirect to production.
-* **Resolution**: Local subdomains (`http://community.localtest.me:5173/`, `http://ipl-finder.localtest.me:8080/`) must be whitelisted in the Supabase Dashboard, alongside the production domain `https://community.veryresto.com/`.
+* **Blocker**: When logging in locally, the application requests redirection back to `http://portal.localtest.me:5173/`. However, if this URL is not explicitly whitelisted in the Supabase Dashboard under **Authentication > URL Configuration > Redirect URLs**, Supabase rejects the redirect request and defaults to the production Site URL, causing local logins to redirect to production.
+* **Resolution**: Local subdomains (`http://portal.localtest.me:5173/`, `http://ipl-finder.localtest.me:8080/`) must be whitelisted in the Supabase Dashboard, alongside the production domain `https://portal.veryresto.com/`.
 
 ### 3. Permissions Loading Timing Race Condition
 * **Blocker**: When consumer apps mount, the authentication state resolves first. In the single render frame where `user` becomes valid but the database query for `usePermissions` is still loading, the UI might evaluate permissions as `false` and trigger a redirect loop back to the portal.
 * **Resolution**: The `usePermissions` hook returns a `resolvedUserId` state variable. Consumer apps verify `resolvedUserId === user.id` before executing any automatic unapproved-resident redirects, ensuring timing parity between the user and permission states.
 
 ### 4. Vite Host Verification (`allowedHosts`)
-* **Blocker**: When accessing local Vite dev servers via custom domains (e.g. `community.localtest.me`), Vite's default dev server security blocks the requests.
-* **Resolution**: Whitelist the hosts explicitly in each project's `vite.config.ts` under `server.allowedHosts` (e.g., `community.localtest.me` and `ipl-finder.localtest.me`).
+* **Blocker**: When accessing local Vite dev servers via custom domains (e.g. `portal.localtest.me`), Vite's default dev server security blocks the requests.
+* **Resolution**: Whitelist the hosts explicitly in each project's `vite.config.ts` under `server.allowedHosts` (e.g., `portal.localtest.me` and `ipl-finder.localtest.me`).
 
 ### 5. macOS mDNSResponder Negative DNS Caching
-* **Blocker**: When setting up new production custom domains (like `community.veryresto.com`), trying to access the domain *before* DNS propagation finishes causes the macOS resolver to cache a negative lookup (NXDOMAIN) for up to 3,600 seconds (1 hour). This prevents browsers from reaching the site even after DNS resolves globally.
+* **Blocker**: When setting up new production custom domains (like `portal.veryresto.com`), trying to access the domain *before* DNS propagation finishes causes the macOS resolver to cache a negative lookup (NXDOMAIN) for up to 3,600 seconds (1 hour). This prevents browsers from reaching the site even after DNS resolves globally.
 * **Resolution**: Flush the macOS resolver cache using `sudo killall -HUP mDNSResponder` to force the system to retrieve the updated IP address.

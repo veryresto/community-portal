@@ -22,13 +22,13 @@ Add to your `.env` file:
 ```env
 VITE_SUPABASE_URL="https://your-supabase-project.supabase.co"
 VITE_SUPABASE_PUBLISHABLE_KEY="your-supabase-anon-key"
-VITE_PORTAL_URL="https://community.veryresto.com"
+VITE_PORTAL_URL="https://portal.veryresto.com"
 ```
 
 For local development:
 
 ```env
-VITE_PORTAL_URL="http://community.localtest.me:5173"
+VITE_PORTAL_URL="http://portal.localtest.me:5173"
 ```
 
 ---
@@ -145,7 +145,7 @@ import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
-const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'https://community.veryresto.com';
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'https://portal.veryresto.com';
 
 interface AuthContextType {
   user: User | null;
@@ -298,7 +298,7 @@ npx vite --host 0.0.0.0 --port 3001
 # Then access at: http://my-app.localtest.me:3001
 ```
 
-The local portal runs at `http://community.localtest.me:5173`.
+The local portal runs at `http://portal.localtest.me:5173`.
 
 ---
 

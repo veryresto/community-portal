@@ -22,7 +22,7 @@ The Veryresto ecosystem uses a **centralized identity provider (IdP)** model.
                                         │
                      ┌──────────────────▼───────────────────┐
                      │      Community Portal (Identity)      │
-                     │      community.veryresto.com          │
+                     │      portal.veryresto.com            │
                      │                                       │
                      │  • The only app that initiates OAuth  │
                      │  • Handles approval/rejection flow    │
@@ -105,12 +105,12 @@ The cookie lives for **30 days**. The Supabase access token (JWT) inside it expi
 When a user is not authenticated, the app must redirect them to the portal with a return URL:
 
 ```
-https://community.veryresto.com/?redirect_to=<URL-encoded return URL>
+https://portal.veryresto.com/?redirect_to=<URL-encoded return URL>
 ```
 
 **Example:**
 ```
-https://community.veryresto.com/?redirect_to=https%3A%2F%2Fipl-finder.veryresto.com%2Fdashboard
+https://portal.veryresto.com/?redirect_to=https%3A%2F%2Fipl-finder.veryresto.com%2Fdashboard
 ```
 
 ### Return URL Requirements
@@ -133,7 +133,7 @@ During local development, use `localtest.me` subdomains instead of `localhost`. 
 
 | Service | Local URL |
 |---|---|
-| Community Portal | `http://community.localtest.me:5173` |
+| Community Portal | `http://portal.localtest.me:5173` |
 | Your App | `http://my-app.localtest.me:<port>` |
 
 The cookie domain becomes `.localtest.me`, preserving the same cross-subdomain sharing behavior as production.

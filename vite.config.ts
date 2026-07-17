@@ -7,8 +7,6 @@ export default defineConfig({
     host: "::",
     port: 5173,
     allowedHosts: [
-      "community.lvh.me",
-      "community.localtest.me",
       "portal.lvh.me",
       "portal.localtest.me",
       "localhost",

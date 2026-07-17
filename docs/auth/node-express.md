@@ -217,7 +217,7 @@ Your Express server and the local portal both need to be on `localtest.me` subdo
 
 | Service | Local URL |
 |---|---|
-| Community Portal | `http://community.localtest.me:5173` |
+| Community Portal | `http://portal.localtest.me:5173` |
 | Your Express App | `http://my-app.localtest.me:3000` |
 
 If you access your app at `http://localhost:3000`, the browser will not send the `.localtest.me` cookie. Use the subdomain URL instead.

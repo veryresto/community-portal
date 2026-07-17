@@ -88,7 +88,7 @@ WHERE app.slug = 'my_app' AND ar.name = 'resident' AND ap.name = 'read_data'
 ON CONFLICT DO NOTHING;
 ```
 
-Once registered, the **Admin Center** on `community.veryresto.com` can assign app roles to individual residents.
+Once registered, the **Admin Center** on `portal.veryresto.com` can assign app roles to individual residents.
 
 ---
 
@@ -100,7 +100,7 @@ Once registered, the **Admin Center** on `community.veryresto.com` can assign ap
 | Cookie domain (prod) | `.veryresto.com` |
 | Cookie domain (local) | `.localtest.me` |
 | Supabase `storageKey` | `veryresto-auth` |
-| Portal URL (prod) | `https://community.veryresto.com` |
-| Portal URL (local) | `http://community.localtest.me:5173` |
+| Portal URL (prod) | `https://portal.veryresto.com` |
+| Portal URL (local) | `http://portal.localtest.me:5173` |
 | Permission RPC | `has_namespaced_permission(user_id, 'app_slug.perm_name')` |
 | Approval field | `public.profiles.approval_status` |

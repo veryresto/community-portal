@@ -14,7 +14,7 @@ sequenceDiagram
     autonumber
     actor User as User Browser
     participant App as Ecosystem App<br/>(e.g., IPL Finder)
-    participant Portal as Community Portal<br/>(community.veryresto.com)
+    participant Portal as Community Portal<br/>(portal.veryresto.com)
     participant Supabase as Supabase Auth & DB
     participant Google as Google Identity Provider
 

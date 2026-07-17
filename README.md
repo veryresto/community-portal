@@ -2,7 +2,7 @@
 
 The **Veryresto Identity Portal** — the centralized authentication and identity management hub for the Veryresto resident ecosystem.
 
-**Live:** [community.veryresto.com](https://community.veryresto.com)  
+**Live:** [portal.veryresto.com](https://portal.veryresto.com)  
 **GitHub:** [veryresto/community-portal](https://github.com/veryresto/community-portal)
 
 ---
@@ -22,7 +22,7 @@ This is the **single sign-on portal** for all Veryresto resident applications. I
 
 | App | URL | Status |
 |---|---|---|
-| Community Portal (this) | `community.veryresto.com` | ✅ Live |
+| Community Portal (this) | `portal.veryresto.com` | ✅ Live |
 | IPL Finder | `ipl-finder.veryresto.com` | ✅ Live |
 | Rekap Viewer | `rekap.veryresto.com` | ✅ Live |
 | Kas Management | — | 📋 Planned |
@@ -96,7 +96,7 @@ npm run dev
 For cross-subdomain session sharing with other local apps, access the portal via:
 
 ```
-http://community.localtest.me:5173
+http://portal.localtest.me:5173
 ```
 
 All `*.localtest.me` subdomains resolve to `127.0.0.1` automatically — no `/etc/hosts` setup required.
