@@ -15,9 +15,24 @@ export function generate(specifiedMode) {
   const pkgPath = join(projectRoot, 'package.json');
   let version = '0.0.0';
   let appName = 'Unknown App';
+
+  // 1. Try to read version from Git tags first
+  try {
+    const gitTag = execSync('git describe --tags --abbrev=0').toString().trim();
+    version = gitTag.startsWith('v') ? gitTag.slice(1) : gitTag;
+  } catch (err) {
+    // Fallback to package.json version if git describe fails (e.g. no tags or no git)
+    try {
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+      version = pkg.version || '0.0.0';
+    } catch (e) {
+      // Ignored
+    }
+  }
+
+  // 2. Resolve appName from package.json or env override
   try {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-    version = pkg.version || '0.0.0';
     if (process.env.VITE_APP_NAME) {
       appName = process.env.VITE_APP_NAME;
     } else if (pkg.name) {
