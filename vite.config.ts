@@ -15,7 +15,6 @@ export default defineConfig({
       "as-macbook-pro.tailc513e0.ts.net",
       ".tailc513e0.ts.net"
     ]
-
   },
   plugins: [react()],
 })
