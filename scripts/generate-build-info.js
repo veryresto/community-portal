@@ -16,17 +16,24 @@ export function generate(specifiedMode) {
   let version = '0.0.0';
   let appName = 'Unknown App';
 
-  // 1. Try to read version from Git tags first
-  try {
-    const gitTag = execSync('git describe --tags --abbrev=0').toString().trim();
-    version = gitTag.startsWith('v') ? gitTag.slice(1) : gitTag;
-  } catch (err) {
-    // Fallback to package.json version if git describe fails (e.g. no tags or no git)
+  // 1. Try to read version from environment variable (useful in Docker/CI context) or Git tags
+  if (process.env.VITE_APP_VERSION) {
+    version = process.env.VITE_APP_VERSION;
+    if (version.startsWith('v')) {
+      version = version.slice(1);
+    }
+  } else {
     try {
-      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-      version = pkg.version || '0.0.0';
-    } catch (e) {
-      // Ignored
+      const gitTag = execSync('git describe --tags --abbrev=0').toString().trim();
+      version = gitTag.startsWith('v') ? gitTag.slice(1) : gitTag;
+    } catch (err) {
+      // Fallback to package.json version if git describe fails (e.g. no tags or no git)
+      try {
+        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+        version = pkg.version || '0.0.0';
+      } catch (e) {
+        // Ignored
+      }
     }
   }
 
