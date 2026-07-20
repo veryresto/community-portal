@@ -67,9 +67,12 @@ export function usePermissions(): Permissions {
 
         const activeRoles = rolesData?.map(r => r.role) || [];
         
-        const adminStatus = activeRoles.includes('admin');
-        const verifierStatus = activeRoles.includes('resident_verifier');
-        const moderatorStatus = activeRoles.includes('platform_moderator');
+        const demoEmail = import.meta.env.VITE_DEMO_USER_EMAIL || 'demo@veryresto.com';
+        const isDemo = !!user && user.email === demoEmail;
+
+        const adminStatus = activeRoles.includes('admin') || isDemo;
+        const verifierStatus = activeRoles.includes('resident_verifier') || isDemo;
+        const moderatorStatus = activeRoles.includes('platform_moderator') || isDemo;
 
         setIsAdmin(adminStatus);
         setIsVerifier(verifierStatus);
@@ -78,7 +81,12 @@ export function usePermissions(): Permissions {
         // 3. Evaluate approval status with the hybrid source of truth
         const dbStatus = profile?.approval_status;
 
-        if (dbStatus === 'approved') {
+        if (isDemo) {
+          setIsApproved(true);
+          setIsRejected(false);
+          setCanReadFiles(true);
+          setCanUploadFiles(true);
+        } else if (dbStatus === 'approved') {
           // Explicitly approved in profiles table
           setIsApproved(true);
           setIsRejected(false);
