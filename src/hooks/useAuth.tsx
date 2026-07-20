@@ -9,7 +9,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInAsDemo: () => Promise<void>;
+  signInAsDemo: (password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -81,13 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
-  const signInAsDemo = async () => {
+  const signInAsDemo = async (password: string) => {
     const res = await fetch('/api/auth/predefined-login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ account: 'demo' }),
+      body: JSON.stringify({ account: 'demo', password }),
     });
 
     if (!res.ok) {

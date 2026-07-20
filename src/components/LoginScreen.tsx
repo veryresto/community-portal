@@ -7,6 +7,8 @@ export function LoginScreen() {
   const { signInWithGoogle, signInAsDemo } = useAuth();
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
+  const [showDemoPassword, setShowDemoPassword] = useState(false);
+  const [demoPassword, setDemoPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
@@ -21,11 +23,20 @@ export function LoginScreen() {
     }
   };
 
-  const handleDemoLogin = async () => {
+  const handleDemoLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!showDemoPassword) {
+      setShowDemoPassword(true);
+      return;
+    }
+    if (!demoPassword.trim()) {
+      setError("Please enter the demo password");
+      return;
+    }
     try {
       setDemoLoading(true);
       setError(null);
-      await signInAsDemo();
+      await signInAsDemo(demoPassword);
     } catch (err) {
       console.error(err);
       setError((err as Error).message || t('login.auth_failed'));
@@ -92,23 +103,47 @@ export function LoginScreen() {
             <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--border-color)' }}></div>
           </div>
 
-          <button
-            onClick={handleDemoLogin}
-            disabled={loading || demoLoading}
-            className="sso-button"
-            type="button"
-            style={{ borderColor: 'var(--primary-glow)', backgroundColor: 'var(--bg-secondary)' }}
-          >
-            {demoLoading ? (
-              <span className="spinner"></span>
-            ) : (
-              <>
-                <KeyRound className="google-icon" style={{ color: 'var(--primary)', width: '18px', height: '18px' }} />
-                <span>{t('login.continue_as_demo')}</span>
-                <ArrowRight className="btn-arrow" />
-              </>
-            )}
-          </button>
+          {showDemoPassword ? (
+            <form onSubmit={handleDemoLogin} className="portal-form" style={{ marginTop: '8px', gap: '12px' }}>
+              <div className="form-group">
+                <input
+                  type="password"
+                  placeholder="Enter Demo Password"
+                  value={demoPassword}
+                  onChange={(e) => setDemoPassword(e.target.value)}
+                  disabled={demoLoading}
+                  autoFocus
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading || demoLoading}
+                className="submit-button"
+              >
+                {demoLoading ? (
+                  <span className="spinner"></span>
+                ) : (
+                  <>
+                    <span>Submit Password</span>
+                    <ArrowRight className="btn-arrow" />
+                  </>
+                )}
+              </button>
+            </form>
+          ) : (
+            <button
+              onClick={() => handleDemoLogin()}
+              disabled={loading || demoLoading}
+              className="sso-button"
+              type="button"
+              style={{ borderColor: 'var(--primary-glow)', backgroundColor: 'var(--bg-secondary)' }}
+            >
+              <KeyRound className="google-icon" style={{ color: 'var(--primary)', width: '18px', height: '18px' }} />
+              <span>{t('login.continue_as_demo')}</span>
+              <ArrowRight className="btn-arrow" />
+            </button>
+          )}
         </div>
 
         <div className="card-footer">

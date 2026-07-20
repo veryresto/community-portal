@@ -20,7 +20,7 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { account } = await req.json();
+    const { account, password } = await req.json();
 
     if (account !== "demo") {
       return new Response(
@@ -38,6 +38,13 @@ serve(async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ error: "Demo login credentials are not configured on the server" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (password !== demoPassword) {
+      return new Response(
+        JSON.stringify({ error: "Invalid login credentials" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
