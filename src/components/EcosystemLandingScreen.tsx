@@ -9,8 +9,12 @@ import { t } from '../lib/i18n';
 import * as analytics from '../lib/analytics';
 import { buildInfo } from '../generated/build-info';
 
+import { useDemoMode } from '../hooks/useDemoMode';
+import { maskName, maskEmail, maskPhone } from '../lib/masking';
+
 export function EcosystemLandingScreen() {
   const { user, signOut } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const { isAdmin, isVerifier, isModerator, isGovernanceManager } = usePermissions();
   const [houseNumber, setHouseNumber] = useState<string | null>(null);
   const [whatsappNumber, setWhatsappNumber] = useState<string | null>(null);
@@ -186,8 +190,8 @@ export function EcosystemLandingScreen() {
               </div>
             )}
             <div className="profile-info">
-              <h2>{user?.user_metadata?.full_name || user?.email}</h2>
-              <p className="user-email">{user?.email}</p>
+              <h2>{maskName(user?.user_metadata?.full_name || user?.email, isDemoMode)}</h2>
+              <p className="user-email">{maskEmail(user?.email, isDemoMode)}</p>
               <div className="role-tags">
                 <span className="role-tag status-approved">
                   {participantType === 'non_resident' 
@@ -218,7 +222,7 @@ export function EcosystemLandingScreen() {
             {whatsappNumber && (
               <div className="p-detail">
                 <span className="p-label">{t('landing.whatsapp_contact')}:</span>
-                <span className="p-value">{whatsappNumber}</span>
+                <span className="p-value">{maskPhone(whatsappNumber, isDemoMode)}</span>
               </div>
             )}
             <div className="p-detail">

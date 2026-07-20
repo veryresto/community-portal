@@ -7,6 +7,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { usePermissions } from '../hooks/usePermissions';
 import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliations';
+import { useDemoMode } from '../hooks/useDemoMode';
+import { maskName, maskEmail, maskPhone } from '../lib/masking';
 
 interface AdminDashboardScreenProps {
   onBack: () => void;
@@ -76,6 +78,7 @@ interface GovernanceEvent {
 
 export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
   const { user } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const { isAdmin, isVerifier, isModerator, loading: permLoading } = usePermissions();
   
   // Tab states: 'approvals', 'roles', 'app_governance', 'audit'
@@ -1404,6 +1407,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                         onClick={() => handleSetPrimaryAffiliation(aff)}
                         className="admin-btn secondary" 
                         style={{ fontSize: '12px', padding: '4px 8px', minWidth: 'auto' }}
+                        disabled={isDemoMode}
                       >
                         Set Primary
                       </button>
@@ -1412,6 +1416,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                       onClick={() => handleDeleteAffiliation(aff.id, aff.is_primary)}
                       className="admin-btn danger" 
                       style={{ padding: '4px 8px', minWidth: 'auto' }}
+                      disabled={isDemoMode}
                     >
                       Delete
                     </button>
@@ -1501,6 +1506,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                 onClick={handleAddAffiliation}
                 className="admin-btn primary" 
                 style={{ marginTop: '8px', width: '100%' }}
+                disabled={isDemoMode}
               >
                 Add Affiliation
               </button>
@@ -1681,8 +1687,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                         <tr key={profile.id}>
                           <td>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous User'}</span>
-                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
+                              <span style={{ fontWeight: 600 }}>{maskName(profile.full_name || 'Anonymous User', isDemoMode)}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{maskEmail(profile.email, isDemoMode)}</span>
                               <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
                                 <span className={`role-tag ${profile.participant_type === 'resident' ? 'status-approved' : 'status-verifier'}`} style={{ fontSize: '9px', padding: '1px 6px' }}>
                                   {profile.participant_type || 'resident'}
@@ -1877,7 +1883,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 )}
                                 {houseEditEvent && (
                                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }} title={`Edited: ${houseEditEvent.reason}`}>
-                                    Corrected by {houseEditEvent.actor_email}
+                                    Corrected by {maskEmail(houseEditEvent.actor_email, isDemoMode)}
                                   </span>
                                 )}
                               </div>
@@ -1895,10 +1901,10 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                               />
                             ) : (
                               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>}</span>
+                                <span>{profile.whatsapp_number ? maskPhone(profile.whatsapp_number, isDemoMode) : <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>None</span>}</span>
                                 {whatsappEditEvent && (
                                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }} title={`Edited: ${whatsappEditEvent.reason}`}>
-                                    Corrected by {whatsappEditEvent.actor_email}
+                                    Corrected by {maskEmail(whatsappEditEvent.actor_email, isDemoMode)}
                                   </span>
                                 )}
                               </div>
@@ -1912,7 +1918,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                               {stateEvent && (
                                 <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                   {profile.approval_status === 'approved' ? 'Approved' : 
-                                   profile.approval_status === 'rejected' ? 'Rejected' : 'Suspended'} by {stateEvent.actor_email}
+                                   profile.approval_status === 'rejected' ? 'Rejected' : 'Suspended'} by {maskEmail(stateEvent.actor_email, isDemoMode)}
                                 </span>
                               )}
                             </div>
@@ -1925,7 +1931,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                     <button 
                                       onClick={() => handleSaveProfileEdit(profile)}
                                       className="admin-btn primary"
-                                      disabled={loading}
+                                      disabled={loading || isDemoMode}
+                                      title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                     >
                                       <Check style={{ width: '14px' }} />
                                       <span>Save</span>
@@ -1945,28 +1952,32 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                       onClick={() => handleStartEdit(profile)}
                                       className="admin-btn secondary"
                                       title="Edit resident profile details"
+                                      disabled={isDemoMode}
                                     >
                                       <Edit style={{ width: '14px' }} />
                                       <span>Edit</span>
                                     </button>
-
+ 
                                     {profile.approval_status === 'approved' && profile.participant_type === 'resident' && (
                                       <button 
                                         onClick={() => { setManageAffiliationsProfile(profile); setModalHouseSearch(''); }}
                                         className="admin-btn secondary"
                                         style={{ borderColor: 'var(--primary)' }}
                                         title="Manage multiple house affiliations"
+                                        disabled={isDemoMode}
                                       >
                                         <Home style={{ width: '14px' }} />
                                         <span>Houses</span>
                                       </button>
                                     )}
-
+ 
                                     {profile.approval_status === 'pending' && (
                                       <>
                                         <button 
                                           onClick={() => handleApproveResident(profile)}
                                           className="admin-btn primary"
+                                          disabled={isDemoMode}
+                                          title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                         >
                                           <Check style={{ width: '14px' }} />
                                           <span>Approve</span>
@@ -1974,37 +1985,45 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                         <button 
                                           onClick={() => triggerReasonModal(profile, 'reject')}
                                           className="admin-btn danger"
+                                          disabled={isDemoMode}
+                                          title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                         >
                                           <X style={{ width: '14px' }} />
                                           <span>Reject</span>
                                         </button>
                                       </>
                                     )}
-
+ 
                                     {profile.approval_status === 'approved' && (
                                       <button 
                                         onClick={() => triggerReasonModal(profile, 'suspend')}
                                         className="admin-btn danger"
+                                        disabled={isDemoMode}
+                                        title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                       >
                                         <ShieldAlert style={{ width: '14px' }} />
                                         <span>Suspend</span>
                                       </button>
                                     )}
-
+ 
                                     {profile.approval_status === 'suspended' && (
                                       <button 
                                         onClick={() => handleApproveResident(profile)}
                                         className="admin-btn primary"
+                                        disabled={isDemoMode}
+                                        title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                       >
                                         <Check style={{ width: '14px' }} />
                                         <span>Re-Approve</span>
                                       </button>
                                     )}
-
+ 
                                     {profile.approval_status === 'rejected' && (
                                       <button 
                                         onClick={() => handleApproveResident(profile)}
                                         className="admin-btn primary"
+                                        disabled={isDemoMode}
+                                        title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                       >
                                         <Check style={{ width: '14px' }} />
                                         <span>Re-Approve</span>
@@ -2016,7 +2035,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                             ) : (
                               <div style={{ textAlign: 'right' }}>
                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                                  Read-only (Admins/Verifiers only)
+                                  {isDemoMode ? 'Read-only (Demo Mode)' : 'Read-only (Admins/Verifiers only)'}
                                 </span>
                               </div>
                             )}
@@ -2111,8 +2130,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                         <tr key={profile.id}>
                           <td>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <span style={{ fontWeight: 600 }}>{profile.full_name || 'Anonymous User'}</span>
-                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{profile.email}</span>
+                              <span style={{ fontWeight: 600 }}>{maskName(profile.full_name || 'Anonymous User', isDemoMode)}</span>
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{maskEmail(profile.email, isDemoMode)}</span>
                               <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
                                 <span className={`role-tag ${profile.participant_type === 'non_resident' ? 'status-verifier' : 'status-approved'}`} style={{ fontSize: '9px', padding: '1px 6px' }}>
                                   {profile.participant_type === 'non_resident' 
@@ -2122,7 +2141,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                               </div>
                             </div>
                           </td>
-                          <td>{profile.whatsapp_number || <span style={{ color: 'var(--text-muted)' }}>-</span>}</td>
+                          <td>{profile.whatsapp_number ? maskPhone(profile.whatsapp_number, isDemoMode) : <span style={{ color: 'var(--text-muted)' }}>-</span>}</td>
                           <td>
                             <div className="role-tags">
                               {roles.length === 0 ? (
@@ -2149,6 +2168,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 <button 
                                   onClick={() => handleRemoveGlobalRole(profile.id, 'resident_verifier', profile.email)}
                                   className="admin-btn danger"
+                                  disabled={isDemoMode}
+                                  title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                 >
                                   <span>Demote Verifier</span>
                                 </button>
@@ -2156,6 +2177,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 <button 
                                   onClick={() => handleAssignGlobalRole(profile.id, 'resident_verifier', profile.email)}
                                   className="admin-btn secondary"
+                                  disabled={isDemoMode}
+                                  title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                 >
                                   <span>Promote Verifier</span>
                                 </button>
@@ -2166,6 +2189,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 <button 
                                   onClick={() => handleRemoveGlobalRole(profile.id, 'platform_moderator', profile.email)}
                                   className="admin-btn danger"
+                                  disabled={isDemoMode}
+                                  title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                 >
                                   <span>Demote Moderator</span>
                                 </button>
@@ -2173,6 +2198,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                 <button 
                                   onClick={() => handleAssignGlobalRole(profile.id, 'platform_moderator', profile.email)}
                                   className="admin-btn secondary"
+                                  disabled={isDemoMode}
+                                  title={isDemoMode ? "Actions are disabled in Demo Mode" : undefined}
                                 >
                                   <span>Promote Moderator</span>
                                 </button>
@@ -2251,8 +2278,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                         onClick={() => setSelectedProfileId(p.id)}
                         className={`gov-user-item ${selectedProfileId === p.id ? 'active' : ''}`}
                       >
-                        <span style={{ fontWeight: 600, display: 'block', fontSize: '13.5px' }}>{p.full_name}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{p.email}</span>
+                        <span style={{ fontWeight: 600, display: 'block', fontSize: '13.5px' }}>{maskName(p.full_name, isDemoMode)}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{maskEmail(p.email, isDemoMode)}</span>
                       </div>
                     ))
                   )}
@@ -2281,8 +2308,8 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                             </div>
                           )}
                           <div className="profile-info">
-                            <h3 style={{ fontSize: '16px' }}>{activeProfile.full_name}</h3>
-                            <p style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>{activeProfile.email}</p>
+                            <h3 style={{ fontSize: '16px' }}>{maskName(activeProfile.full_name, isDemoMode)}</h3>
+                            <p style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>{maskEmail(activeProfile.email, isDemoMode)}</p>
                             <span className="pill-badge approved" style={{ marginTop: '6px' }}>
                               🟢 Approved {activeProfile.participant_type === 'non_resident' ? 'Non-Resident' : 'Resident'}
                             </span>
@@ -2331,6 +2358,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                                     activeProfile.email
                                   )}
                                   className="matrix-select"
+                                  disabled={isDemoMode}
                                 >
                                   <option value="none">No Access</option>
                                   {availableAppRoles.map(role => (
@@ -2402,13 +2430,13 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
                         <td style={{ fontFamily: 'var(--font-mono)', fontSize: '11.5px', whiteSpace: 'nowrap' }}>
                           {new Date(ev.created_at).toLocaleString()}
                         </td>
-                        <td style={{ fontWeight: 500, fontSize: '13px' }}>{ev.actor_email}</td>
+                        <td style={{ fontWeight: 500, fontSize: '13px' }}>{maskEmail(ev.actor_email, isDemoMode)}</td>
                         <td>
                           <span className="role-tag status-admin" style={{ fontSize: '10px', textTransform: 'lowercase', fontFamily: 'var(--font-mono)' }}>
                             {ev.action}
                           </span>
                         </td>
-                        <td style={{ fontSize: '13px' }}>{ev.target_email}</td>
+                        <td style={{ fontSize: '13px' }}>{maskEmail(ev.target_email, isDemoMode)}</td>
                         <td>
                           {ev.reason ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '13px' }}>
@@ -2441,7 +2469,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
             
             <p style={{ fontSize: '13.5px', color: 'var(--text-secondary)' }}>
               You are {modalContext.action === 'reject' ? 'rejecting' : 'suspending'} registration for{' '}
-              <strong style={{ color: 'var(--text-primary)' }}>{modalContext.profile.full_name}</strong> ({modalContext.profile.email}).
+              <strong style={{ color: 'var(--text-primary)' }}>{maskName(modalContext.profile.full_name, isDemoMode)}</strong> ({maskEmail(modalContext.profile.email, isDemoMode)}).
               Provide operational context for this action:
             </p>
 

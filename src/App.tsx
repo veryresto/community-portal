@@ -5,6 +5,8 @@ import { PendingApprovalScreen } from './components/PendingApprovalScreen';
 import { RejectedScreen } from './components/RejectedScreen';
 import { EcosystemLandingScreen } from './components/EcosystemLandingScreen';
 
+import { DemoBanner } from './components/DemoBanner';
+
 function MainAppContent() {
   const { user, session, loading: authLoading } = useAuth();
   const { isApproved, isRejected, loading: permLoading } = usePermissions();
@@ -38,35 +40,40 @@ function MainAppContent() {
   }
 
   // Route 2: Account explicitly rejected/suspended -> Access Denied Screen
+  let screenComponent = <EcosystemLandingScreen />;
+
   if (isRejected) {
-    return <RejectedScreen />;
-  }
+    screenComponent = <RejectedScreen />;
+  } else if (!isApproved) {
+    // Route 3: Account not approved yet -> Waiting Room Details collection or Awaiting review
+    screenComponent = <PendingApprovalScreen />;
+  } else {
+    // Route 4: Account approved -> Portal landing hub directory
+    // Retrieve the redirect URL from parameter or fallback to the saved sessionStorage URL
+    const finalRedirectTo = redirectTo || sessionStorage.getItem('oauth_redirect_to');
 
-  // Route 3: Account not approved yet -> Waiting Room Details collection or Awaiting review
-  if (!isApproved) {
-    return <PendingApprovalScreen />;
-  }
-
-  // Route 4: Account approved -> Portal landing hub directory
-  // Retrieve the redirect URL from parameter or fallback to the saved sessionStorage URL
-  const finalRedirectTo = redirectTo || sessionStorage.getItem('oauth_redirect_to');
-
-  if (finalRedirectTo && session) {
-    // Clear the stored URL so subsequent direct portal visits don't redirect
-    sessionStorage.removeItem('oauth_redirect_to');
-    window.location.replace(finalRedirectTo);
-    return (
-      <div className="portal-container">
-        <div className="glow-accent glow-1"></div>
-        <div className="loading-container glassmorphic" style={{ borderRadius: '24px', maxWidth: '320px', width: '100%' }}>
-          <span className="spinner"></span>
-          <p style={{ fontSize: '14px', fontWeight: 500 }}>Redirecting back to application...</p>
+    if (finalRedirectTo && session) {
+      // Clear the stored URL so subsequent direct portal visits don't redirect
+      sessionStorage.removeItem('oauth_redirect_to');
+      window.location.replace(finalRedirectTo);
+      return (
+        <div className="portal-container">
+          <div className="glow-accent glow-1"></div>
+          <div className="loading-container glassmorphic" style={{ borderRadius: '24px', maxWidth: '320px', width: '100%' }}>
+            <span className="spinner"></span>
+            <p style={{ fontSize: '14px', fontWeight: 500 }}>Redirecting back to application...</p>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 
-  return <EcosystemLandingScreen />;
+  return (
+    <>
+      <DemoBanner />
+      {screenComponent}
+    </>
+  );
 }
 
 const ALLOWED_ORIGINS = [

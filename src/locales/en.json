@@ -128,6 +128,8 @@
     "description": "Sign in using your authorized community Google account to access Veryresto ecosystem applications (IPL Finder, Rekap, Kas, Surat).",
     "continue_with_google": "Continue with Google",
     "continue_as_demo": "Continue as Demo",
+    "demo_banner_title": "Demo Mode",
+    "demo_banner_desc": "You are exploring the application using a read-only demo account. Some personal information has been hidden to protect resident privacy.",
     "footer_notice": "Protected by Community Governance policies. Unauthorized access is recorded.",
     "auth_failed": "Authentication failed. Please try again."
   }
