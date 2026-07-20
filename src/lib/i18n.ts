@@ -2,7 +2,7 @@ import id from '../locales/id.json';
 import en from '../locales/en.json';
 
 const translations: Record<string, unknown> = { id, en };
-let currentLocale = 'id';
+let currentLocale = 'en';
 
 export function setLocale(locale: string) {
   if (translations[locale]) {
@@ -17,7 +17,7 @@ export function getLocale() {
 export function t(path: string, variables?: Record<string, string | number>): string {
   const keys = path.split('.');
   let value: unknown = translations[currentLocale];
-  
+
   for (const key of keys) {
     if (value && typeof value === 'object' && key in value) {
       value = (value as Record<string, unknown>)[key];
@@ -39,11 +39,11 @@ export function t(path: string, variables?: Record<string, string | number>): st
       return path; // Return key path as final fallback
     }
   }
-  
+
   if (typeof value !== 'string') {
     return path;
   }
-  
+
   if (variables) {
     let result = value;
     for (const [key, val] of Object.entries(variables)) {
@@ -51,6 +51,6 @@ export function t(path: string, variables?: Record<string, string | number>): st
     }
     return result;
   }
-  
+
   return value;
 }
