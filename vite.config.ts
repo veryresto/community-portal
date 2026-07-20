@@ -12,7 +12,14 @@ export default defineConfig({
       "localhost",
       "as-macbook-pro.tailc513e0.ts.net",
       ".tailc513e0.ts.net"
-    ]
+    ],
+    proxy: {
+      '/api/auth/predefined-login': {
+        target: 'https://lfxkabhzfgenpqfnhjyw.supabase.co/functions/v1/predefined-login',
+        changeOrigin: true,
+        rewrite: () => '',
+      }
+    }
   },
   plugins: [react()],
 })

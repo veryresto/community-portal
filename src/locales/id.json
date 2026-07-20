@@ -127,6 +127,7 @@
     "secure_entry": "Akses Masuk Aman",
     "description": "Masuk menggunakan akun Google warga yang terverifikasi untuk mengakses aplikasi ekosistem Veryresto (IPL Finder, Rekap, Kas, Surat).",
     "continue_with_google": "Lanjutkan dengan Google",
+    "continue_as_demo": "Lanjutkan sebagai Demo",
     "footer_notice": "Dilindungi oleh kebijakan tata tertib lingkungan. Akses tidak sah akan dicatat.",
     "auth_failed": "Autentikasi gagal. Silakan coba lagi."
   }

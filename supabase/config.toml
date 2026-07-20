@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.delete-users]
 verify_jwt = false
+
+[functions.predefined-login]
+verify_jwt = false
