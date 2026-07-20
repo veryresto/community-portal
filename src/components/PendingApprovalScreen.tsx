@@ -6,6 +6,9 @@ import { AFFILIATION_OPTIONS, getAffiliationLabel } from '../constants/affiliati
 import { t } from '../lib/i18n';
 import * as analytics from '../lib/analytics';
 
+import { useDemoMode } from '../hooks/useDemoMode';
+import { maskName, maskPhone } from '../lib/masking';
+
 const getSubtypeLabel = (value: string): string => {
   const key = `house_relationships.${value}.label`;
   const translated = t(key);
@@ -14,6 +17,7 @@ const getSubtypeLabel = (value: string): string => {
 
 export function PendingApprovalScreen() {
   const { user, signOut } = useAuth();
+  const { isDemoMode } = useDemoMode();
   const [participantType, setParticipantType] = useState<'resident' | 'non_resident'>('resident');
   const [residentSubtype, setResidentSubtype] = useState<'owner' | 'renter' | 'household_member' | 'caretaker'>('owner');
   const [houseNumber, setHouseNumber] = useState('');
@@ -226,7 +230,7 @@ export function PendingApprovalScreen() {
           </div>
           <h1 className="portal-title">{t('waiting_room.title')}</h1>
           <p className="portal-subtitle">
-            {t('waiting_room.welcome', { name: user?.user_metadata?.full_name || user?.email || '' })}
+            {t('waiting_room.welcome', { name: maskName(user?.user_metadata?.full_name || user?.email || '', isDemoMode) })}
           </p>
         </div>
 
@@ -286,7 +290,7 @@ export function PendingApprovalScreen() {
                   <div className="detail-row">
                     <Phone className="row-icon" />
                     <span className="row-label">{t('waiting_room.whatsapp_contact')}:</span>
-                    <span className="row-value">{savedWhatsappNumber}</span>
+                    <span className="row-value">{maskPhone(savedWhatsappNumber, isDemoMode)}</span>
                   </div>
                 )}
               </div>
@@ -567,7 +571,7 @@ export function PendingApprovalScreen() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || isDemoMode}
                 className="submit-button"
                 style={{ marginTop: '12px' }}
               >
