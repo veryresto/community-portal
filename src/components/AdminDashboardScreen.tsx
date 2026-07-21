@@ -312,7 +312,7 @@ export function AdminDashboardScreen({ onBack }: AdminDashboardScreenProps) {
 
       if (error) throw error;
 
-      setProfiles(data || []);
+      setProfiles((data as unknown as Profile[]) || []);
       setApprovalsTotalCount(count || 0);
 
       // Fetch audit logs contextually for visible profiles
