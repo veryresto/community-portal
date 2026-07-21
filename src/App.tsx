@@ -69,10 +69,10 @@ function MainAppContent() {
   }
 
   return (
-    <>
+    <div className="portal-app-root">
       <DemoBanner />
       {screenComponent}
-    </>
+    </div>
   );
 }
 
