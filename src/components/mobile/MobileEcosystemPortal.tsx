@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
-import { MobileContainer } from './MobileContainer';
 import { BottomTabBar } from './BottomTabBar';
 import type { MobileTab } from './BottomTabBar';
 import { MobileHubScreen } from './MobileHubScreen';
@@ -400,101 +399,103 @@ export function MobileEcosystemPortal() {
   };
 
   return (
-    <MobileContainer>
-      <div className="glow-accent glow-ecosystem"></div>
+    <div className="mobile-app-shell">
+      <div className="mobile-scroll-content">
+        <div className="glow-accent glow-ecosystem"></div>
 
-      {activeTab === 'hub' && (
-        <MobileHubScreen
-          participantType={participantType}
-          residentSubtype={residentSubtype}
-          requestedAffiliation={requestedAffiliation}
-          houseNumber={houseNumber}
-          whatsappNumber={whatsappNumber}
-          onOpenAdmin={() => handleTabChange('approvals')}
-        />
-      )}
+        {activeTab === 'hub' && (
+          <MobileHubScreen
+            participantType={participantType}
+            residentSubtype={residentSubtype}
+            requestedAffiliation={requestedAffiliation}
+            houseNumber={houseNumber}
+            whatsappNumber={whatsappNumber}
+            onOpenAdmin={() => handleTabChange('approvals')}
+          />
+        )}
 
-      {activeTab === 'approvals' && (
-        <MobileApprovalsScreen
-          profiles={profiles}
-          loading={loading}
-          totalCount={totalCount}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filterStatus={filterStatus}
-          onFilterStatusChange={setFilterStatus}
-          filterType={filterType}
-          onFilterTypeChange={setFilterType}
-          filterSubtype={filterSubtype}
-          onFilterSubtypeChange={setFilterSubtype}
-          onApproveProfile={handleApproveProfile}
-          onSuspendProfile={handleSuspendProfile}
-          onUpdateProfile={handleUpdateProfile}
-          canManage={isAdmin || isVerifier}
-        />
-      )}
+        {activeTab === 'approvals' && (
+          <MobileApprovalsScreen
+            profiles={profiles}
+            loading={loading}
+            totalCount={totalCount}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            filterStatus={filterStatus}
+            onFilterStatusChange={setFilterStatus}
+            filterType={filterType}
+            onFilterTypeChange={setFilterType}
+            filterSubtype={filterSubtype}
+            onFilterSubtypeChange={setFilterSubtype}
+            onApproveProfile={handleApproveProfile}
+            onSuspendProfile={handleSuspendProfile}
+            onUpdateProfile={handleUpdateProfile}
+            canManage={isAdmin || isVerifier}
+          />
+        )}
 
-      {activeTab === 'roles' && (
-        <MobileRolesScreen
-          profiles={profiles}
-          userRoles={userRoles}
-          loading={loading}
-          totalCount={totalCount}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onPromoteRole={handlePromoteRole}
-          onDemoteRole={handleDemoteRole}
-          isAdmin={isAdmin}
-        />
-      )}
+        {activeTab === 'roles' && (
+          <MobileRolesScreen
+            profiles={profiles}
+            userRoles={userRoles}
+            loading={loading}
+            totalCount={totalCount}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onPromoteRole={handlePromoteRole}
+            onDemoteRole={handleDemoteRole}
+            isAdmin={isAdmin}
+          />
+        )}
 
-      {activeTab === 'app-rbac' && (
-        <MobileAppRbacScreen
-          profiles={profiles}
-          applications={applications}
-          appRoles={appRoles}
-          userAppRoles={userAppRoles}
-          loading={loading}
-          totalCount={totalCount}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedProfileId={selectedProfileId}
-          onSelectProfile={setSelectedProfileId}
-          onAssignAppRole={handleAssignAppRole}
-          onRemoveAppRole={handleRemoveAppRole}
-          canManage={isGovernanceManager}
-        />
-      )}
+        {activeTab === 'app-rbac' && (
+          <MobileAppRbacScreen
+            profiles={profiles}
+            applications={applications}
+            appRoles={appRoles}
+            userAppRoles={userAppRoles}
+            loading={loading}
+            totalCount={totalCount}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedProfileId={selectedProfileId}
+            onSelectProfile={setSelectedProfileId}
+            onAssignAppRole={handleAssignAppRole}
+            onRemoveAppRole={handleRemoveAppRole}
+            canManage={isGovernanceManager}
+          />
+        )}
 
-      {activeTab === 'logs' && (
-        <MobileLogsScreen
-          logs={logs}
-          loading={loading}
-          totalCount={totalCount}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          actionFilter={actionFilter}
-          onActionFilterChange={setActionFilter}
-        />
-      )}
+        {activeTab === 'logs' && (
+          <MobileLogsScreen
+            logs={logs}
+            loading={loading}
+            totalCount={totalCount}
+            page={page}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            actionFilter={actionFilter}
+            onActionFilterChange={setActionFilter}
+          />
+        )}
+      </div>
 
       <BottomTabBar
         activeTab={activeTab}
         onTabChange={handleTabChange}
         isGovernanceManager={isGovernanceManager}
       />
-    </MobileContainer>
+    </div>
   );
 }
