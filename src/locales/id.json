@@ -129,7 +129,7 @@
     "continue_with_google": "Lanjutkan dengan Google",
     "continue_as_demo": "Lanjutkan sebagai Demo",
     "demo_banner_title": "Mode Demo",
-    "demo_banner_desc": "Anda sedang menjelajahi aplikasi dengan akun demo baca-saja. Beberapa informasi pribadi disembunyikan untuk melindungi privasi warga.",
+    "demo_banner_desc": "Anda sedang menjelajahi aplikasi dengan akun demo read-only.",
     "footer_notice": "Dilindungi oleh kebijakan tata tertib lingkungan. Akses tidak sah akan dicatat.",
     "auth_failed": "Autentikasi gagal. Silakan coba lagi."
   }
