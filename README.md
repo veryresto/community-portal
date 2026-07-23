@@ -1,9 +1,18 @@
 # Community Portal
 
-The **Veryresto Identity Portal** — the centralized authentication and identity management hub for the Veryresto resident ecosystem.
+> [!IMPORTANT]
+> **Repository Status: Deprecated & Read-Only**
+> Active development for the Veryresto Community Portal has transitioned to the new repository: **[sakura3id/community-portal](https://github.com/sakura3id/community-portal)** (currently under development/migration in [PR #1](https://github.com/sakura3id/community-portal/pull/1)).
+> 
+> * **Maintenance:** Future maintenance and feature updates will occur exclusively on the new repository.
+> * **Deployment:**
+>   * **Staging Environment:** [veryresto.com](https://veryresto.com) (deployed from the new repository)
+>   * **Production Environment:** [sakura3.id](https://sakura3.id) (deployed from the new repository)
+> 
+> **Credit & Historical Role:**
+> This repository serves as the original foundation and core reference implementation of the Veryresto Identity Portal, including its Supabase schemas, identity protocols, and initial React front-end. We credit all the contributors who built the bedrock of this ecosystem.
 
-**Live:** [portal.veryresto.com](https://portal.veryresto.com)  
-**GitHub:** [veryresto/community-portal](https://github.com/veryresto/community-portal)
+**Original GitHub:** [veryresto/community-portal](https://github.com/veryresto/community-portal)
 
 ---
 
