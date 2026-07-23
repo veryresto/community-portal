@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > **Repository Status: Deprecated & Read-Only**
-> Active development for the Veryresto Community Portal has transitioned to the new repository: **[sakura3id/community-portal](https://github.com/sakura3id/community-portal)** (currently under development/migration in [PR #1](https://github.com/sakura3id/community-portal/pull/1)).
+> Active development for the Community Portal has transitioned to the new repository: **[sakura3id/community-portal](https://github.com/sakura3id/community-portal)** (currently under development/migration in [PR #1](https://github.com/sakura3id/community-portal/pull/1)).
 > 
 > * **Maintenance:** Future maintenance and feature updates will occur exclusively on the new repository.
 > * **Deployment:**
@@ -10,7 +10,7 @@
 >   * **Production Environment:** [sakura3.id](https://sakura3.id) (deployed from the new repository)
 > 
 > **Credit & Historical Role:**
-> This repository serves as the original foundation and core reference implementation of the Veryresto Identity Portal, including its Supabase schemas, identity protocols, and initial React front-end. We credit all the contributors who built the bedrock of this ecosystem.
+> This repository serves as the original foundation and core reference implementation of the Community Portal, including its Supabase schemas, identity protocols, and initial React front-end. We credit all the contributors who built the bedrock of this ecosystem.
 
 **Original GitHub:** [veryresto/community-portal](https://github.com/veryresto/community-portal)
 
@@ -18,7 +18,7 @@
 
 ## What This Is
 
-This is the **single sign-on portal** for all Veryresto resident applications. It is the only app in the ecosystem that handles Google OAuth and manages resident identity. Other resident apps (IPL Finder, Rekap Viewer, etc.) redirect here to authenticate and share the session via a cross-subdomain cookie.
+This is the **single sign-on portal** for all resident applications. It is the only app in the ecosystem that handles Google OAuth and manages resident identity. Other resident apps (IPL Finder, Rekap Viewer, etc.) redirect here to authenticate and share the session via a cross-subdomain cookie.
 
 ### Key Responsibilities
 
@@ -46,7 +46,7 @@ If you are building a new app that should authenticate using this portal, read t
 | Document | Description |
 |---|---|
 | [Auth Integration Guide](./docs/auth-integration-guide.md) | Start here — overview, app registration, quick reference |
-| [Veryresto Identity Protocol](./docs/veryresto-identity-protocol.md) | Platform-agnostic auth contract (cookie, redirect, approval, RBAC specs) |
+| [Identity Protocol](./docs/veryresto-identity-protocol.md) | Platform-agnostic auth contract (cookie, redirect, approval, RBAC specs) |
 | [React + Vite Implementation](./docs/auth/react-vite.md) | Reference implementation for React/Vite apps |
 | [Node.js + Express Implementation](./docs/auth/node-express.md) | Reference implementation for Express backends |
 | [Next.js Implementation](./docs/auth/nextjs.md) | Stub — contributions welcome |
